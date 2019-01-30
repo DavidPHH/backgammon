@@ -1,0 +1,9 @@
+#pane {
+    -fx-background-image: url("res/board.png");
+    -fx-background-repeat: stretch;
+    -fx-background-position: center center;
+}
+
+#transparency{
+    -fx-opacity: 0.5;
+}
