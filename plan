@@ -1,0 +1,41 @@
+Color enum
+Classes: Static Board, Strip, Piece, Move, Dice
+
+Board variables:
+-Strip array[24]
+-List Bar
+-List array BearOff[2] -- BearOff[x].add(Piece)
+-Current turn color
+
+Board methods:
+-InitialPos
+-InsertToStrip(Piece, StripID)
+-MakeMove(Move)
+-NextTurn 
+-ValidMove(Move)
+-FindValidMoves(Piece)
+
+Strip variables:
+-Color
+-Piece stack
+-bool Empty
+-Next strip
+-ID
+
+Strip methods:
+-Insert(Piece)
+-Remove()
+
+Piece variables:
+-Color
+-Strip
+
+Move variables:
+Color
+Origin
+Dest
+
+Dice methods:
+Roll
+RiggedRoll(result)
+
