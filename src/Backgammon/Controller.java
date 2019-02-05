@@ -43,7 +43,10 @@ public class Controller {
     }
 
     public class slit {
-        public slit(){
+    }
+
+    public void initialize() {
+
             GridPane[] p = {Q1, Q2, Q3, Q4};
             slitArray = new VBox[24];                    // MOVE THIS TO CLASS
             int offset = 0;
@@ -54,11 +57,6 @@ public class Controller {
                 }
                 offset++;
             }
-        }
-
-    }
-
-    public void initialize() {
 
 
         Image black = new Image("Backgammon/res/piece-black.png");
