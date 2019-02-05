@@ -7,3 +7,39 @@
 #transparency{
     -fx-opacity: 0.5;
 }
+/*Current styling for button, textarea and textfield are only temporary, colours chosen to try blend with the board
+whilst also maintaining visibility for testing
+ */
+#displayArea{
+    -fx-opacity: .5;
+    -fx-border-color: grey;
+    -fx-text-fill: black;
+}
+
+#displayArea:hover{
+    -fx-opacity: 1;
+}
+
+#pCommand{
+    -fx-opacity:.55;
+    -fx-background-color: grey;
+    -fx-border-color: white;
+    -fx-border-width: 3px;
+    -fx-text-fill:white;
+}
+
+#infoBut{
+    -fx-background-color: grey;
+}
+
+/*
+Couldn't get the on hover to work with pure css, left here for later attempts
+*/
+/*#infoBut:pressed > #displayArea{
+    -fx-opacity: .5;
+}*/
+/*
+#infoBut:hover ~ #displayArea{
+    visibility: display;
+}
+*/
