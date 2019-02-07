@@ -24,6 +24,8 @@ public class Controller {
     public GridPane Q3;
     @FXML
     public GridPane Q4;
+    @FXML
+    private GridPane textAreaGrid;
 
     //Player commands textfield
     @FXML
@@ -46,17 +48,16 @@ public class Controller {
     }
 
     public void initialize() {
-
-            GridPane[] p = {Q1, Q2, Q3, Q4};
-            slitArray = new VBox[24];                    // MOVE THIS TO CLASS
-            int offset = 0;
-            for (GridPane pane : p) {
-                for (int i = 0; i < pane.getChildren().size(); i++) {
-                    slitArray[i + 6 * offset] = (VBox) pane.getChildren().get(i);
-                    //System.out.println(i+6*offset);
-                }
-                offset++;
+        GridPane[] p = {Q1, Q2, Q3, Q4};
+        slitArray = new VBox[24];                    // MOVE THIS TO CLASS
+        int offset = 0;
+        for (GridPane pane : p) {
+            for (int i = 0; i < pane.getChildren().size(); i++) {
+                slitArray[i + 6 * offset] = (VBox) pane.getChildren().get(i);
+                System.out.println(i+6*offset);
             }
+            offset++;
+        }
 
 
         Image black = new Image("Backgammon/res/piece-black.png");
@@ -88,6 +89,8 @@ public class Controller {
                 append("Game information will be displayed here\nInput \\ before commands \n");
         gameInfo.setText(textString.toString());
         gameInfo.setEditable(false);
+        textAreaGrid.setMouseTransparent(true);
+
 
         /* Event handlers on button
             Shows gameInfo text area when mouse hovers over the info button
@@ -122,7 +125,7 @@ public class Controller {
         }
         //User wants command list
         else if (inputString.equals("\\commands")) {
-            textString.append("\n").append(pCommands).append("\n").append("Game commands\n______________\n1." +
+            textString.append("\n").append("\\commands\n").append(pCommands.getText()).append("\n").append("Game commands\n______________\n1." +
                     " \\Quit\n2. \\Commands");
             gameInfo.setText(textString.toString());
             pCommands.setText("");

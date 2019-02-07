@@ -14,6 +14,8 @@ public class Main extends Application {
         primaryStage.setTitle("Backgammon");
         Scene scene = new Scene(root, 1000, 650);
         scene.getStylesheets().addAll(this.getClass().getResource("application.css").toExternalForm());
+        //Done temporarily
+        primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
