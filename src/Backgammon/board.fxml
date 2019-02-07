@@ -66,11 +66,11 @@
         </GridPane.margin>
 
         <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="0" />
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #00f2d6; -fx-opacity: 0.5;*/" GridPane.columnIndex="1" />
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" />
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #00b9f2; -fx-opacity: 0.5;*/" GridPane.columnIndex="3" />
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="4" />
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #00abf2; -fx-opacity: 0.5;*/" GridPane.columnIndex="5" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #00f2d6; -fx-opacity: 0.5;*/" GridPane.columnIndex="1" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #00b9f2; -fx-opacity: 0.5;*/" GridPane.columnIndex="3" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="4" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #00abf2; -fx-opacity: 0.5;*/" GridPane.columnIndex="5" />
         <columnConstraints>
             <ColumnConstraints percentWidth="17" />
             <ColumnConstraints percentWidth="17" />
@@ -87,12 +87,12 @@
 
     <!-- Q4 -->
     <GridPane id="Q4" fx:id="Q4" minHeight="325.0" minWidth="400.0" style="/*-fx-background-color: #00bdf2; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" GridPane.rowIndex="1">
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="0" />
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #00f2d6; -fx-opacity: 0.5;*/" GridPane.columnIndex="1" />
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" />
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #00b9f2; -fx-opacity: 0.5;*/" GridPane.columnIndex="3" />
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="4" />
-        <VBox onMouseClicked="#click" style="/*-fx-background-color: #00abf2; -fx-opacity: 0.5;*/" GridPane.columnIndex="5" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="0" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #00f2d6; -fx-opacity: 0.5;*/" GridPane.columnIndex="1" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #00b9f2; -fx-opacity: 0.5;*/" GridPane.columnIndex="3" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="4" />
+        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #00abf2; -fx-opacity: 0.5;*/" GridPane.columnIndex="5" />
         <columnConstraints>
             <ColumnConstraints percentWidth="17" />
             <ColumnConstraints percentWidth="17" />

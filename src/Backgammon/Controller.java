@@ -54,7 +54,7 @@ public class Controller {
         for (GridPane pane : p) {
             for (int i = 0; i < pane.getChildren().size(); i++) {
                 slitArray[i + 6 * offset] = (VBox) pane.getChildren().get(i);
-                System.out.println(i+6*offset);
+                //System.out.println(i+6*offset);
             }
             offset++;
         }
@@ -164,9 +164,6 @@ public class Controller {
         }
     }
 
-    // @FXML
-    //VBox test;
-
     /*public void click(MouseEvent event) {
         VBox box = (VBox) event.getSource();
         Image image = new Image("Backgammon/res/piece-black.png");
@@ -189,7 +186,10 @@ public class Controller {
 
     public void click(MouseEvent event) {
         VBox box = (VBox) event.getSource();
-        box.getChildren().remove(box.getChildren().size() - 1);
+        if(box.getChildren().size()==0)
+            System.out.println("No pieces left in strip");
+        else
+            box.getChildren().remove(box.getChildren().size() - 1);
     }
 
 }
