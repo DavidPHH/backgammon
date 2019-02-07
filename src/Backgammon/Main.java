@@ -6,6 +6,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+enum Color{
+    NONE,
+    WHITE,
+    BLACK
+}
+
 public class Main extends Application {
 
     @Override
