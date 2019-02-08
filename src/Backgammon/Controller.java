@@ -71,7 +71,7 @@ public class Controller {
         String inputString = pCommands.getText().toLowerCase();
         if (inputString.equals(""))
             return;
-        switch (inputString) {
+        switch (inputString.split(" ")[0]) {
             case "/quit":
                 Platform.exit();
                 break;
@@ -83,13 +83,30 @@ public class Controller {
                 pCommands.setText("");
                 break;
             case "/move":
-                // Move()
+                pCommands.setText("");
+                String[] splot = inputString.split(" ");
+                int org, dest;
+                try{
+                    org = Integer.parseInt(splot[1]) - 1;
+                    dest = Integer.parseInt(splot[2]) - 1;
+                    if(org < 0 || dest < 0 || org > 23 || dest > 23)
+                        throw new ArrayIndexOutOfBoundsException();
+                }
+                catch (Exception ex){
+                    gameInfo.appendText("\nInvalid syntax. Expected /move int int");
+                    break;
+                }
+
+                Move move = new Move(org, dest, Board.getStrip(org).pieceColor);
+                gameInfo.appendText("\n"+ move);
+                Board.makeMove(move);
                 break;
             default:
                 gameInfo.appendText("\n" + pCommands.getText());
                 pCommands.setText("");
                 break;
         }
+
     }
 
     /*Function for the information button
