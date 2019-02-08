@@ -10,7 +10,7 @@ import javafx.scene.layout.VBox;
 class Classes {
 
     static class Board {
-        static Strip[] stripArray = new Strip[24];
+        private static Strip[] stripArray = new Strip[24];
         /*
         TODO add a Vbox(?) to the bar/bearoff grid then implement these lists
         static ArrayList<Piece> bar = new ArrayList<>();
@@ -49,6 +49,10 @@ class Classes {
             stripArray[stripID].insert(piece);
         }
 
+        static Strip getStrip(int index) {
+            return stripArray[index];
+        }
+
         static Strip getStrip(VBox box) {
             for (Strip strip : stripArray) {
                 if (strip.vBox.equals(box))
@@ -57,13 +61,27 @@ class Classes {
             return null;
         }
 
-        static void makeMove(Move move) {
+        static void makeMove(Move move) { //TODO add logic for pushing off pieces to the bar - ATM it's an invalid move if there's 1 piece.
+            if (!validMove(move))
+                return;
             stripArray[move.orgStrip].pop();
             stripArray[move.destStrip].insert(new Piece(move.color));
         }
 
         static boolean validMove(Move move) {
-            return false;
+
+            if (move.orgStrip < 0 || move.destStrip < 0 || move.orgStrip > 23 || move.destStrip > 23) // If outside of array, it's an invalid move
+                return false;
+
+            Strip dest = getStrip(move.destStrip);
+            Strip org = getStrip(move.orgStrip);
+
+            if (org.quantity == 0)   // If there is no piece to move, it's an invalid move
+                return false;
+
+            if ((org.pieceColor != dest.pieceColor)) // If the dest strip has pieces of the opposite color, it's an invalid move
+                return (dest.pieceColor == Color.NONE);
+            return true;
         }
 
         static Move[] findAllvalidMoves() { // Maybe change this to some other method, depends what comes in handy
@@ -75,6 +93,7 @@ class Classes {
             return currentTurn;
         }
 
+
     }
 }
 
@@ -83,10 +102,18 @@ class Move {
     int destStrip;
     Color color;
 
-    public Move(int orgStrip, int destStrip, Color color) {
+    Move(int orgStrip, int destStrip, Color color) {
         this.color = color;
         this.orgStrip = orgStrip;
         this.destStrip = destStrip;
+    }
+
+    @Override
+    public String toString() {
+        if (Classes.Board.validMove(this))
+            return "Move: Origin: " + orgStrip + " Destination: " + destStrip;
+        else
+            return "Invalid move";
     }
 }
 
@@ -110,6 +137,7 @@ class Strip {
     VBox vBox;
     int stripID; // Maybe not needed
     int quantity = 0; // Amount of pieces in this strip
+    Color pieceColor = Color.NONE;
 
     Strip(VBox strip, int stripID) {
         this.vBox = strip;
@@ -123,12 +151,14 @@ class Strip {
     }
 
     void insert(Piece piece) {
+        pieceColor = piece.color;
         vBox.getChildren().add(piece.imgView);
         quantity++;
     }
 
     void pop() {
         vBox.getChildren().remove(--quantity);
-        System.out.println(quantity);
+        if (quantity == 0)
+            pieceColor = Color.NONE;
     }
 }
