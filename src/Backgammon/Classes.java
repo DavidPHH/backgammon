@@ -111,7 +111,7 @@ class Move {
     @Override
     public String toString() {
         if (Classes.Board.validMove(this))
-            return "Move: Origin: " + orgStrip + " Destination: " + destStrip;
+            return "Move: Origin: " + (orgStrip+1) + " Destination: " + (destStrip+1);
         else
             return "Invalid move";
     }

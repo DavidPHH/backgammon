@@ -13,7 +13,7 @@
 <GridPane id="pane" minHeight="650.0" minWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Backgammon.Controller">
 
     <!-- Q1 -->
-    <GridPane id="Q1" fx:id="Q1" minHeight="325.0" minWidth="400.0" style="/*-fx-background-color: #f2d518; -fx-opacity: 0.5;*/" GridPane.columnIndex="0" GridPane.rowIndex="0">
+    <GridPane id="Q1" fx:id="Q1" prefHeight="325.0" prefWidth="400.0" style="/*-fx-background-color: #f2d518; -fx-opacity: 0.5;*/" GridPane.columnIndex="0" GridPane.rowIndex="0">
       <GridPane.margin>
          <Insets left="20.0" />
       </GridPane.margin>
@@ -37,7 +37,7 @@
     </GridPane>
 
     <!-- Q2 -->
-    <GridPane id="Q2" fx:id="Q2" minHeight="325.0" minWidth="400.0" style="/*-fx-background-color: #00f231; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" GridPane.rowIndex="0">
+    <GridPane id="Q2" fx:id="Q2" prefHeight="325.0" prefWidth="400.0" style="/*-fx-background-color: #00f231; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" GridPane.rowIndex="0">
         <VBox onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="0" />
         <VBox onMouseClicked="#click" style="/*-fx-background-color: #00f2d6; -fx-opacity: 0.5;*/" GridPane.columnIndex="1" />
         <VBox onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" />
@@ -60,7 +60,7 @@
 
 
     <!-- Q3 -->
-    <GridPane id="Q3" fx:id="Q3" minHeight="325.0" minWidth="400.0" style="/*-fx-background-color: #f21e00; -fx-opacity: 0.5;*/" GridPane.columnIndex="0" GridPane.rowIndex="1">
+    <GridPane id="Q3" fx:id="Q3" prefHeight="325.0" prefWidth="400.0" style="/*-fx-background-color: #f21e00; -fx-opacity: 0.5;*/" GridPane.columnIndex="0" GridPane.rowIndex="1">
         <GridPane.margin>
          <Insets left="20.0" />
         </GridPane.margin>
@@ -86,7 +86,7 @@
     </GridPane>
 
     <!-- Q4 -->
-    <GridPane id="Q4" fx:id="Q4" minHeight="325.0" minWidth="400.0" style="/*-fx-background-color: #00bdf2; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" GridPane.rowIndex="1">
+    <GridPane id="Q4" fx:id="Q4" prefHeight="325.0" prefWidth="400.0" style="/*-fx-background-color: #00bdf2; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" GridPane.rowIndex="1">
         <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="0" />
         <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #00f2d6; -fx-opacity: 0.5;*/" GridPane.columnIndex="1" />
         <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" style="/*-fx-background-color: #f23423; -fx-opacity: 0.5;*/" GridPane.columnIndex="2" />
@@ -108,34 +108,53 @@
     </GridPane>
 
     <!-- Bar -->
-    <GridPane id="Bar" minWidth="60.0" onMouseClicked="#click" style="/*-fx-background-color: #f200e1; -fx-opacity: 0.5;*/" GridPane.columnIndex="1" GridPane.rowSpan="2" />
+    <GridPane id="Bar" prefWidth="60.0" onMouseClicked="#click" style="/*-fx-background-color: #f200e1; -fx-opacity: 0.5;*/" GridPane.columnIndex="1" GridPane.rowSpan="2" >
+        <VBox GridPane.rowIndex="0" alignment="TOP_CENTER"/>
+        <VBox GridPane.rowIndex="1" alignment="BOTTOM_CENTER" />
+        <columnConstraints>
+            <ColumnConstraints percentWidth="100" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints percentHeight="50"/>
+            <RowConstraints percentHeight="50"/>
+        </rowConstraints>
+    </GridPane>
 
     <!-- Bearoff -->
-    <GridPane id="Bearoff" minWidth="100.0" onMouseClicked="#click" style="/*-fx-background-color: #e3f2ef; -fx-opacity: 0.5;*/" GridPane.columnIndex="3" GridPane.rowSpan="2">
+    <GridPane id="Bearoff" prefWidth="100.0" onMouseClicked="#click" style="/*-fx-background-color: #e3f2ef; -fx-opacity: 0.5;*/" GridPane.columnIndex="3" GridPane.rowSpan="2">
       <GridPane.margin>
          <Insets left="15.0" />
       </GridPane.margin>
+        <VBox GridPane.rowIndex="0" alignment="TOP_CENTER"/>
+        <VBox GridPane.rowIndex="1" alignment="BOTTOM_CENTER" />
+        <columnConstraints>
+            <ColumnConstraints percentWidth="100" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints percentHeight="50"/>
+            <RowConstraints percentHeight="50"/>
+        </rowConstraints>
     </GridPane>
 
     <!-- Text field for user input -->
-    <GridPane id="inputText" alignment="BASELINE_LEFT" maxHeight="30.0" maxWidth="300" GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.rowIndex="1">
+    <GridPane id="inputText" alignment="BASELINE_LEFT" prefHeight="30.0" prefWidth="300" GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.rowIndex="1">
         <!-- Temporary hard coded -->
         <GridPane.margin>
             <Insets top="290"/>
         </GridPane.margin>
         <!-- This HBox contains the text field -->
         <HBox alignment="BOTTOM_LEFT">
-            <TextField id="pCommand" fx:id="pCommands" alignment="BOTTOM_LEFT" minHeight="30" minWidth="300" onAction="#onEnter" promptText="Input your commands here" />
+            <TextField id="pCommand" fx:id="pCommands" alignment="BOTTOM_LEFT" prefHeight="30" prefWidth="300" onAction="#onEnter" promptText="Input your commands here" />
         </HBox>
     </GridPane>
 
     <!-- Text Area Grid -->
-    <GridPane fx:id="textAreaGrid" alignment="CENTER_RIGHT" GridPane.columnIndex="2" GridPane.columnSpan="2">
+    <GridPane fx:id="textAreaGrid" alignment="CENTER_RIGHT" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowSpan="2">
         <GridPane.margin>
             <Insets top="25" />
         </GridPane.margin>
         <VBox alignment="CENTER">
-            <TextArea id="displayArea" fx:id="gameInfo" maxWidth="350" prefWidth="300"  minHeight="300" GridPane.rowSpan="2"/>
+            <TextArea id="displayArea" fx:id="gameInfo" maxWidth="350" prefWidth="300"  prefHeight="600" GridPane.columnSpan="2" GridPane.rowSpan="2"/>
         </VBox>
     </GridPane>
 
@@ -144,11 +163,15 @@
         <Button id="infoBut" fx:id="infoButton" alignment="TOP_RIGHT" onAction="#infoB" text="i" />
     </GridPane>
 
+    <!-- Pop Up -->
+    <HBox fx:id="errorPopUp" GridPane.rowIndex="0" alignment="BOTTOM_CENTER" maxHeight="40" prefHeight="30" prefWidth="30" style="-fx-background-color: red"
+    opacity=".75"/>
+
    <columnConstraints>
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
+      <ColumnConstraints percentWidth="42"/>
+      <ColumnConstraints percentWidth="6"/>
+      <ColumnConstraints percentWidth="40.5"/>
+      <ColumnConstraints percentWidth="11.5"/>
    </columnConstraints>
    <rowConstraints>
       <RowConstraints />

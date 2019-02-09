@@ -1,16 +1,23 @@
 package Backgammon;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.PopupControl;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import Backgammon.Classes.Board;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 
 public class Controller {
@@ -33,6 +40,8 @@ public class Controller {
     private TextArea gameInfo;
     @FXML
     private Button infoButton;
+    @FXML
+    private HBox errorPopUp;
 
     private Boolean vis = true;
 
@@ -44,10 +53,15 @@ public class Controller {
         gameInfo.setText("\nGame commands:\n" +
                 "1. /quit\n" +
                 "2. /commands\n" +
+                "3. /move (origin: int) (destination: int)\n" +
+                "4. /tests (used to move pieces in sprint 1)\n" +
                 "Game information will be displayed here\n" +
                 "Input / before commands:\n");
+
+        //Initialising the text area and the pop up box, so that don't interfere with the board itself.
         gameInfo.setEditable(false);
-        textAreaGrid.setMouseTransparent(true);
+        errorPopUp.setMouseTransparent(true);
+        errorPopUp.setVisible(false);
 
         /* Event handlers on button
             Shows gameInfo text area when mouse hovers over the info button
@@ -79,6 +93,8 @@ public class Controller {
                 gameInfo.appendText("\nGame commands:" +
                         "\n1. /quit" +
                         "\n2. /commands" +
+                        "\n3. /move (origin: int) (destination: int)" +
+                        "\n4. /test (used to move pieces in sprint 1)" +
                         "\n");
                 pCommands.setText("");
                 break;
@@ -101,12 +117,13 @@ public class Controller {
                 gameInfo.appendText("\n"+ move);
                 Board.makeMove(move);
                 break;
+            case "/test":
+                //test();
             default:
                 gameInfo.appendText("\n" + pCommands.getText());
                 pCommands.setText("");
                 break;
         }
-
     }
 
     /*Function for the information button
@@ -114,11 +131,13 @@ public class Controller {
      */
     @FXML
     public void infoB() {
-        if (vis) {
+        if (vis){
+            textAreaGrid.setMouseTransparent(true);
             gameInfo.setVisible(false);
             infoButton.setStyle("-fx-background-color: yellow");
             vis = false;
         } else {
+            textAreaGrid.setMouseTransparent(false);
             gameInfo.setVisible(true);
             infoButton.setStyle("-fx-background-color: lightgrey");
             vis = true;
@@ -131,9 +150,22 @@ public class Controller {
         if (strip == null)
             return;
         if (strip.quantity == 0) {
-            System.out.println("No pieces left in strip");
+            //Popup telling user that strip is empty
+
+            //Ensures that the string is not appended multiple times
+            if(!errorPopUp.isVisible()){
+                errorPopUp.getChildren().clear();
+                errorPopUp.getChildren().add(new Text("No pieces left in strip"));
+            }
+
+            errorPopUp.setVisible(true);
+
+            PauseTransition removeAfter = new PauseTransition(Duration.seconds(2));
+
+            removeAfter.setOnFinished(e -> errorPopUp.setVisible(false));
+
+            removeAfter.play();
         } else
             strip.pop();
-
     }
 }

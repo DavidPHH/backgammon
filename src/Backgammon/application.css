@@ -1,7 +1,8 @@
 #pane {
     -fx-background-image: url("res/board.png");
-    -fx-background-repeat: stretch;
+    -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
+
 }
 
 #transparency{
@@ -17,7 +18,7 @@ whilst also maintaining visibility for testing
 }
 
 #displayArea:hover{
-    -fx-opacity: 1;
+   /* -fx-opacity: 1;*/
 }
 
 #pCommand{
