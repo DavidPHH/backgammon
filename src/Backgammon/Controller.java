@@ -138,6 +138,7 @@ public class Controller {
                     }
                 });
                 t.start();
+               //Board.getStrip(23).pop();  gets rid of wrong color at the moment
                 break;
 
             default:

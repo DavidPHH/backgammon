@@ -20,10 +20,20 @@ class Classes {
 
         static void setInitialpos(GridPane[] p) {
             int offset = 0;
-            for (GridPane pane : p) {
-                for (int i = 0; i < pane.getChildren().size(); i++) {
-                    int x = i + 6 * offset;
-                    stripArray[x] = new Strip((VBox) pane.getChildren().get(i), x);
+            for (int i=0; i<p.length/2; i++) {       //for the top row, goes left to right assigning index values of 11-0
+                for (int j = 11; j >= p[i].getChildren().size(); j--) {
+                    int x = j - 6 * offset;
+                    stripArray[x] = new Strip((VBox) p[i].getChildren().get(11-j), x);
+                    System.out.println(x);
+                }
+                offset++;
+
+            }
+            for (int i=p.length/2; i<p.length; i++) {   //for the bottom row, it goes left to right assigning index values of 12-23
+                for (int j = 0; j < p[i].getChildren().size(); j++) {
+                    int x = j + 6 * offset;
+                    stripArray[x] = new Strip((VBox) p[i].getChildren().get(j), x);
+                    System.out.println(x);
                 }
                 offset++;
             }
@@ -34,10 +44,11 @@ class Classes {
                 black[i] = new Piece(Color.BLACK);
                 white[i] = new Piece(Color.WHITE);
             }
-            stripArray[0].insert(black, 0, 4);
-            stripArray[4].insert(white, 0, 2);
-            stripArray[6].insert(white, 3, 7);
-            stripArray[11].insert(black, 5, 6);
+            stripArray[0].insert(black, 5, 6);
+            stripArray[5].insert(white, 3, 7);
+            stripArray[7].insert(white, 0, 2);
+            stripArray[11].insert(black, 0, 4);
+
             stripArray[12].insert(white, 8, 12);
             stripArray[16].insert(black, 7, 9);
             stripArray[18].insert(black, 10, 14);
