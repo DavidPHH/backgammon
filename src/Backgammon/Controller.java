@@ -85,7 +85,7 @@ public class Controller {
         String inputString = pCommands.getText().toLowerCase();
         if (inputString.equals(""))
             return;
-        switch (inputString.split(" ")[0]) {
+        switch (inputString.split(" ")[0]) {    //split purpose?
             case "/quit":
                 Platform.exit();
                 break;
@@ -117,8 +117,29 @@ public class Controller {
                 gameInfo.appendText("\n"+ move);
                 Board.makeMove(move);
                 break;
-            case "/test":
-                //test();
+            case "/test" :
+
+                System.out.println("In Case");
+
+                Board.insertToStrip( new Piece(Color.BLACK), 0);
+
+                Thread t = new Thread(() -> {
+
+                    System.out.println("In Thread");
+
+                    for (int i = 0; i<23; i++){
+                        Move m = new Move(i, i+1, Color.BLACK);
+                        try{
+                            Thread.sleep(500);
+                            Platform.runLater(() -> Board.testMove(m));
+                        }catch (Exception ex) {
+                            break;
+                        }
+                    }
+                });
+                t.start();
+                break;
+
             default:
                 gameInfo.appendText("\n" + pCommands.getText());
                 pCommands.setText("");

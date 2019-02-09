@@ -12,7 +12,7 @@ class Classes {
     static class Board {
         private static Strip[] stripArray = new Strip[24];
         /*
-        TODO add a Vbox(?) to the bar/bearoff grid then implement these lists
+        TODO add a VBox(?) to the bar/bearoff grid then implement these lists
         static ArrayList<Piece> bar = new ArrayList<>();
         static ArrayList[] bearoff = new ArrayList[2];
         */
@@ -42,7 +42,6 @@ class Classes {
             stripArray[16].insert(black, 7, 9);
             stripArray[18].insert(black, 10, 14);
             stripArray[23].insert(white, 13, 14);
-
         }
 
         static void insertToStrip(Piece piece, int stripID) {
@@ -64,6 +63,11 @@ class Classes {
         static void makeMove(Move move) { //TODO add logic for pushing off pieces to the bar - ATM it's an invalid move if there's 1 piece.
             if (!validMove(move))
                 return;
+            stripArray[move.orgStrip].pop();
+            stripArray[move.destStrip].insert(new Piece(move.color));
+        }
+
+        static void testMove(Move move) { //same as makeMove but allows both colors on the same strip for test purposes
             stripArray[move.orgStrip].pop();
             stripArray[move.destStrip].insert(new Piece(move.color));
         }
@@ -92,7 +96,6 @@ class Classes {
             currentTurn = currentTurn == Color.BLACK ? Color.WHITE : Color.BLACK;
             return currentTurn;
         }
-
 
     }
 }
@@ -123,7 +126,7 @@ class Piece {
 
     Piece(Color color) {
         this.color = color;
-        String url = color == Color.WHITE ? "Backgammon/res/piece-white.png" : "Backgammon/res/piece-black.png";
+        String url = ((color == Color.WHITE) ? "Backgammon/res/piece-white.png" : "Backgammon/res/piece-black.png");
         Image image = new Image(url);
         imgView = new ImageView();
         imgView.setImage(image);
