@@ -18,7 +18,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("board.fxml"));
         primaryStage.setTitle("Backgammon");
-        Scene scene = new Scene(root, 1000, 650);
+        Scene scene = new Scene(root, 1000, 715);
         scene.getStylesheets().addAll(this.getClass().getResource("application.css").toExternalForm());
         //Done temporarily
         primaryStage.setResizable(false);
