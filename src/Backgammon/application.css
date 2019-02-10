@@ -2,7 +2,6 @@
     -fx-background-image: url("res/board.png");
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
-
 }
 
 #transparency{
@@ -12,13 +11,13 @@
 whilst also maintaining visibility for testing
  */
 #displayArea{
-    -fx-opacity: .5;
+    -fx-opacity: .65;
     -fx-border-color: grey;
     -fx-text-fill: black;
 }
 
 #displayArea:hover{
-   /* -fx-opacity: 1;*/
+    -fx-opacity: 1;
 }
 
 #pCommand{
@@ -33,14 +32,9 @@ whilst also maintaining visibility for testing
     -fx-background-color: grey;
 }
 
-/*
-Couldn't get the on hover to work with pure css, left here for later attempts
-*/
-/*#infoBut:pressed > #displayArea{
-    -fx-opacity: .5;
-}*/
-/*
-#infoBut:hover ~ #displayArea{
-    visibility: display;
+/*Styling for the player area*/
+#players{
+    -fx-text-alignment: center;
+    -fx-text-fill:darkgrey;
+    -fx-font-size: 20;
 }
-*/

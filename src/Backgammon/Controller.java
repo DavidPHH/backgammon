@@ -5,15 +5,17 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PopupControl;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import Backgammon.Classes.Board;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -40,6 +42,8 @@ public class Controller {
     public VBox blackBearOffVBox;
     @FXML
     public VBox whiteBearOffVBox;
+    @FXML
+    private GridPane paneId;
 
     //Player commands textfield
     @FXML
@@ -49,8 +53,11 @@ public class Controller {
     @FXML
     private Button infoButton;
     @FXML
-    private HBox errorPopUp;
+    private HBox playerOne;
+    @FXML
+    private HBox playerTwo;
 
+    private Player[] players = new Player[2];
     private Boolean vis = true;
 
     public void initialize() {
@@ -66,17 +73,24 @@ public class Controller {
                 "Game information will be displayed here\n" +
                 "Input / before commands:\n");
 
-        //Initialising the text area and the pop up box, so that don't interfere with the board itself.
-        gameInfo.setEditable(false);
-        errorPopUp.setMouseTransparent(true);
-        errorPopUp.setVisible(false);
+        //Initialising the positions of the infoButton and the user input text field
+        GridPane.setValignment(infoButton, VPos.CENTER);
+        GridPane.setHalignment(infoButton,HPos.CENTER);
+        GridPane.setHalignment(pCommands,HPos.LEFT);
+        GridPane.setValignment(pCommands,VPos.BOTTOM);
+        GridPane.setValignment(gameInfo,VPos.TOP);
+        GridPane.setHalignment(gameInfo,HPos.RIGHT);
 
-        /* Event handlers on button
-            Shows gameInfo text area when mouse hovers over the info button
-            Disappears when mouse leaves
-            Done this way as I couldn't get the CSS code to work, left in application.css commented out
-            if someone wants to take a look
-         */
+        //Initialising the text area so that it doesn't interfere with the board itself.
+        gameInfo.setEditable(false);
+
+        for(int i = 0;i < 2;i++){
+            players[i] = new Player("Player "+(i+1));
+        }
+        playerOne.getChildren().add(new Text(players[0].getPlayerName()+"\nPips:"+players[0].getPipsLeft()));
+        playerTwo.getChildren().add(new Text(players[1].getPlayerName()+"\nPips:"+players[1].getPipsLeft()));
+
+        //Event Handlers on info button to display gameInfo on hover
         infoButton.addEventHandler(MouseEvent.ANY, e -> {
             EventType ev = e.getEventType();
             EventType ex = MouseEvent.MOUSE_EXITED;
@@ -222,12 +236,12 @@ public class Controller {
     @FXML
     public void infoB() {
         if (vis){
-            textAreaGrid.setMouseTransparent(true);
+            gameInfo.setMouseTransparent(true);
             gameInfo.setVisible(false);
             infoButton.setStyle("-fx-background-color: yellow");
             vis = false;
         } else {
-            textAreaGrid.setMouseTransparent(false);
+            gameInfo.setMouseTransparent(false);
             gameInfo.setVisible(true);
             infoButton.setStyle("-fx-background-color: lightgrey");
             vis = true;
@@ -240,21 +254,21 @@ public class Controller {
         if (strip == null)
             return;
         if (strip.quantity == 0) {
-            //Popup telling user that strip is empty
 
-            //Ensures that the string is not appended multiple times
-            if(!errorPopUp.isVisible()){
-                errorPopUp.getChildren().clear();
-                errorPopUp.getChildren().add(new Text("No pieces left in strip"));
+            Text txt = new Text("No pieces\nleft in\nthis strip");
+            //This statement doesn't stop the constant inputting of strings
+            if(!box.getChildren().contains(txt)){
+                box.setStyle("-fx-background-color: red;-fx-opacity: .5");
+                box.getChildren().add(txt);
             }
 
-            errorPopUp.setVisible(true);
-
             PauseTransition removeAfter = new PauseTransition(Duration.seconds(2));
-
-            removeAfter.setOnFinished(e -> errorPopUp.setVisible(false));
+            PauseTransition removeColour = new PauseTransition(Duration.seconds(2));
+            removeAfter.setOnFinished(e -> box.getChildren().clear());
+            removeColour.setOnFinished((e -> box.setStyle(null)));
 
             removeAfter.play();
+            removeColour.play();
         } else
             strip.pop();
     }
