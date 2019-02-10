@@ -109,8 +109,8 @@
 
     <!-- Bar -->
     <GridPane id="Bar" prefWidth="60.0" onMouseClicked="#click" style="/*-fx-background-color: #f200e1; -fx-opacity: 0.5;*/" GridPane.columnIndex="1" GridPane.rowSpan="2" >
-        <VBox GridPane.rowIndex="0" alignment="TOP_CENTER"/>
-        <VBox GridPane.rowIndex="1" alignment="BOTTOM_CENTER" />
+        <VBox fx:id="blackBarVBox" GridPane.rowIndex="0" alignment="BOTTOM_CENTER"/>
+        <VBox fx:id="whiteBarVBox" GridPane.rowIndex="1" alignment="TOP_CENTER" />
         <columnConstraints>
             <ColumnConstraints percentWidth="100" />
         </columnConstraints>
@@ -125,8 +125,8 @@
       <GridPane.margin>
          <Insets left="15.0" />
       </GridPane.margin>
-        <VBox GridPane.rowIndex="0" alignment="TOP_CENTER"/>
-        <VBox GridPane.rowIndex="1" alignment="BOTTOM_CENTER" />
+        <VBox fx:id="whiteBearOffVBox" GridPane.rowIndex="0" alignment="TOP_CENTER"/>
+        <VBox fx:id="blackBearOffVBox" GridPane.rowIndex="1" alignment="BOTTOM_CENTER" />
         <columnConstraints>
             <ColumnConstraints percentWidth="100" />
         </columnConstraints>

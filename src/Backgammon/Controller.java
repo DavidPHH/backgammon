@@ -32,6 +32,14 @@ public class Controller {
     public GridPane Q4;
     @FXML
     private GridPane textAreaGrid;
+    @FXML
+    public VBox blackBarVBox;
+    @FXML
+    public VBox whiteBarVBox;
+    @FXML
+    public VBox blackBearOffVBox;
+    @FXML
+    public VBox whiteBearOffVBox;
 
     //Player commands textfield
     @FXML
@@ -46,7 +54,7 @@ public class Controller {
     private Boolean vis = true;
 
     public void initialize() {
-        GridPane[] p = {Q1, Q2, Q3, Q4};
+        GridPane[] p = {Q2, Q1, Q3, Q4};
         Board.setInitialpos(p);
 
         //Default gameInfo string to be displayed
@@ -85,7 +93,7 @@ public class Controller {
         String inputString = pCommands.getText().toLowerCase();
         if (inputString.equals(""))
             return;
-        switch (inputString.split(" ")[0]) {    //split purpose?
+        switch (inputString.split(" ")[0]) {    //why split?
             case "/quit":
                 Platform.exit();
                 break;
@@ -100,7 +108,7 @@ public class Controller {
                 break;
             case "/move":
                 pCommands.setText("");
-                String[] splot = inputString.split(" ");
+                String[] splot = inputString.split(" ");    //Did you really use splot as the past tense of split?  ...I like it.
                 int org, dest;
                 try{
                     org = Integer.parseInt(splot[1]) - 1;
@@ -119,26 +127,86 @@ public class Controller {
                 break;
             case "/test" :
 
-                System.out.println("In Case");
+                Strip blackBar =  new Strip(blackBarVBox, 24);      //for the moment just stored in 24
+                //because it was the next available index, but should probably change later for gameplay reasons
+                Strip blackBearOff =  new Strip(blackBearOffVBox, 25); //same as above, 25 may be changed
 
-                Board.insertToStrip( new Piece(Color.BLACK), 0);
+                Strip whiteBar =  new Strip(whiteBarVBox, 26);
+                Strip whiteBearOff =  new Strip(whiteBearOffVBox, 27);
+
+
 
                 Thread t = new Thread(() -> {
 
-                    System.out.println("In Thread");
+                    //for(int i=0; i<2; i++) {      //possible to avoid duplicating white/black test code with loop?
+                                                    //tried but IDE didn't like the fact that i wasn't final
 
-                    for (int i = 0; i<23; i++){
-                        Move m = new Move(i, i+1, Color.BLACK);
-                        try{
+                    //blacks test run code
+                    try {
+                        Platform.runLater(() -> blackBar.insert(new Piece(Color.BLACK)));
+                        Thread.sleep(800);
+                        Platform.runLater(() -> blackBar.pop());
+                        Platform.runLater(() -> Board.insertToStrip(new Piece(Color.BLACK), 0));
+
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    for (int i = 0; i < 23; i++) {
+                        Move m = new Move(i, i + 1, Color.BLACK);
+                        try {
                             Thread.sleep(500);
                             Platform.runLater(() -> Board.testMove(m));
-                        }catch (Exception ex) {
+                        } catch (Exception ex) {
                             break;
                         }
                     }
+
+                    try {
+                        Thread.sleep(500);
+                        Platform.runLater(() -> Board.getStrip(23).pop());
+                        Platform.runLater(() -> blackBearOff.insert(new Piece(Color.BLACK)));
+                        Thread.sleep(1500);
+                        Platform.runLater(() -> blackBearOff.pop());
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    //white's test run starts here
+                    try {
+
+                        Platform.runLater(() -> whiteBar.insert(new Piece(Color.WHITE)));
+                        Thread.sleep(800);
+                        Platform.runLater(() -> whiteBar.pop());
+                        Platform.runLater(() -> Board.insertToStrip(new Piece(Color.WHITE), 23));
+
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    for (int i = 23; i > 0; i--) {
+                        Move m = new Move(i, i - 1, Color.WHITE);
+                        try {
+                            Thread.sleep(500);
+                            Platform.runLater(() -> Board.testMove(m));
+                        } catch (Exception ex) {
+                            break;
+                        }
+                    }
+
+                    try {
+                        Thread.sleep(500);
+                        Platform.runLater(() -> Board.getStrip(0).pop());
+                        Platform.runLater(() -> whiteBearOff.insert(new Piece(Color.WHITE)));
+                        Thread.sleep(1500);
+                        Platform.runLater(() -> whiteBearOff.pop());
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                    //}
+
                 });
                 t.start();
-               //Board.getStrip(23).pop();  gets rid of wrong color at the moment
                 break;
 
             default:

@@ -20,23 +20,18 @@ class Classes {
 
         static void setInitialpos(GridPane[] p) {
             int offset = 0;
-            for (int i=0; i<p.length/2; i++) {       //for the top row, goes left to right assigning index values of 11-0
-                for (int j = 11; j >= p[i].getChildren().size(); j--) {
-                    int x = j - 6 * offset;
-                    stripArray[x] = new Strip((VBox) p[i].getChildren().get(11-j), x);
-                    System.out.println(x);
-                }
-                offset++;
-
-            }
-            for (int i=p.length/2; i<p.length; i++) {   //for the bottom row, it goes left to right assigning index values of 12-23
-                for (int j = 0; j < p[i].getChildren().size(); j++) {
+            for (GridPane pane : p) {       //for the top row, goes left to right assigning index values of 11-0
+                for (int j = 0; j < pane.getChildren().size(); j++) {
                     int x = j + 6 * offset;
-                    stripArray[x] = new Strip((VBox) p[i].getChildren().get(j), x);
+                    stripArray[x] = new Strip((VBox) pane.getChildren().get(offset == 0 || offset == 1 ? 5 - j : j), x);
                     System.out.println(x);
                 }
                 offset++;
             }
+            //for the top row, goes right to left assigning index values of 0-11
+            //for the bottom row, goes left to right assigning index values of 12-23
+
+
 
             Piece[] black = new Piece[15];
             Piece[] white = new Piece[15];
