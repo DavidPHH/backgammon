@@ -108,9 +108,9 @@
     </GridPane>
 
     <!-- Bar -->
-    <GridPane id="Bar" prefWidth="60.0" onMouseClicked="#click" GridPane.columnIndex="1" GridPane.rowSpan="2" >
-        <VBox fx:id="blackBarVBox" GridPane.rowIndex="1" alignment="BOTTOM_CENTER"/>
-        <VBox fx:id="whiteBarVBox" GridPane.rowIndex="2" alignment="TOP_CENTER" />
+    <GridPane  id="Bar" prefWidth="60.0" onMouseClicked="#click" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2" >
+        <VBox fx:id="blackBarVBox" GridPane.rowIndex="0" alignment="BOTTOM_CENTER"/>
+        <VBox fx:id="whiteBarVBox" GridPane.rowIndex="1" alignment="TOP_CENTER" />
         <columnConstraints>
             <ColumnConstraints percentWidth="100" />
         </columnConstraints>
@@ -121,12 +121,12 @@
     </GridPane>
 
     <!-- Bearoff -->
-    <GridPane id="Bearoff" prefWidth="100.0" onMouseClicked="#click" GridPane.columnIndex="3" GridPane.rowSpan="2">
+    <GridPane id="Bearoff" prefWidth="100.0" onMouseClicked="#click" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.rowSpan="2">
       <GridPane.margin>
          <Insets left="15.0" />
       </GridPane.margin>
-        <VBox fx:id="whiteBearOffVBox" GridPane.rowIndex="1" alignment="TOP_CENTER"/>
-        <VBox fx:id="blackBearOffVBox" GridPane.rowIndex="2" alignment="BOTTOM_CENTER" />
+        <VBox fx:id="whiteBearOffVBox" GridPane.rowIndex="0" alignment="TOP_CENTER"/>
+        <VBox fx:id="blackBearOffVBox" GridPane.rowIndex="1" alignment="BOTTOM_CENTER" />
         <columnConstraints>
             <ColumnConstraints percentWidth="100" />
         </columnConstraints>

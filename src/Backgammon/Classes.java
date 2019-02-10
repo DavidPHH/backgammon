@@ -20,11 +20,11 @@ class Classes {
 
         static void setInitialpos(GridPane[] p) {
             int offset = 0;
-            for (GridPane pane : p) {       //for the top row, goes left to right assigning index values of 11-0
+            for (GridPane pane : p) {
                 for (int j = 0; j < pane.getChildren().size(); j++) {
                     int x = j + 6 * offset;
                     stripArray[x] = new Strip((VBox) pane.getChildren().get(offset == 0 || offset == 1 ? 5 - j : j), x);
-                    System.out.println(x);
+                    //System.out.println(x);
                 }
                 offset++;
             }
