@@ -11,7 +11,7 @@
 whilst also maintaining visibility for testing
  */
 #displayArea{
-    -fx-opacity: .65;
+    -fx-opacity: .70;
     -fx-border-color: grey;
     -fx-text-fill: black;
 }
