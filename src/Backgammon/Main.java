@@ -7,9 +7,16 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 enum Color{
-    NONE,
-    WHITE,
-    BLACK
+    WHITE(0),
+    BLACK(1),
+    NONE(2);
+    private final int value;
+    Color(int value) {
+        this.value = value;
+    }
+    public int getValue() {
+        return value;
+    }
 }
 
 public class Main extends Application {
