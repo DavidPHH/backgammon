@@ -71,7 +71,8 @@ public class Controller {
                 "3. /move (origin: int) (destination: int)\n" +
                 "4. /tests (used to move pieces in sprint 1)\n" +
                 "Game information will be displayed here\n" +
-                "Input / before commands:\n");
+                "Input / before commands:\n\n" +
+                "Finally, click on the 'i' button above to open/close this section.\n");
 
         //Initialising the positions of the infoButton and the user input text field
         GridPane.setValignment(infoButton, VPos.CENTER);
@@ -107,7 +108,7 @@ public class Controller {
         String inputString = pCommands.getText().toLowerCase();
         if (inputString.equals(""))
             return;
-        switch (inputString.split(" ")[0]) {    //why split?
+        switch (inputString.split(" ")[0]) {
             case "/quit":
                 Platform.exit();
                 break;
@@ -154,6 +155,7 @@ public class Controller {
 
                     //for(int i=0; i<2; i++) {      //possible to avoid duplicating white/black test code with loop?
                                                     //tried but IDE didn't like the fact that i wasn't final
+                                                    //when used in situations like bearOff[i].pop()
 
                     //blacks test run code
                     try {
@@ -248,6 +250,8 @@ public class Controller {
         }
     }
 
+    //precursor to eventual feature of user being able to make their moves through the GUI
+    //as well as through the commands textField
     public void click(MouseEvent event) {
         VBox box = (VBox) event.getSource();
         Strip strip = Board.getStrip(box);

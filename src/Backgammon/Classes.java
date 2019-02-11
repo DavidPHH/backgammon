@@ -20,16 +20,17 @@ class Classes {
             Bar = new Bar(bar);
             BearOff = new Bar(bearOff);
             int offset = 0;
-            for (GridPane pane : p) {       // for the top row, goes left to right assigning index values of 11-0
+            for (GridPane pane : p) {
                 for (int j = 0; j < pane.getChildren().size(); j++) {
                     int x = j + 6 * offset;
                     stripArray[x] = new Strip((VBox) pane.getChildren().get(offset == 0 || offset == 1 ? 5 - j : j), x);
                 }
                 offset++;
             }
+            //for the top row, goes right to left assigning index values of 0-11
+            //for the bottom row, goes left to right assigning index values of 12-23
 
-            // for the top row, goes right to left assigning index values of 0-11
-            // for the bottom row, goes left to right assigning index values of 12-23
+
 
             Piece[] black = new Piece[15];
             Piece[] white = new Piece[15];
@@ -46,7 +47,6 @@ class Classes {
             stripArray[16].insert(black, 7, 9);
             stripArray[18].insert(black, 10, 14);
             stripArray[23].insert(white, 13, 14);
-
         }
 
         static void insertToStrip(Piece piece, int stripID) {
@@ -100,11 +100,9 @@ class Classes {
             currentTurn = currentTurn == Color.BLACK ? Color.WHITE : Color.BLACK;
             return currentTurn;
         }
+
     }
-
-
 }
-
 
 class Move {
     int orgStrip;
