@@ -199,7 +199,8 @@ public class Controller {
                 Platform.runLater(() -> Board.testMove(m));
             }
             Thread.sleep(500);
-            Platform.runLater(() -> Board.getStrip(23).pop());
+            int finalY = y;
+            Platform.runLater(() -> Board.getStrip(finalY).pop());
             Platform.runLater(() -> Board.BearOff.insert(testPiece));
             Thread.sleep(1500);
             Platform.runLater(() -> Board.BearOff.remove(testPiece.color));
