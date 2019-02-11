@@ -5,20 +5,13 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.VPos;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.PopupControl;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import Backgammon.Classes.Board;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 
 
@@ -61,9 +54,10 @@ public class Controller {
     private Boolean vis = true;
 
     public void initialize() {
-        GridPane[] p = {Q2, Q1, Q3, Q4};
-        Board.setInitialpos(p);
-
+        VBox[] bar = {whiteBarVBox, blackBarVBox};
+        VBox[] bearOff = {whiteBearOffVBox, blackBearOffVBox};
+        GridPane[] quadrants = {Q2, Q1, Q3, Q4};
+        Board.setInitialpos(quadrants, bar, bearOff);
         //Default gameInfo string to be displayed
         gameInfo.setText("\nGame commands:\n" +
                 "1. /quit\n" +
@@ -74,25 +68,13 @@ public class Controller {
                 "Input / before commands:\n\n" +
                 "Finally, click on the 'i' button above to open/close this section.\n");
 
-        //Initialising the positions of the infoButton and the user input text field
-        GridPane.setValignment(infoButton, VPos.CENTER);
-        GridPane.setHalignment(infoButton,HPos.CENTER);
-        GridPane.setHalignment(pCommands,HPos.LEFT);
-        GridPane.setValignment(pCommands,VPos.BOTTOM);
-        GridPane.setValignment(gameInfo,VPos.TOP);
-        GridPane.setHalignment(gameInfo,HPos.RIGHT);
-
-        //Initialising the text area so that it doesn't interfere with the board itself.
-        gameInfo.setEditable(false);
-
-        for(int i = 0;i < 2;i++){
-            players[i] = new Player("Player "+(i+1));
+        for (int i = 0; i < 2; i++) {
+            players[i] = new Player("Player " + (i + 1));
         }
-        playerOne.getChildren().add(new Text(players[0].getPlayerName()+"\nPips:"+players[0].getPipsLeft()));
-        playerTwo.getChildren().add(new Text(players[1].getPlayerName()+"\nPips:"+players[1].getPipsLeft()));
+        playerOne.getChildren().add(new Text(players[0].getPlayerName() + "\nPips:" + players[0].getPipsLeft()));
+        playerTwo.getChildren().add(new Text(players[1].getPlayerName() + "\nPips:" + players[1].getPipsLeft()));
 
-        //Event Handlers on info button to display gameInfo on hover
-        infoButton.addEventHandler(MouseEvent.ANY, e -> {
+        infoButton.addEventHandler(MouseEvent.ANY, e -> { // Game info is displayed while mouse hovers over info button.
             EventType ev = e.getEventType();
             EventType ex = MouseEvent.MOUSE_EXITED;
             EventType ent = MouseEvent.MOUSE_ENTERED;
@@ -125,104 +107,27 @@ public class Controller {
                 pCommands.setText("");
                 String[] splot = inputString.split(" ");    //Did you really use splot as the past tense of split?  ...I like it.
                 int org, dest;
-                try{
+                try {
                     org = Integer.parseInt(splot[1]) - 1;
                     dest = Integer.parseInt(splot[2]) - 1;
-                    if(org < 0 || dest < 0 || org > 23 || dest > 23)
+                    if (org < 0 || dest < 0 || org > 23 || dest > 23)
                         throw new ArrayIndexOutOfBoundsException();
-                }
-                catch (Exception ex){
+                } catch (Exception ex) {
                     gameInfo.appendText("\nInvalid syntax. Expected /move int int");
                     break;
                 }
 
                 Move move = new Move(org, dest, Board.getStrip(org).pieceColor);
-                gameInfo.appendText("\n"+ move);
+                gameInfo.appendText("\n" + move);
                 Board.makeMove(move);
                 break;
-            case "/test" :
-
-                Strip blackBar =  new Strip(blackBarVBox, 24);      //for the moment just stored in 24
-                //because it was the next available index, but should probably change later for gameplay reasons
-                Strip blackBearOff =  new Strip(blackBearOffVBox, 25); //same as above, 25 may be changed
-
-                Strip whiteBar =  new Strip(whiteBarVBox, 26);
-                Strip whiteBearOff =  new Strip(whiteBearOffVBox, 27);
-
-
-
-                Thread t = new Thread(() -> {
-
-                    //for(int i=0; i<2; i++) {      //possible to avoid duplicating white/black test code with loop?
-                                                    //tried but IDE didn't like the fact that i wasn't final
-                                                    //when used in situations like bearOff[i].pop()
-
-                    //blacks test run code
-                    try {
-                        Platform.runLater(() -> blackBar.insert(new Piece(Color.BLACK)));
-                        Thread.sleep(800);
-                        Platform.runLater(() -> blackBar.pop());
-                        Platform.runLater(() -> Board.insertToStrip(new Piece(Color.BLACK), 0));
-
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-
-                    for (int i = 0; i < 23; i++) {
-                        Move m = new Move(i, i + 1, Color.BLACK);
-                        try {
-                            Thread.sleep(500);
-                            Platform.runLater(() -> Board.testMove(m));
-                        } catch (Exception ex) {
-                            break;
-                        }
-                    }
-
-                    try {
-                        Thread.sleep(500);
-                        Platform.runLater(() -> Board.getStrip(23).pop());
-                        Platform.runLater(() -> blackBearOff.insert(new Piece(Color.BLACK)));
-                        Thread.sleep(1500);
-                        Platform.runLater(() -> blackBearOff.pop());
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-
-                    //white's test run starts here
-                    try {
-
-                        Platform.runLater(() -> whiteBar.insert(new Piece(Color.WHITE)));
-                        Thread.sleep(800);
-                        Platform.runLater(() -> whiteBar.pop());
-                        Platform.runLater(() -> Board.insertToStrip(new Piece(Color.WHITE), 23));
-
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-
-                    for (int i = 23; i > 0; i--) {
-                        Move m = new Move(i, i - 1, Color.WHITE);
-                        try {
-                            Thread.sleep(500);
-                            Platform.runLater(() -> Board.testMove(m));
-                        } catch (Exception ex) {
-                            break;
-                        }
-                    }
-
-                    try {
-                        Thread.sleep(500);
-                        Platform.runLater(() -> Board.getStrip(0).pop());
-                        Platform.runLater(() -> whiteBearOff.insert(new Piece(Color.WHITE)));
-                        Thread.sleep(1500);
-                        Platform.runLater(() -> whiteBearOff.pop());
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                    //}
-
-                });
-                t.start();
+            case "/test":
+                pCommands.setText("");
+                gameInfo.appendText("\nRunning test...");
+                new Thread(() -> {
+                    test(Color.BLACK);
+                    test(Color.WHITE);
+                }).start();
                 break;
 
             default:
@@ -258,14 +163,11 @@ public class Controller {
         if (strip == null)
             return;
         if (strip.quantity == 0) {
-
+            if (box.getChildren().size() > 0)
+                return;
             Text txt = new Text("No pieces\nleft in\nthis strip");
-            //This statement doesn't stop the constant inputting of strings
-            if(!box.getChildren().contains(txt)){
-                box.setStyle("-fx-background-color: red;-fx-opacity: .5");
-                box.getChildren().add(txt);
-            }
-
+            box.setStyle("-fx-background-color: red;-fx-opacity: .5");
+            box.getChildren().add(txt);
             PauseTransition removeAfter = new PauseTransition(Duration.seconds(2));
             PauseTransition removeColour = new PauseTransition(Duration.seconds(2));
             removeAfter.setOnFinished(e -> box.getChildren().clear());
@@ -275,5 +177,35 @@ public class Controller {
             removeColour.play();
         } else
             strip.pop();
+    }
+
+    private void test(Color color) {
+        Piece testPiece = new Piece(color);
+        int x = 0, y = 23, z = 1;
+        if (color == Color.WHITE) {
+            x = 23;
+            y = 0;
+            z = -1;
+        }
+        try {
+            Platform.runLater(() -> Board.Bar.insert(testPiece));
+            Thread.sleep(800);
+            Platform.runLater(() -> Board.Bar.remove(testPiece.color));
+            int finalX = x;
+            Platform.runLater(() -> Board.insertToStrip(testPiece, finalX));
+            for (int i = x; i != y; i += z) {
+                Move m = new Move(i, i + z, color);
+                Thread.sleep(500);
+                Platform.runLater(() -> Board.testMove(m));
+            }
+            Thread.sleep(500);
+            Platform.runLater(() -> Board.getStrip(23).pop());
+            Platform.runLater(() -> Board.BearOff.insert(testPiece));
+            Thread.sleep(1500);
+            Platform.runLater(() -> Board.BearOff.remove(testPiece.color));
+
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
     }
 }
