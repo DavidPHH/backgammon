@@ -1,37 +1,35 @@
 package Backgammon;
 
-import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
+
 class Classes {
 
     static class Board {
         private static Strip[] stripArray = new Strip[24];
-        /*
-        TODO add a VBox(?) to the bar/bearoff grid then implement these lists
-        static ArrayList<Piece> bar = new ArrayList<>();
-        static ArrayList[] bearoff = new ArrayList[2];
-        */
         static Color currentTurn;
+        static Bar Bar;
+        static Bar BearOff;
 
-        static void setInitialpos(GridPane[] p) {
+        static void setInitialpos(GridPane[] p, VBox[] bar, VBox[] bearOff) {
+            Bar = new Bar(bar);
+            BearOff = new Bar(bearOff);
             int offset = 0;
-            for (GridPane pane : p) {       //for the top row, goes left to right assigning index values of 11-0
+            for (GridPane pane : p) {       // for the top row, goes left to right assigning index values of 11-0
                 for (int j = 0; j < pane.getChildren().size(); j++) {
                     int x = j + 6 * offset;
                     stripArray[x] = new Strip((VBox) pane.getChildren().get(offset == 0 || offset == 1 ? 5 - j : j), x);
-                    System.out.println(x);
                 }
                 offset++;
             }
-            //for the top row, goes right to left assigning index values of 0-11
-            //for the bottom row, goes left to right assigning index values of 12-23
 
-
+            // for the top row, goes right to left assigning index values of 0-11
+            // for the bottom row, goes left to right assigning index values of 12-23
 
             Piece[] black = new Piece[15];
             Piece[] white = new Piece[15];
@@ -48,6 +46,7 @@ class Classes {
             stripArray[16].insert(black, 7, 9);
             stripArray[18].insert(black, 10, 14);
             stripArray[23].insert(white, 13, 14);
+
         }
 
         static void insertToStrip(Piece piece, int stripID) {
@@ -73,13 +72,12 @@ class Classes {
             stripArray[move.destStrip].insert(new Piece(move.color));
         }
 
-        static void testMove(Move move) { //same as makeMove but allows both colors on the same strip for test purposes
+        static void testMove(Move move) { // same as makeMove but allows both colors on the same strip for test purposes
             stripArray[move.orgStrip].pop();
             stripArray[move.destStrip].insert(new Piece(move.color));
         }
 
         static boolean validMove(Move move) {
-
             if (move.orgStrip < 0 || move.destStrip < 0 || move.orgStrip > 23 || move.destStrip > 23) // If outside of array, it's an invalid move
                 return false;
 
@@ -102,9 +100,11 @@ class Classes {
             currentTurn = currentTurn == Color.BLACK ? Color.WHITE : Color.BLACK;
             return currentTurn;
         }
-
     }
+
+
 }
+
 
 class Move {
     int orgStrip;
@@ -120,7 +120,7 @@ class Move {
     @Override
     public String toString() {
         if (Classes.Board.validMove(this))
-            return "Move: Origin: " + (orgStrip+1) + " Destination: " + (destStrip+1);
+            return "Move: Origin: " + (orgStrip + 1) + " Destination: " + (destStrip + 1);
         else
             return "Invalid move";
     }
@@ -169,5 +169,32 @@ class Strip {
         vBox.getChildren().remove(--quantity);
         if (quantity == 0)
             pieceColor = Color.NONE;
+    }
+}
+
+@SuppressWarnings("unchecked")
+class Bar {
+    VBox[] boxes;
+    ArrayList<Piece>[] pieces = new ArrayList[2];
+
+    public Bar(VBox[] boxes) {
+        this.boxes = boxes;
+        for (int i = 0; i < 2; i++)
+            pieces[i] = new ArrayList<>();
+    }
+
+    void insert(Piece piece) {
+        int color = piece.color.getValue();
+        pieces[color].add(piece);
+        boxes[color].getChildren().add(piece.imgView);
+    }
+
+    void remove(Color color) {
+        int x = color.getValue();
+        int len = pieces[x].size();
+        if (len == 0)
+            return;
+        pieces[x].remove(len - 1);
+        boxes[x].getChildren().remove(len - 1);
     }
 }
