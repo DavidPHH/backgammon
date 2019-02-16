@@ -87,8 +87,8 @@ class Classes {
             if (org.quantity == 0)   // If there is no piece to move, it's an invalid move
                 return false;
 
-            if ((org.pieceColor != dest.pieceColor)) // If the dest strip has pieces of the opposite color, it's an invalid move
-                return (dest.pieceColor == Color.NONE);
+            if ((org.pieceColor != dest.pieceColor)) // If the dest strip has pieces of the opposite color,
+                return (dest.pieceColor == Color.NONE); // it's an invalid move
             return true;
         }
 
@@ -169,6 +169,24 @@ class Strip {
             pieceColor = Color.NONE;
     }
 }
+
+class DiceFace{
+
+    ImageView imgView;
+    int number;
+
+    DiceFace (int num){
+        number = num;
+        String url = "Backgammon/res/DiceFace" + (num) + ".png";
+                    // By derivative work: PhJDie_Faces.png: Nanami Kamimura - Die_Faces.png,
+                    // CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=4162818
+
+        Image image = new Image(url);
+        imgView = new ImageView();
+        imgView.setImage(image);
+        }
+}
+
 
 @SuppressWarnings("unchecked")
 class Bar {

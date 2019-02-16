@@ -124,14 +124,17 @@
       <GridPane.margin>
          <Insets left="15.0" />
       </GridPane.margin>
-        <VBox fx:id="whiteBearOffVBox" alignment="TOP_CENTER" spacing="-20" GridPane.rowIndex="0" />
-        <VBox fx:id="blackBearOffVBox" alignment="BOTTOM_CENTER" spacing="-20" GridPane.rowIndex="1" />
+        <VBox fx:id="whiteBearOffVBox"  alignment="TOP_CENTER" spacing="-20" GridPane.rowIndex="0" />
+        <VBox fx:id="diceBox" id="diceBox" style="/*-fx-background-color: #f200e1; -fx-opacity: 0.5;*/" maxHeight="80" maxWidth="80" alignment="CENTER" spacing="-20" GridPane.rowIndex="1"  />
+        <VBox fx:id="blackBearOffVBox" alignment="BOTTOM_CENTER" spacing="-20" GridPane.rowIndex="2" />
+
         <columnConstraints>
             <ColumnConstraints percentWidth="100" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints percentHeight="50"/>
-            <RowConstraints percentHeight="50"/>
+            <RowConstraints percentHeight="41"/>
+            <RowConstraints percentHeight="18"/>
+            <RowConstraints percentHeight="41"/>
         </rowConstraints>
     </GridPane>
 

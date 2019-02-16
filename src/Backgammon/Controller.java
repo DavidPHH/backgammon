@@ -13,6 +13,8 @@ import javafx.scene.layout.*;
 import Backgammon.Classes.Board;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import java.util.Random;
+
 
 
 public class Controller {
@@ -49,6 +51,8 @@ public class Controller {
     private HBox playerOne;
     @FXML
     private HBox playerTwo;
+    @FXML
+    private VBox diceBox;
 
     private Player[] players = new Player[2];
     private Boolean vis = true;
@@ -64,6 +68,7 @@ public class Controller {
                 "2. /commands\n" +
                 "3. /move (origin: int) (destination: int)\n" +
                 "4. /tests (used to move pieces in sprint 1)\n" +
+                "5. /dice for, well, dice stuff\n" +
                 "Game information will be displayed here\n" +
                 "Input / before commands:\n\n" +
                 "Finally, click on the 'i' button above to open/close this section.\n");
@@ -100,6 +105,7 @@ public class Controller {
                         "\n2. /commands" +
                         "\n3. /move (origin: int) (destination: int)" +
                         "\n4. /test (used to move pieces in sprint 1)" +
+                        "\n5. /dice for, well, dice stuff" +
                         "\n");
                 pCommands.setText("");
                 break;
@@ -121,13 +127,44 @@ public class Controller {
                 gameInfo.appendText("\n" + move);
                 Board.makeMove(move);
                 break;
-            case "/test":
+            case "/test":       //produces IndexOutOfBoundsException when running too many at once
                 pCommands.setText("");
                 gameInfo.appendText("\nRunning test...");
                 new Thread(() -> {
                     test(Color.BLACK);
                     test(Color.WHITE);
                 }).start();
+                break;
+            case "/dice":
+                Random rand = new Random();
+                DiceFace dice[] = new DiceFace[7];      // no particular reason it's 7, other than that's just what I
+                new Thread(() -> {                      // felt looked best
+                    int n;
+                    for (int i = 0; i < 7 ; i++) {
+                        do {                                        //included just so it wouldn't generate
+                            n = rand.nextInt(6) + 1;                //repeat numbers in a row
+                        } while (i > 0 && n == dice[i - 1].number);
+                        dice[i] = new DiceFace(n);
+                    }
+                    int i=0;
+                    for(DiceFace d: dice){
+                        try {
+                            if(i==0 && !diceBox.getChildren().isEmpty())
+                                Platform.runLater(() ->  diceBox.getChildren().remove(0));  //removes existing picture
+                            Platform.runLater(() -> diceBox.getChildren().add(d.imgView));  // if one's already there
+                            Thread.sleep(100 + (60*i++));   //pauses for a longer amount of time after each change
+                            if(i!=dice.length)
+                                Platform.runLater(() ->  diceBox.getChildren().remove(0)); //doesn't remove the final result
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+
+                    }
+
+                }).start();
+
+
+
                 break;
 
             default:
@@ -153,6 +190,7 @@ public class Controller {
             infoButton.setStyle("-fx-background-color: lightgrey");
             vis = true;
         }
+
     }
 
     //precursor to eventual feature of user being able to make their moves through the GUI
