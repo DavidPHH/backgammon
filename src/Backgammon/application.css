@@ -1,23 +1,22 @@
-#pane {
+#board {
     -fx-background-image: url("res/board.png");
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
 }
 
-#transparency{
-    -fx-opacity: 0.5;
-}
-/*Current styling for button, textarea and textfield are only temporary, colours chosen to try blend with the board
-whilst also maintaining visibility for testing
- */
 #displayArea{
-    -fx-opacity: .70;
-    -fx-border-color: grey;
+    -fx-opacity: .65;
+    -fx-border-color: transparent;
     -fx-text-fill: black;
+    -fx-font-size: 15;
+    -fx-effect: dropshadow( one-pass-box , black , 15 , 0.0 , 0 , 0)
 }
 
+#displayArea .content{
+    -fx-background-color: rgba(178, 169, 149,0.4);
+}
 #displayArea:hover{
-    -fx-opacity: 1;
+    -fx-opacity: .90;
 }
 
 #pCommand{
@@ -29,12 +28,45 @@ whilst also maintaining visibility for testing
 }
 
 #infoBut{
-    -fx-background-color: grey;
+    -fx-background-color: transparent;
+    -fx-graphic: url("res/info.png");
+}
+#infoBut:pressed{
+    -fx-opacity: .3;
+}
+#infoBut:hover{
+    -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 0 , 0 )
 }
 
-/*Styling for the player area*/
+/* Styling for the player area */
 #players{
     -fx-text-alignment: center;
     -fx-text-fill:darkgrey;
     -fx-font-size: 20;
+}
+
+/* Login Screen */
+
+#login {
+    -fx-background-image: url("res/background.png");
+}
+
+#inputArea {
+    -fx-font-size: 20;
+}
+
+#playBtn{
+    -fx-background-color: transparent;
+    -fx-graphic: url("res/play.png");
+}
+#playBtn:pressed{
+    -fx-opacity: .4;
+}
+#playBtn:hover{
+    -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 2 )
+}
+#checkBoxBtn{
+    -fx-effect: dropshadow( one-pass-box , white , 5 , 0.0 , 2 , 2 )
+    /* -fx-background-radius: 20;
+     -fx-background-color: rgba(178, 169, 149,0.7); */
 }

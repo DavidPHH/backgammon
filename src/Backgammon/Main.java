@@ -20,19 +20,21 @@ enum Color{
 }
 
 public class Main extends Application {
-
+    static Player players[] = new Player[2];
+    static Stage window;
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("board.fxml"));
-        primaryStage.setTitle("Backgammon");
+        window = primaryStage;
+        window.setTitle("Backgammon");
+        window.setResizable(false);  // Done temporarily
+
+        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
         Scene scene = new Scene(root, 1000, 715);
         scene.getStylesheets().addAll(this.getClass().getResource("application.css").toExternalForm());
-        //Done temporarily
-        primaryStage.setResizable(false);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+        window.setScene(scene);
+        window.show();
 
+    }
 
     public static void main(String[] args) {
         launch(args);

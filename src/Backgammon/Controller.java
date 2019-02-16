@@ -54,10 +54,11 @@ public class Controller {
     @FXML
     private VBox diceBox;
 
-    private Player[] players = new Player[2];
+    private Player[] players;
     private Boolean vis = true;
 
     public void initialize() {
+        players = Main.players;
         VBox[] bar = {whiteBarVBox, blackBarVBox};
         VBox[] bearOff = {whiteBearOffVBox, blackBearOffVBox};
         GridPane[] quadrants = {Q2, Q1, Q3, Q4};
@@ -73,9 +74,6 @@ public class Controller {
                 "Input / before commands:\n\n" +
                 "Finally, click on the 'i' button above to open/close this section.\n");
 
-        for (int i = 0; i < 2; i++) {
-            players[i] = new Player("Player " + (i + 1));
-        }
         playerOne.getChildren().add(new Text(players[0].getPlayerName() + "\nPips:" + players[0].getPipsLeft()));
         playerTwo.getChildren().add(new Text(players[1].getPlayerName() + "\nPips:" + players[1].getPipsLeft()));
 
@@ -141,8 +139,8 @@ public class Controller {
                 new Thread(() -> {                      // felt looked best
                     int n;
                     for (int i = 0; i < 7 ; i++) {
-                        do {                                        //included just so it wouldn't generate
-                            n = rand.nextInt(6) + 1;                //repeat numbers in a row
+                        do {                                        // included just so it wouldn't generate
+                            n = rand.nextInt(6) + 1;                // repeat numbers in a row
                         } while (i > 0 && n == dice[i - 1].number);
                         dice[i] = new DiceFace(n);
                     }
@@ -150,11 +148,11 @@ public class Controller {
                     for(DiceFace d: dice){
                         try {
                             if(i==0 && !diceBox.getChildren().isEmpty())
-                                Platform.runLater(() ->  diceBox.getChildren().remove(0));  //removes existing picture
+                                Platform.runLater(() ->  diceBox.getChildren().remove(0));  // removes existing picture
                             Platform.runLater(() -> diceBox.getChildren().add(d.imgView));  // if one's already there
-                            Thread.sleep(100 + (60*i++));   //pauses for a longer amount of time after each change
+                            Thread.sleep(100 + (60*i++));   // pauses for a longer amount of time after each change
                             if(i!=dice.length)
-                                Platform.runLater(() ->  diceBox.getChildren().remove(0)); //doesn't remove the final result
+                                Platform.runLater(() ->  diceBox.getChildren().remove(0)); // doesn't remove the final result
                         } catch (InterruptedException e1) {
                             e1.printStackTrace();
                         }
@@ -162,9 +160,6 @@ public class Controller {
                     }
 
                 }).start();
-
-
-
                 break;
 
             default:
@@ -174,27 +169,16 @@ public class Controller {
         }
     }
 
-    /*Function for the information button
-        Changes visibility of the text area
-     */
+    // Toggles the text area when info Button is clicked
     @FXML
     public void infoB() {
-        if (vis){
-            gameInfo.setMouseTransparent(true);
-            gameInfo.setVisible(false);
-            infoButton.setStyle("-fx-background-color: yellow");
-            vis = false;
-        } else {
-            gameInfo.setMouseTransparent(false);
-            gameInfo.setVisible(true);
-            infoButton.setStyle("-fx-background-color: lightgrey");
-            vis = true;
-        }
-
+        gameInfo.setMouseTransparent(vis);
+        gameInfo.setVisible(!vis);
+        vis = !vis;
     }
 
-    //precursor to eventual feature of user being able to make their moves through the GUI
-    //as well as through the commands textField
+    // precursor to eventual feature of user being able to make their moves through the GUI
+    // as well as through the commands textField
     public void click(MouseEvent event) {
         VBox box = (VBox) event.getSource();
         Strip strip = Board.getStrip(box);
