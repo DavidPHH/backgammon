@@ -10,12 +10,12 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane id="board" fx:id="paneId" minHeight="715.0" minWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Backgammon.Controller">
+<GridPane id="board" fx:id="paneId" gridLinesVisible="true" minHeight="715.0" minWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Backgammon.Controller">
 
     <!-- Q1 -->
     <GridPane id="Q1" fx:id="Q1" prefHeight="325.0" prefWidth="400.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
       <GridPane.margin>
-         <Insets left="20.0" />
+         <Insets left="20.0" top="15.0" />
       </GridPane.margin>
         <VBox onMouseClicked="#click" spacing="-20" GridPane.columnIndex="0" />
         <VBox onMouseClicked="#click" spacing="-20" GridPane.columnIndex="1" />
@@ -40,10 +40,10 @@
     <GridPane id="Q2" fx:id="Q2" prefHeight="325.0" prefWidth="400.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
         <VBox onMouseClicked="#click" spacing="-20" GridPane.columnIndex="0" />
         <VBox onMouseClicked="#click" spacing="-20" GridPane.columnIndex="1" />
-        <VBox onMouseClicked="#click" spacing="-20" GridPane.columnIndex="2" />
-        <VBox onMouseClicked="#click" spacing="-20" GridPane.columnIndex="3" />
-        <VBox onMouseClicked="#click" spacing="-20" GridPane.columnIndex="4" />
-        <VBox onMouseClicked="#click" spacing="-20" GridPane.columnIndex="5" />
+        <VBox alignment="TOP_CENTER" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="2" />
+        <VBox alignment="TOP_CENTER" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="3" />
+        <VBox alignment="TOP_CENTER" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="4" />
+        <VBox alignment="TOP_CENTER" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="5" />
         <columnConstraints>
             <ColumnConstraints percentWidth="17" />
             <ColumnConstraints percentWidth="17" />
@@ -55,6 +55,9 @@
         <rowConstraints>
             <RowConstraints percentHeight="90" />
         </rowConstraints>
+      <GridPane.margin>
+         <Insets left="5.0" top="15.0" />
+      </GridPane.margin>
 
     </GridPane>
 
@@ -62,11 +65,11 @@
     <!-- Q3 -->
     <GridPane id="Q3" fx:id="Q3" prefHeight="325.0" prefWidth="400.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
         <GridPane.margin>
-         <Insets left="20.0" />
+         <Insets left="20.0" right="5.0" />
         </GridPane.margin>
 
-        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="0" />
-        <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="1" />
+        <VBox alignment="BOTTOM_LEFT" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="0" />
+        <VBox alignment="BOTTOM_LEFT" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="1" />
         <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="2" />
         <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="3" />
         <VBox alignment="BOTTOM_CENTER" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="4" />
@@ -82,6 +85,9 @@
         <rowConstraints>
             <RowConstraints percentHeight="100" />
         </rowConstraints>
+      <padding>
+         <Insets bottom="20.0" />
+      </padding>
 
     </GridPane>
 
@@ -104,18 +110,21 @@
         <rowConstraints>
             <RowConstraints percentHeight="100" />
         </rowConstraints>
+      <padding>
+         <Insets bottom="20.0" />
+      </padding>
     </GridPane>
 
     <!-- Bar -->
-    <GridPane  id="Bar" prefWidth="60.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
+    <GridPane id="Bar" prefWidth="60.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.rowSpan="2">
         <VBox fx:id="blackBarVBox" alignment="BOTTOM_CENTER" GridPane.rowIndex="0" />
         <VBox fx:id="whiteBarVBox" alignment="TOP_CENTER" GridPane.rowIndex="1" />
         <columnConstraints>
             <ColumnConstraints percentWidth="100" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints percentHeight="50"/>
-            <RowConstraints percentHeight="50"/>
+            <RowConstraints percentHeight="50" />
+            <RowConstraints percentHeight="50" />
         </rowConstraints>
     </GridPane>
 
@@ -124,24 +133,24 @@
       <GridPane.margin>
          <Insets left="15.0" />
       </GridPane.margin>
-        <VBox fx:id="whiteBearOffVBox"  alignment="TOP_CENTER" spacing="-20" GridPane.rowIndex="0" />
-        <VBox fx:id="diceBox" id="diceBox" style="/*-fx-background-color: #f200e1; -fx-opacity: 0.5;*/" maxHeight="80" maxWidth="80" alignment="CENTER" spacing="-20" GridPane.rowIndex="1"  />
+        <VBox fx:id="whiteBearOffVBox" alignment="TOP_CENTER" spacing="-20" GridPane.rowIndex="0" />
+        <VBox id="diceBox" fx:id="diceBox" alignment="CENTER" maxHeight="80" maxWidth="80" spacing="-20" style="/*-fx-background-color: #f200e1; -fx-opacity: 0.5;*/" GridPane.rowIndex="1" />
         <VBox fx:id="blackBearOffVBox" alignment="BOTTOM_CENTER" spacing="-20" GridPane.rowIndex="2" />
 
         <columnConstraints>
             <ColumnConstraints percentWidth="100" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints percentHeight="41"/>
-            <RowConstraints percentHeight="18"/>
-            <RowConstraints percentHeight="41"/>
+            <RowConstraints percentHeight="41" />
+            <RowConstraints percentHeight="18" />
+            <RowConstraints percentHeight="41" />
         </rowConstraints>
     </GridPane>
 
     <!-- User input text field -->
     <TextField id="pCommand" fx:id="pCommands" onAction="#onEnter" prefHeight="30" prefWidth="300" promptText="Input your commands here" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
 
-    <TextArea wrapText="true" id="displayArea" fx:id="gameInfo" editable="false" maxWidth="350" minHeight="610" prefWidth="300" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="TOP" />
+    <TextArea id="displayArea" fx:id="gameInfo" editable="false" maxWidth="350" minHeight="610" prefWidth="300" wrapText="true" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="TOP" />
 
     <!-- Button -->
 
