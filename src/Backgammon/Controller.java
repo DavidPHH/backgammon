@@ -28,8 +28,6 @@ public class Controller {
     @FXML
     public GridPane Q4;
     @FXML
-    private GridPane textAreaGrid;
-    @FXML
     public VBox blackBarVBox;
     @FXML
     public VBox whiteBarVBox;
@@ -55,7 +53,9 @@ public class Controller {
     private VBox diceBox;
 
     private Player[] players;
-    private Boolean vis = true;
+    private Boolean vis;
+    private Boolean gameStart;
+    private Boolean hasRolled;
 
     public void initialize() {
         players = Main.players;
@@ -64,15 +64,22 @@ public class Controller {
         GridPane[] quadrants = {Q2, Q1, Q3, Q4};
         Board.setInitialpos(quadrants, bar, bearOff);
         //Default gameInfo string to be displayed
-        gameInfo.setText("\nGame commands:\n" +
-                "1. /quit\n" +
-                "2. /commands\n" +
-                "3. /move (origin: int) (destination: int)\n" +
-                "4. /tests (used to move pieces in sprint 1)\n" +
-                "5. /dice for, well, dice stuff\n" +
-                "Game information will be displayed here\n" +
-                "Input / before commands:\n\n" +
+        gameInfo.setText("\nGame commands:" +
+                "\n1. /start to start the game"+
+                "\n2. /next to pass turn to other player" +
+                "\n3. /quit" +
+                "\n4. /commands" +
+                "\n5. /move (origin: int) (destination: int)" +
+                "\n6. /test (used to move pieces in sprint 1)" +
+                "\n7. /dice for, well, dice stuff" +
+                "\n" +
                 "Finally, click on the 'i' button above to open/close this section.\n");
+
+        // Initialising the boolean variables
+        vis = true;
+        gameStart = false;
+        //TODO in sprint 3, change hasRolled to initialise to false
+        hasRolled = true;
 
         playerOne.getChildren().add(new Text(players[0].getPlayerName() + "\nPips:" + players[0].getPipsLeft()));
         playerTwo.getChildren().add(new Text(players[1].getPlayerName() + "\nPips:" + players[1].getPipsLeft()));
@@ -99,31 +106,96 @@ public class Controller {
                 break;
             case "/commands":
                 gameInfo.appendText("\nGame commands:" +
-                        "\n1. /quit" +
-                        "\n2. /commands" +
-                        "\n3. /move (origin: int) (destination: int)" +
-                        "\n4. /test (used to move pieces in sprint 1)" +
-                        "\n5. /dice for, well, dice stuff" +
+                        "\n1. /start to start the game"+
+                        "\n2. /next to pass turn to other player" +
+                        "\n3. /quit" +
+                        "\n4. /commands" +
+                        "\n5. /move (origin: int) (destination: int)" +
+                        "\n6. /test (used to move pieces in sprint 1)" +
+                        "\n7. /dice for, well, dice stuff" +
                         "\n");
                 pCommands.setText("");
                 break;
             case "/move":
                 pCommands.setText("");
-                String[] splot = inputString.split(" ");    //Did you really use splot as the past tense of split?  ...I like it.
-                int org, dest;
-                try {
-                    org = Integer.parseInt(splot[1]) - 1;
-                    dest = Integer.parseInt(splot[2]) - 1;
-                    if (org < 0 || dest < 0 || org > 23 || dest > 23)
-                        throw new ArrayIndexOutOfBoundsException();
-                } catch (Exception ex) {
-                    gameInfo.appendText("\nInvalid syntax. Expected /move int int");
-                    break;
+                if(Board.currentMoves < 2){
+                    String[] splot = inputString.split(" "); // Did you really use splot as the past tense of split?  ...I like it.
+                    int org, dest;
+                    try {
+                        org = Integer.parseInt(splot[1]) - 1;
+                        dest = Integer.parseInt(splot[2]) - 1;
+                        if (org < 0 || dest < 0 || org > 23 || dest > 23)
+                            throw new ArrayIndexOutOfBoundsException();
+                    } catch (Exception ex) {
+                        gameInfo.appendText("\nInvalid syntax. Expected /move int int");
+                        break;
+                    }
+                    Move move = new Move(org, dest, Board.currentTurn);
+                    gameInfo.appendText("\n" + move);
+                    Board.makeMove(move);
+                }
+                else{
+                    gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
+                }
+                break;
+            case "/start":
+                pCommands.setText("");
+                if(!gameStart) {
+                    Board.rollStart(players);
+                    gameInfo.appendText("\n"+players[0].getPlayerName() +" rolled: "+Board.die.getDice1()+", "
+                            +players[1].getPlayerName()+" rolled: " +Board.die.getDice2()+"\n");
+                    if(players[0].getColor() == Board.currentTurn)
+                        gameInfo.appendText("\n" + players[0].getPlayerName()+"'s turn");
+
+                    else
+                        gameInfo.appendText("\n" + players[1].getPlayerName()+"'s turn");
+
                 }
 
-                Move move = new Move(org, dest, Board.getStrip(org).pieceColor);
-                gameInfo.appendText("\n" + move);
-                Board.makeMove(move);
+                gameStart = true;
+                hasRolled = true;
+                break;
+            case "/roll":
+                pCommands.setText("");
+                if(!hasRolled){
+                    Board.rollDice();
+
+                    //Printing of the results of the player's roll
+                    if(players[0].getColor() == Board.currentTurn)
+                    {
+                        gameInfo.appendText("\n" + players[0].getPlayerName() +
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                    }
+                    else{
+                        gameInfo.appendText("\n" + players[1].getPlayerName() +
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                    }
+                    hasRolled = true;
+                }
+                else{
+                    gameInfo.appendText("\nYou cannot roll again\n");
+                }
+                break;
+            case "/next":
+                pCommands.setText("");
+                Board.nextTurn();
+                // Printing the new player's turn
+                if(players[0].getColor() == Board.currentTurn)
+                    gameInfo.appendText("\n" + players[0].getPlayerName()+"'s turn");
+                else
+                    gameInfo.appendText("\n" + players[1].getPlayerName()+"'s turn");
+                Board.rollDice();
+
+                /* Printing of the results of the player's roll. This is only here for sprint 2 as required */
+                if(players[1].getColor() == Board.currentTurn)
+                {
+                    gameInfo.appendText("\n" + players[1].getPlayerName() +
+                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                }
+                else{
+                    gameInfo.appendText("\n" + players[0].getPlayerName() +
+                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                }
                 break;
             case "/test":       //produces IndexOutOfBoundsException when running too many at once
                 pCommands.setText("");
@@ -135,7 +207,7 @@ public class Controller {
                 break;
             case "/dice":
                 Random rand = new Random();
-                DiceFace dice[] = new DiceFace[7];      // no particular reason it's 7, other than that's just what I
+                DiceFace[] dice = new DiceFace[7];      // no particular reason it's 7, other than that's just what I
                 new Thread(() -> {                      // felt looked best
                     int n;
                     for (int i = 0; i < 7 ; i++) {
