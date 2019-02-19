@@ -14,13 +14,13 @@ enum Color{
     Color(int value) {
         this.value = value;
     }
-    public int getValue() {
+    public int getValue(){
         return value;
     }
 }
 
 public class Main extends Application {
-    static Player players[] = new Player[2];
+    static Player[] players = new Player[2];
     static Stage window;
     @Override
     public void start(Stage primaryStage) throws Exception{

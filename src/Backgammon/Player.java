@@ -4,10 +4,12 @@ Player class not important for sprint 1, will be used later for additional funct
 */
 public class Player{
     private String playerName;
+    private Color color;
     private int pipsLeft;
 
-    public Player(String player){
+    public Player(String player, Color color){
         this.playerName = player;
+        this.color = color;
         pipsLeft = 167;
     }
 
@@ -22,5 +24,8 @@ public class Player{
     }
     public int getPipsLeft(){
         return this.pipsLeft;
+    }
+    public Color getColor(){
+        return this.color;
     }
 }
