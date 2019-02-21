@@ -50,12 +50,16 @@ public class Controller {
     @FXML
     private HBox playerTwo;
     @FXML
+    private VBox doubleBox;
+    @FXML
     private VBox diceBox;
 
     private Player[] players;
     private Boolean vis;
     private Boolean gameStart;
     private Boolean hasRolled;
+    private int currentDoublingCube;
+
 
     public void initialize() {
         players = Main.players;
@@ -197,8 +201,20 @@ public class Controller {
                             " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
                 }
                 break;
+            case "/double":
+                if(doubleBox.getChildren().isEmpty()) {
+                    doubleBox.getChildren().add(new DoublingCube().imgView);
+                    currentDoublingCube = 2;
+                }else if (currentDoublingCube<64){
+                    doubleBox.getChildren().remove(0);
+                    currentDoublingCube *= 2;
+                    doubleBox.getChildren().add(new DoublingCube(currentDoublingCube).imgView);
+                }else{
+                    System.out.println("Can't double anymore");  //I'm assuming we're limiting ourselves to what fits on a normal die
+                }                                               //and not letting the players keep doubling as much as they want
+                break;
             case "/test":       //produces IndexOutOfBoundsException when running too many at once
-                pCommands.setText("");
+                //pCommands.setText("");
                 gameInfo.appendText("\nRunning test...");
                 new Thread(() -> {
                     test(Color.BLACK);
@@ -207,24 +223,32 @@ public class Controller {
                 break;
             case "/dice":
                 Random rand = new Random();
-                DiceFace[] dice = new DiceFace[7];      // no particular reason it's 7, other than that's just what I
+                DiceFace[] diceOne = new DiceFace[7];       //combine both into one 2d array
+                DiceFace[] diceTwo = new DiceFace[7];      // no particular reason it's 7, other than that's just what I
                 new Thread(() -> {                      // felt looked best
                     int n;
                     for (int i = 0; i < 7 ; i++) {
                         do {                                        // included just so it wouldn't generate
                             n = rand.nextInt(6) + 1;                // repeat numbers in a row
-                        } while (i > 0 && n == dice[i - 1].number);
-                        dice[i] = new DiceFace(n);
+                        } while (i > 0 && n == diceOne[i - 1].number);
+                        diceOne[i] = new DiceFace(n);
+                        do {                                        // included just so it wouldn't generate
+                            n = rand.nextInt(6) + 1;                // repeat numbers in a row
+                        } while (i > 0 && n == diceTwo[i - 1].number);
+                        diceTwo[i] = new DiceFace(n);
                     }
-                    int i=0;
-                    for(DiceFace d: dice){
+
+                    for(int i=0; i<7; i++){
                         try {
-                            if(i==0 && !diceBox.getChildren().isEmpty())
-                                Platform.runLater(() ->  diceBox.getChildren().remove(0));  // removes existing picture
-                            Platform.runLater(() -> diceBox.getChildren().add(d.imgView));  // if one's already there
-                            Thread.sleep(100 + (60*i++));   // pauses for a longer amount of time after each change
-                            if(i!=dice.length)
-                                Platform.runLater(() ->  diceBox.getChildren().remove(0)); // doesn't remove the final result
+                            if(i==0 &&  !diceBox.getChildren().isEmpty())                           // if they're already there
+                                Platform.runLater(() ->  diceBox.getChildren().remove(0, 2));    // removes existing dice
+                            int finalI = i;   //Without this you get the error "Variable used in lambda expression should be final or effectively final"
+                                              //Before this was avoided by using a forEach loop, but can't really do that now with two dice arrays involved
+                            Platform.runLater(() -> diceBox.getChildren().add(diceOne[finalI].imgView));
+                            Platform.runLater(() -> diceBox.getChildren().add(diceTwo[finalI].imgView));
+                            Thread.sleep(100 + (60*i));   // pauses for a longer amount of time after each change
+                            if(i!=diceOne.length-1)
+                                Platform.runLater(() ->  diceBox.getChildren().remove(0, 2)); // doesn't remove the final result
                         } catch (InterruptedException e1) {
                             e1.printStackTrace();
                         }
@@ -232,7 +256,9 @@ public class Controller {
                     }
 
                 }).start();
+
                 break;
+
 
             default:
                 gameInfo.appendText("\n" + pCommands.getText());

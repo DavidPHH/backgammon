@@ -193,13 +193,37 @@ class DiceFace{
     DiceFace (int num){
         number = num;
         String url = "Backgammon/res/DiceFace" + (num) + ".png";
-                    // By derivative work: PhJDie_Faces.png: Nanami Kamimura - Die_Faces.png,
-                    // CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=4162818
+        // By derivative work: PhJDie_Faces.png: Nanami Kamimura - Die_Faces.png,
+        // CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=4162818
 
         Image image = new Image(url);
         imgView = new ImageView();
         imgView.setImage(image);
-        }
+    }
+}
+class DoublingCube{
+
+    ImageView imgView;
+
+    DoublingCube(int num){
+        String url = "Backgammon/res/diceNum" + num + ".png";   //ultimately plan to make these a little more stylish
+        Image image = new Image(url);                           //thinking white numbers on dark red at the moment
+        imgView = new ImageView();
+        imgView.setImage(image);
+    }
+
+    DoublingCube(){
+        this(2);
+    }
+
+ /*   public void doubleCurrent(){
+        number *= 2;
+        String url = "Backgammon/res/diceNum" + number + ".png";
+        Image image = new Image(url);
+        imgView = new ImageView();
+        imgView.setImage(image);
+
+    }*/
 }
 
 
