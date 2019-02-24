@@ -8,13 +8,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import Backgammon.Classes.Board;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import java.util.Random;
 
+import java.util.Random;
 
 
 public class Controller {
@@ -38,7 +40,7 @@ public class Controller {
     @FXML
     private GridPane paneId;
 
-    //Player commands textfield
+    // Player commands textfield
     @FXML
     private TextField pCommands;
     @FXML
@@ -66,10 +68,10 @@ public class Controller {
         VBox[] bar = {whiteBarVBox, blackBarVBox};
         VBox[] bearOff = {whiteBearOffVBox, blackBearOffVBox};
         GridPane[] quadrants = {Q2, Q1, Q3, Q4};
-        Board.setInitialpos(quadrants, bar, bearOff);
-        //Default gameInfo string to be displayed
+        Board.setInitialpos(quadrants, bar, bearOff, paneId);
+        // Default gameInfo string to be displayed
         gameInfo.setText("\nGame commands:" +
-                "\n1. /start to start the game"+
+                "\n1. /start to start the game" +
                 "\n2. /next to pass turn to other player" +
                 "\n3. /quit" +
                 "\n4. /commands" +
@@ -82,11 +84,13 @@ public class Controller {
         // Initialising the boolean variables
         vis = true;
         gameStart = false;
-        //TODO in sprint 3, change hasRolled to initialise to false
+        // TODO in sprint 3, change hasRolled to initialise to false
         hasRolled = true;
 
         playerOne.getChildren().add(new Text(players[0].getPlayerName() + "\nPips:" + players[0].getPipsLeft()));
+        playerOne.getChildren().add(new ImageView(new Image("Backgammon/res/piece-white.png", 25, 25, false, false)));
         playerTwo.getChildren().add(new Text(players[1].getPlayerName() + "\nPips:" + players[1].getPipsLeft()));
+        playerTwo.getChildren().add(new ImageView(new Image("Backgammon/res/piece-black.png", 25, 25, false, false)));
 
         infoButton.addEventHandler(MouseEvent.ANY, e -> { // Game info is displayed while mouse hovers over info button.
             EventType ev = e.getEventType();
@@ -98,7 +102,7 @@ public class Controller {
         });
     }
 
-    /*Function for user input in the text field */
+    // Function for user input in the text field
     @FXML
     public void onEnter(ActionEvent e) {
         String inputString = pCommands.getText().toLowerCase();
@@ -110,7 +114,7 @@ public class Controller {
                 break;
             case "/commands":
                 gameInfo.appendText("\nGame commands:" +
-                        "\n1. /start to start the game"+
+                        "\n1. /start to start the game" +
                         "\n2. /next to pass turn to other player" +
                         "\n3. /quit" +
                         "\n4. /commands" +
@@ -122,8 +126,8 @@ public class Controller {
                 break;
             case "/move":
                 pCommands.setText("");
-                if(Board.currentMoves < 2){
-                    String[] splot = inputString.split(" "); // Did you really use splot as the past tense of split?  ...I like it.
+                if (Board.currentMoves < 2) {
+                    String[] splot = inputString.split(" ");
                     int org, dest;
                     try {
                         org = Integer.parseInt(splot[1]) - 1;
@@ -137,22 +141,21 @@ public class Controller {
                     Move move = new Move(org, dest, Board.currentTurn);
                     gameInfo.appendText("\n" + move);
                     Board.makeMove(move);
-                }
-                else{
+                } else {
                     gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
                 }
                 break;
             case "/start":
                 pCommands.setText("");
-                if(!gameStart) {
+                if (!gameStart) {
                     Board.rollStart(players);
-                    gameInfo.appendText("\n"+players[0].getPlayerName() +" rolled: "+Board.die.getDice1()+", "
-                            +players[1].getPlayerName()+" rolled: " +Board.die.getDice2()+"\n");
-                    if(players[0].getColor() == Board.currentTurn)
-                        gameInfo.appendText("\n" + players[0].getPlayerName()+"'s turn");
+                    gameInfo.appendText("\n" + players[0].getPlayerName() + " rolled: " + Board.die.getDice1() + ", "
+                            + players[1].getPlayerName() + " rolled: " + Board.die.getDice2() + "\n");
+                    if (players[0].getColor() == Board.currentTurn)
+                        gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
 
                     else
-                        gameInfo.appendText("\n" + players[1].getPlayerName()+"'s turn");
+                        gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
 
                 }
 
@@ -161,22 +164,19 @@ public class Controller {
                 break;
             case "/roll":
                 pCommands.setText("");
-                if(!hasRolled){
+                if (!hasRolled) {
                     Board.rollDice();
 
                     //Printing of the results of the player's roll
-                    if(players[0].getColor() == Board.currentTurn)
-                    {
+                    if (players[0].getColor() == Board.currentTurn) {
                         gameInfo.appendText("\n" + players[0].getPlayerName() +
-                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
-                    }
-                    else{
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
+                    } else {
                         gameInfo.appendText("\n" + players[1].getPlayerName() +
-                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
                     }
                     hasRolled = true;
-                }
-                else{
+                } else {
                     gameInfo.appendText("\nYou cannot roll again\n");
                 }
                 break;
@@ -184,32 +184,30 @@ public class Controller {
                 pCommands.setText("");
                 Board.nextTurn();
                 // Printing the new player's turn
-                if(players[0].getColor() == Board.currentTurn)
-                    gameInfo.appendText("\n" + players[0].getPlayerName()+"'s turn");
+                if (players[0].getColor() == Board.currentTurn)
+                    gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
                 else
-                    gameInfo.appendText("\n" + players[1].getPlayerName()+"'s turn");
+                    gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
                 Board.rollDice();
 
                 /* Printing of the results of the player's roll. This is only here for sprint 2 as required */
-                if(players[1].getColor() == Board.currentTurn)
-                {
+                if (players[1].getColor() == Board.currentTurn) {
                     gameInfo.appendText("\n" + players[1].getPlayerName() +
-                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
-                }
-                else{
+                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
+                } else {
                     gameInfo.appendText("\n" + players[0].getPlayerName() +
-                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
                 }
                 break;
             case "/double":
-                if(doubleBox.getChildren().isEmpty()) {
+                if (doubleBox.getChildren().isEmpty()) {
                     doubleBox.getChildren().add(new DoublingCube().imgView);
                     currentDoublingCube = 2;
-                }else if (currentDoublingCube<64){
+                } else if (currentDoublingCube < 64) {
                     doubleBox.getChildren().remove(0);
                     currentDoublingCube *= 2;
                     doubleBox.getChildren().add(new DoublingCube(currentDoublingCube).imgView);
-                }else{
+                } else {
                     System.out.println("Can't double anymore");  //I'm assuming we're limiting ourselves to what fits on a normal die
                 }                                               //and not letting the players keep doubling as much as they want
                 break;
@@ -227,7 +225,7 @@ public class Controller {
                 DiceFace[] diceTwo = new DiceFace[7];      // no particular reason it's 7, other than that's just what I
                 new Thread(() -> {                      // felt looked best
                     int n;
-                    for (int i = 0; i < 7 ; i++) {
+                    for (int i = 0; i < 7; i++) {
                         do {                                        // included just so it wouldn't generate
                             n = rand.nextInt(6) + 1;                // repeat numbers in a row
                         } while (i > 0 && n == diceOne[i - 1].number);
@@ -238,17 +236,17 @@ public class Controller {
                         diceTwo[i] = new DiceFace(n);
                     }
 
-                    for(int i=0; i<7; i++){
+                    for (int i = 0; i < 7; i++) {
                         try {
-                            if(i==0 &&  !diceBox.getChildren().isEmpty())                           // if they're already there
-                                Platform.runLater(() ->  diceBox.getChildren().remove(0, 2));    // removes existing dice
+                            if (i == 0 && !diceBox.getChildren().isEmpty())                           // if they're already there
+                                Platform.runLater(() -> diceBox.getChildren().remove(0, 2));    // removes existing dice
                             int finalI = i;   //Without this you get the error "Variable used in lambda expression should be final or effectively final"
-                                              //Before this was avoided by using a forEach loop, but can't really do that now with two dice arrays involved
+                            //Before this was avoided by using a forEach loop, but can't really do that now with two dice arrays involved
                             Platform.runLater(() -> diceBox.getChildren().add(diceOne[finalI].imgView));
                             Platform.runLater(() -> diceBox.getChildren().add(diceTwo[finalI].imgView));
-                            Thread.sleep(100 + (60*i));   // pauses for a longer amount of time after each change
-                            if(i!=diceOne.length-1)
-                                Platform.runLater(() ->  diceBox.getChildren().remove(0, 2)); // doesn't remove the final result
+                            Thread.sleep(100 + (60 * i));   // pauses for a longer amount of time after each change
+                            if (i != diceOne.length - 1)
+                                Platform.runLater(() -> diceBox.getChildren().remove(0, 2)); // doesn't remove the final result
                         } catch (InterruptedException e1) {
                             e1.printStackTrace();
                         }

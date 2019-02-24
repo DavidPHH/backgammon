@@ -29,8 +29,8 @@ public class LoginController {
         if (p2.equals(""))
             p2 = "Player 2";
 
-        Main.players[0] = new Player(p1,Color.BLACK);
-        Main.players[1] = new Player(p2,Color.WHITE);
+        Main.players[0] = new Player(p1, Color.WHITE);
+        Main.players[1] = new Player(p2, Color.BLACK);
 
         // Swap scenes
         Parent root = FXMLLoader.load(getClass().getResource("board.fxml"));

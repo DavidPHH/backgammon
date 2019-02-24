@@ -6,25 +6,36 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="login" minHeight="715.0" minWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Backgammon.LoginController">
+<AnchorPane id="login" minHeight="715.0" minWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="Backgammon.LoginController">
     <children>
-        <TextField fx:id="txtPlayer1" layoutX="298.0" layoutY="240.0" promptText="Player 1" AnchorPane.bottomAnchor="431.0" AnchorPane.leftAnchor="298.0">
+        <TextField fx:id="txtPlayer1" layoutX="298.0" layoutY="240.0" promptText="White" AnchorPane.bottomAnchor="431.0"
+                   AnchorPane.leftAnchor="298.0" AnchorPane.rightAnchor="453.0" AnchorPane.topAnchor="240.0">
             <font>
-                <Font size="20.0" />
-            </font></TextField>
-        <TextField fx:id="txtPlayer2" layoutX="298.0" layoutY="301.0" promptText="Player 2" AnchorPane.bottomAnchor="370.0" AnchorPane.rightAnchor="453.0">
-            <font>
-                <Font size="20.0" />
-            </font></TextField>
-        <Button id="playBtn" layoutX="438.0" layoutY="385.0" mnemonicParsing="false" onAction="#click" prefHeight="44.0" prefWidth="109.0" />
-        <TextField fx:id="txtPort" visible="false" layoutX="564.0" layoutY="301.0" prefHeight="44.0" prefWidth="74.0" promptText="Port">
-            <font>
-                <Font size="20.0" />
+                <Font size="20.0"/>
             </font>
         </TextField>
-        <CheckBox fx:id="checkbox" onAction="#checkBox" id="checkBoxBtn" selected="true" layoutX="564.0" layoutY="252.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="143.0" text="Play Locally" textFill="WHITE">
+        <TextField fx:id="txtPlayer2" layoutX="298.0" layoutY="301.0" promptText="Black" AnchorPane.bottomAnchor="370.0"
+                   AnchorPane.leftAnchor="298.0" AnchorPane.rightAnchor="453.0">
             <font>
-                <Font size="20.0" />
+                <Font size="20.0"/>
+            </font>
+        </TextField>
+        <Button id="playBtn" layoutX="438.0" layoutY="385.0" mnemonicParsing="false" onAction="#click" prefHeight="44.0"
+                prefWidth="109.0" AnchorPane.bottomAnchor="286.0" AnchorPane.leftAnchor="438.0"
+                AnchorPane.rightAnchor="453.0" AnchorPane.topAnchor="385.0"/>
+        <TextField fx:id="txtPort" layoutX="564.0" layoutY="301.0" prefHeight="44.0" prefWidth="74.0" promptText="Port"
+                   visible="false">
+            <font>
+                <Font size="20.0"/>
+            </font>
+        </TextField>
+        <CheckBox id="checkBoxBtn" fx:id="checkbox" layoutX="564.0" layoutY="252.0" mnemonicParsing="false"
+                  onAction="#checkBox" prefHeight="30.0" prefWidth="143.0" selected="true" text="Play Locally"
+                  textFill="WHITE" AnchorPane.bottomAnchor="433.0" AnchorPane.leftAnchor="564.0"
+                  AnchorPane.rightAnchor="293.0" AnchorPane.topAnchor="252.0">
+            <font>
+                <Font size="20.0"/>
             </font>
         </CheckBox>
     </children>

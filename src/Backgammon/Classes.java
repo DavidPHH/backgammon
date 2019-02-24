@@ -13,6 +13,7 @@ import java.util.Random;
 class Classes {
 
     static class Board {
+        private static GridPane boardfxml;
         private static Strip[] stripArray = new Strip[24];
         static Color currentTurn;
         static Bar Bar;
@@ -20,7 +21,8 @@ class Classes {
         static Dice die = new Dice();
         static int currentMoves;
 
-        static void setInitialpos(GridPane[] p, VBox[] bar, VBox[] bearOff) {
+        static void setInitialpos(GridPane[] p, VBox[] bar, VBox[] bearOff, GridPane bfxml) {
+            boardfxml = bfxml;
             Bar = new Bar(bar);
             BearOff = new Bar(bearOff);
             int offset = 0;
@@ -33,7 +35,6 @@ class Classes {
             }
             //for the top row, goes right to left assigning index values of 0-11
             //for the bottom row, goes left to right assigning index values of 12-23
-
 
 
             Piece[] black = new Piece[15];
@@ -82,7 +83,7 @@ class Classes {
             stripArray[move.destStrip].insert(new Piece(move.color));
         }
 
-        static boolean validMove(Move move){
+        static boolean validMove(Move move) {
             if (move.orgStrip < 0 || move.destStrip < 0 || move.orgStrip > 23 || move.destStrip > 23) // If outside of array, it's an invalid move
                 return false;
 
@@ -94,9 +95,8 @@ class Classes {
 
             if ((org.pieceColor != dest.pieceColor)) // If the dest strip has pieces of the opposite color,
                 return (dest.pieceColor == Color.NONE); // it's an invalid move
-            if(move.color != dest.pieceColor)// If the player is moving a piece that isn't his
-                return false;
-            return true;
+            // If the player is moving a piece that isn't his
+            return move.color == dest.pieceColor;
         }
 
         static Move[] findAllvalidMoves() { // Maybe change this to some other method, depends what comes in handy
@@ -105,16 +105,18 @@ class Classes {
 
         static Color nextTurn() {
             currentTurn = currentTurn == Color.BLACK ? Color.WHITE : Color.BLACK;
+            boardfxml.setId("board" + currentTurn.getValue());
             currentMoves = 0;
             return currentTurn;
         }
 
-        static void rollStart(Player [] players){
+        static void rollStart(Player[] players) {
             die.findStartingPlayer(players);
         }
-        static void rollDice(){
+
+        static void rollDice() {
             die.roll();
-            System.out.println(die.getDice1() +" "+die.getDice2());
+            System.out.println(die.getDice1() + " " + die.getDice2());
         }
     }
 }
@@ -185,12 +187,12 @@ class Strip {
     }
 }
 
-class DiceFace{
+class DiceFace {
 
     ImageView imgView;
     int number;
 
-    DiceFace (int num){
+    DiceFace(int num) {
         number = num;
         String url = "Backgammon/res/DiceFace" + (num) + ".png";
         // By derivative work: PhJDie_Faces.png: Nanami Kamimura - Die_Faces.png,
@@ -201,18 +203,19 @@ class DiceFace{
         imgView.setImage(image);
     }
 }
-class DoublingCube{
+
+class DoublingCube {
 
     ImageView imgView;
 
-    DoublingCube(int num){
-        String url = "Backgammon/res/diceNum" + num + ".png";   //ultimately plan to make these a little more stylish
-        Image image = new Image(url);                           //thinking white numbers on dark red at the moment
+    DoublingCube(int num) {
+        String url = "Backgammon/res/diceNum" + num + ".png";   // ultimately plan to make these a little more stylish
+        Image image = new Image(url);                           // thinking white numbers on dark red at the moment
         imgView = new ImageView();
         imgView.setImage(image);
     }
 
-    DoublingCube(){
+    DoublingCube() {
         this(2);
     }
 
@@ -229,8 +232,8 @@ class DoublingCube{
 
 @SuppressWarnings("unchecked")
 class Bar {
-    VBox[] boxes;
-    ArrayList<Piece>[] pieces = new ArrayList[2];
+    private VBox[] boxes;
+    private ArrayList<Piece>[] pieces = new ArrayList[2];
 
     public Bar(VBox[] boxes) {
         this.boxes = boxes;
@@ -254,44 +257,44 @@ class Bar {
     }
 }
 
-class Dice{
-    private int dice1,dice2;
+class Dice {
+    private int dice1, dice2;
 
-    public ArrayList<Integer> findStartingPlayer(Player [] players){
+    ArrayList<Integer> findStartingPlayer(Player[] players) {
         Random rand = new Random();
         ArrayList<Integer> rollStartRolls = new ArrayList<>();
 
-        do{
-            dice1 = rand.nextInt(6)+1;
-            dice2 = rand.nextInt(6)+1;
+        do {
+            dice1 = rand.nextInt(6) + 1;
+            dice2 = rand.nextInt(6) + 1;
 
             rollStartRolls.add(dice1);
             rollStartRolls.add(dice2);
 
-            if(dice1 > dice2){
+            if (dice1 > dice2) {
                 Classes.Board.currentTurn = players[0].getColor();
                 /*System.out.println(players[0].getColor());
                 System.out.println(Classes.Board.currentTurn.getValue());*/
-            }
-            else if(dice2 > dice1){
+            } else if (dice2 > dice1) {
                 Classes.Board.currentTurn = players[1].getColor();
                 System.out.println(players[1].getColor());
             }
-        }while(dice1 == dice2);
+        } while (dice1 == dice2);
 
         return rollStartRolls;
     }
 
-    public void roll(){
+    void roll() {
         Random rand = new Random();
-        dice1 = rand.nextInt(6)+1;
-        dice2 = rand.nextInt(6)+1;
+        dice1 = rand.nextInt(6) + 1;
+        dice2 = rand.nextInt(6) + 1;
     }
 
-    public int getDice1(){
+    int getDice1() {
         return dice1;
     }
-    public int getDice2(){
+
+    int getDice2() {
         return dice2;
     }
 }

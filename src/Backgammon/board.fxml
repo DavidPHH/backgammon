@@ -10,13 +10,13 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane id="board" fx:id="paneId" minHeight="715.0" minWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Backgammon.Controller">
+<GridPane id="board0" fx:id="paneId" minHeight="715.0" minWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Backgammon.Controller">
 
     <!-- Q1 -->
     <GridPane id="Q1" fx:id="Q1" prefHeight="325.0" prefWidth="400.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
-      <GridPane.margin>
-         <Insets left="20.0" top="15.0" />
-      </GridPane.margin>
+        <GridPane.margin>
+            <Insets left="20.0" top="15.0" />
+        </GridPane.margin>
         <VBox onMouseClicked="#click" spacing="-20" GridPane.columnIndex="0" />
         <VBox onMouseClicked="#click" spacing="-20" GridPane.columnIndex="1" />
         <VBox alignment="TOP_CENTER" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="2" />
@@ -55,9 +55,9 @@
         <rowConstraints>
             <RowConstraints percentHeight="90" />
         </rowConstraints>
-      <GridPane.margin>
-         <Insets left="5.0" top="15.0" />
-      </GridPane.margin>
+        <GridPane.margin>
+            <Insets left="5.0" top="15.0" />
+        </GridPane.margin>
 
     </GridPane>
 
@@ -65,7 +65,7 @@
     <!-- Q3 -->
     <GridPane id="Q3" fx:id="Q3" prefHeight="325.0" prefWidth="400.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
         <GridPane.margin>
-         <Insets left="20.0" right="5.0" />
+            <Insets left="20.0" right="5.0" />
         </GridPane.margin>
 
         <VBox alignment="BOTTOM_LEFT" onMouseClicked="#click" spacing="-20" GridPane.columnIndex="0" />
@@ -85,9 +85,9 @@
         <rowConstraints>
             <RowConstraints percentHeight="100" />
         </rowConstraints>
-      <padding>
-         <Insets bottom="20.0" />
-      </padding>
+        <padding>
+            <Insets bottom="20.0" />
+        </padding>
 
     </GridPane>
 
@@ -110,9 +110,9 @@
         <rowConstraints>
             <RowConstraints percentHeight="100" />
         </rowConstraints>
-      <padding>
-         <Insets bottom="20.0" />
-      </padding>
+        <padding>
+            <Insets bottom="20.0" />
+        </padding>
     </GridPane>
 
     <!-- Bar -->
@@ -132,9 +132,9 @@
 
     <!-- Bearoff -->
     <GridPane id="Bearoff" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.rowSpan="2">
-      <GridPane.margin>
-         <Insets left="15.0" />
-      </GridPane.margin>
+        <GridPane.margin>
+            <Insets left="15.0" />
+        </GridPane.margin>
         <VBox fx:id="whiteBearOffVBox" alignment="TOP_CENTER" spacing="-20" GridPane.rowIndex="0" />
         <VBox id="diceBox" fx:id="doubleBox" alignment="CENTER" maxHeight="80" maxWidth="80" spacing="-20" style="/*-fx-background-color: #f200e1; -fx-opacity: 0.5;*/" GridPane.rowIndex="1" />
         <VBox fx:id="blackBearOffVBox" alignment="BOTTOM_CENTER" spacing="-20" GridPane.rowIndex="2" />
@@ -152,19 +152,27 @@
     <!-- User input text field -->
     <TextField id="pCommand" fx:id="pCommands" onAction="#onEnter" prefHeight="30" prefWidth="300" promptText="Input your commands here" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
 
-    <TextArea id="displayArea" fx:id="gameInfo" editable="false" maxWidth="350" minHeight="610" prefWidth="300"
-              GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1"
-              GridPane.rowSpan="2" GridPane.valignment="TOP" wrapText="true" />
+    <TextArea id="displayArea" fx:id="gameInfo" editable="false" maxWidth="350" minHeight="610" prefWidth="300" wrapText="true" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="TOP" />
 
     <!-- Button -->
 
     <GridPane id="scoreInfo" style="/*-fx-background-color: #f200e1; -fx-opacity: 0.5;*/" GridPane.columnSpan="4" GridPane.rowIndex="0" GridPane.rowSpan="1">
-        <HBox id="players" fx:id="playerOne" GridPane.columnIndex="0" />
-        <HBox id="players" fx:id="playerTwo" GridPane.columnIndex="2" />
+        <HBox id="players" fx:id="playerOne" GridPane.columnIndex="0">
+            <padding>
+                <Insets top="5.0" />
+            </padding></HBox>
+        <HBox id="players" fx:id="playerTwo" GridPane.columnIndex="2">
+            <padding>
+                <Insets top="5.0" />
+            </padding>
+            <GridPane.margin>
+                <Insets />
+            </GridPane.margin></HBox>
         <Button id="infoBut" fx:id="infoButton" onAction="#infoB" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
-         <GridPane.margin>
-            <Insets right="10.0" />
-         </GridPane.margin></Button>
+            <GridPane.margin>
+                <Insets right="10.0" />
+            </GridPane.margin>
+        </Button>
 
         <columnConstraints>
             <ColumnConstraints percentWidth="42" />
@@ -172,20 +180,20 @@
             <ColumnConstraints percentWidth="40.5" />
             <ColumnConstraints percentWidth="11.5" />
         </columnConstraints>
-      <rowConstraints>
-         <RowConstraints />
-      </rowConstraints>
+        <rowConstraints>
+            <RowConstraints />
+        </rowConstraints>
     </GridPane>
 
-   <columnConstraints>
-      <ColumnConstraints percentWidth="42" />
-      <ColumnConstraints percentWidth="6" />
-      <ColumnConstraints percentWidth="40.5" />
-      <ColumnConstraints percentWidth="11.5" />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints percentHeight="9.090" />
-      <RowConstraints percentHeight="45.45" />
-      <RowConstraints percentHeight="45.45" />
-   </rowConstraints>
+    <columnConstraints>
+        <ColumnConstraints percentWidth="42" />
+        <ColumnConstraints percentWidth="6" />
+        <ColumnConstraints percentWidth="40.5" />
+        <ColumnConstraints percentWidth="11.5" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints percentHeight="9.090" />
+        <RowConstraints percentHeight="45.45" />
+        <RowConstraints percentHeight="45.45" />
+    </rowConstraints>
 </GridPane>

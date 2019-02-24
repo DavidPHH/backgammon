@@ -1,47 +1,56 @@
-#board {
+#board0 {
     -fx-background-image: url("res/board.png");
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
 }
 
-#displayArea{
+#board1 {
+    -fx-background-image: url("res/board2.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+#displayArea {
     -fx-opacity: .65;
     -fx-border-color: transparent;
     -fx-text-fill: black;
     -fx-font-size: 15;
-    -fx-effect: dropshadow( one-pass-box , black , 15 , 0.0 , 0 , 0)
+    -fx-effect: dropshadow(one-pass-box, black, 15, 0.0, 0, 0)
 }
 
-#displayArea .content{
-    -fx-background-color: rgba(178, 169, 149,0.4);
+#displayArea .content {
+    -fx-background-color: rgba(178, 169, 149, 0.4);
 }
-#displayArea:hover{
+
+#displayArea:hover {
     -fx-opacity: .90;
 }
 
-#pCommand{
-    -fx-opacity:.55;
+#pCommand {
+    -fx-opacity: .55;
     -fx-background-color: grey;
     -fx-border-color: white;
     -fx-border-width: 3px;
-    -fx-text-fill:white;
+    -fx-text-fill: white;
 }
 
-#infoBut{
+#infoBut {
     -fx-background-color: transparent;
     -fx-graphic: url("res/info.png");
 }
-#infoBut:pressed{
+
+#infoBut:pressed {
     -fx-opacity: .3;
 }
-#infoBut:hover{
-    -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 0 , 0 )
+
+#infoBut:hover {
+    -fx-effect: dropshadow(one-pass-box, black, 8, 0.0, 0, 0)
 }
 
 /* Styling for the player area */
-#players{
+#players {
     -fx-text-alignment: center;
-    -fx-text-fill:darkgrey;
+    -fx-text-fill: darkgrey;
     -fx-font-size: 20;
 }
 
@@ -55,18 +64,20 @@
     -fx-font-size: 20;
 }
 
-#playBtn{
+#playBtn {
     -fx-background-color: transparent;
     -fx-graphic: url("res/play.png");
 }
-#playBtn:pressed{
+
+#playBtn:pressed {
     -fx-opacity: .4;
 }
-#playBtn:hover{
-    -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 2 , 2 )
+
+#playBtn:hover {
+    -fx-effect: dropshadow(one-pass-box, black, 8, 0.0, 2, 2)
 }
-#checkBoxBtn{
-    -fx-effect: dropshadow( one-pass-box , white , 5 , 0.0 , 2 , 2 )
-    /* -fx-background-radius: 20;
+
+#checkBoxBtn {
+    -fx-effect: dropshadow(one-pass-box, white, 5, 0.0, 2, 2) /* -fx-background-radius: 20;
      -fx-background-color: rgba(178, 169, 149,0.7); */
 }
