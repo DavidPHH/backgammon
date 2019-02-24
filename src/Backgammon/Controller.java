@@ -76,8 +76,6 @@ public class Controller {
                 "\n3. /quit" +
                 "\n4. /commands" +
                 "\n5. /move (origin: int) (destination: int)" +
-                "\n6. /test (used to move pieces in sprint 1)" +
-                "\n7. /dice for, well, dice stuff" +
                 "\n" +
                 "Finally, click on the 'i' button above to open/close this section.\n");
 
@@ -119,8 +117,6 @@ public class Controller {
                         "\n3. /quit" +
                         "\n4. /commands" +
                         "\n5. /move (origin: int) (destination: int)" +
-                        "\n6. /test (used to move pieces in sprint 1)" +
-                        "\n7. /dice for, well, dice stuff" +
                         "\n");
                 pCommands.setText("");
                 break;
@@ -158,7 +154,6 @@ public class Controller {
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
 
                 }
-
                 gameStart = true;
                 hasRolled = true;
                 break;
@@ -176,27 +171,36 @@ public class Controller {
                                 " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
                     }
                     hasRolled = true;
-                } else {
-                    gameInfo.appendText("\nYou cannot roll again\n");
                 }
+                else if(!gameStart)
+                    gameInfo.appendText("\nUse /start to start the game");
+                else
+                    gameInfo.appendText("\nYou cannot roll again\n");
                 break;
+            // Allows the player to finish the turn and hand control to the next player.
             case "/next":
                 pCommands.setText("");
-                Board.nextTurn();
-                // Printing the new player's turn
-                if (players[0].getColor() == Board.currentTurn)
-                    gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
-                else
-                    gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
-                Board.rollDice();
-
-                /* Printing of the results of the player's roll. This is only here for sprint 2 as required */
-                if (players[1].getColor() == Board.currentTurn) {
-                    gameInfo.appendText("\n" + players[1].getPlayerName() +
-                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
-                } else {
-                    gameInfo.appendText("\n" + players[0].getPlayerName() +
-                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
+                if(!gameStart)
+                    gameInfo.appendText("\nUse /start to start the game");
+                //Ensures the player doesn't skip their turn
+                else if(Board.currentMoves < Board.maxMoves)
+                    gameInfo.appendText("\nYou must use you're allotted amount of moves");
+                else{
+                    Board.nextTurn();
+                    // Printing the new player's turn
+                    if (players[0].getColor() == Board.currentTurn)
+                        gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
+                    else
+                        gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
+                    Board.rollDice();
+                    /* Printing of the results of the player's roll. This is only here for sprint 2 as required */
+                    if (players[1].getColor() == Board.currentTurn) {
+                        gameInfo.appendText("\n" + players[1].getPlayerName() +
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
+                    } else {
+                        gameInfo.appendText("\n" + players[0].getPlayerName() +
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
+                    }
                 }
                 break;
             case "/double":
@@ -252,12 +256,9 @@ public class Controller {
                         }
 
                     }
-
                 }).start();
 
                 break;
-
-
             default:
                 gameInfo.appendText("\n" + pCommands.getText());
                 pCommands.setText("");
