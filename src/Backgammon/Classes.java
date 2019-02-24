@@ -20,6 +20,7 @@ class Classes {
         static Bar BearOff;
         static Dice die = new Dice();
         static int currentMoves;
+        static int maxMoves;
 
         static void setInitialpos(GridPane[] p, VBox[] bar, VBox[] bearOff, GridPane bfxml) {
             boardfxml = bfxml;
@@ -112,11 +113,16 @@ class Classes {
 
         static void rollStart(Player[] players) {
             die.findStartingPlayer(players);
+            boardfxml.setId("board" + currentTurn.getValue());
+            maxMoves = 2;
         }
 
         static void rollDice() {
             die.roll();
-            System.out.println(die.getDice1() + " " + die.getDice2());
+            if(die.getDice1() == die.getDice2())
+                maxMoves = 4;
+            else
+                maxMoves = 2;
         }
     }
 }
@@ -128,8 +134,15 @@ class Move {
 
     Move(int orgStrip, int destStrip, Color color) {
         this.color = color;
-        this.orgStrip = orgStrip;
-        this.destStrip = destStrip;
+        //This is here since the pip numbers change depending on which color's turn it is.
+        if(this.color == Color.BLACK){
+            this.orgStrip = 23-orgStrip;
+            this.destStrip = 23-destStrip;
+        }
+        else{
+            this.orgStrip = orgStrip;
+            this.destStrip = destStrip;
+        }
     }
 
     @Override
@@ -264,6 +277,7 @@ class Dice {
         Random rand = new Random();
         ArrayList<Integer> rollStartRolls = new ArrayList<>();
 
+        //Keeps rolling until both players have different rolls
         do {
             dice1 = rand.nextInt(6) + 1;
             dice2 = rand.nextInt(6) + 1;
@@ -273,8 +287,6 @@ class Dice {
 
             if (dice1 > dice2) {
                 Classes.Board.currentTurn = players[0].getColor();
-                /*System.out.println(players[0].getColor());
-                System.out.println(Classes.Board.currentTurn.getValue());*/
             } else if (dice2 > dice1) {
                 Classes.Board.currentTurn = players[1].getColor();
                 System.out.println(players[1].getColor());
