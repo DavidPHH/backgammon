@@ -222,7 +222,7 @@ class DoublingCube {
     ImageView imgView;
 
     DoublingCube(int num) {
-        String url = "Backgammon/res/diceNum" + num + ".png";   // ultimately plan to make these a little more stylish
+        String url = "Backgammon/res/DoublingCube" + num + ".png";   // ultimately plan to make these a little more stylish
         Image image = new Image(url);                           // thinking white numbers on dark red at the moment
         imgView = new ImageView();
         imgView.setImage(image);
@@ -300,6 +300,8 @@ class Dice {
         Random rand = new Random();
         dice1 = rand.nextInt(6) + 1;
         dice2 = rand.nextInt(6) + 1;
+
+
     }
 
     int getDice1() {

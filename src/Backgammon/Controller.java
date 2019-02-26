@@ -15,7 +15,6 @@ import javafx.scene.layout.*;
 import Backgammon.Classes.Board;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-
 import java.util.Random;
 
 
@@ -137,83 +136,88 @@ public class Controller {
                     Move move = new Move(org, dest, Board.currentTurn);
                     gameInfo.appendText("\n" + move);
                     Board.makeMove(move);
-                } else {
+                }
+                else{
                     gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
                 }
                 break;
             case "/start":
                 pCommands.setText("");
-                if (!gameStart) {
+                if(!gameStart) {
                     Board.rollStart(players);
-                    gameInfo.appendText("\n" + players[0].getPlayerName() + " rolled: " + Board.die.getDice1() + ", "
-                            + players[1].getPlayerName() + " rolled: " + Board.die.getDice2() + "\n");
-                    if (players[0].getColor() == Board.currentTurn)
-                        gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
+                    animateRoll(Board.die.getDice1(), Board.die.getDice2());    //show dice in different place from
+                    //Board.rollDice() to distinguish as different from a normal roll? Like next to the player names?
+                    gameInfo.appendText("\n"+players[0].getPlayerName() +" rolled: "+Board.die.getDice1()+", "
+                            +players[1].getPlayerName()+" rolled: " +Board.die.getDice2()+"\n");
+                    if(players[0].getColor() == Board.currentTurn)
+                        gameInfo.appendText("\n" + players[0].getPlayerName()+"'s turn");
 
                     else
-                        gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
+                        gameInfo.appendText("\n" + players[1].getPlayerName()+"'s turn");
 
                 }
+
                 gameStart = true;
                 hasRolled = true;
                 break;
             case "/roll":
                 pCommands.setText("");
-                if (!hasRolled) {
+                if(!hasRolled){
                     Board.rollDice();
 
+                    animateRoll(Board.die.getDice1(), Board.die.getDice2());
+
                     //Printing of the results of the player's roll
-                    if (players[0].getColor() == Board.currentTurn) {
+                    if(players[0].getColor() == Board.currentTurn)
+                    {
                         gameInfo.appendText("\n" + players[0].getPlayerName() +
-                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
-                    } else {
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                    }
+                    else{
                         gameInfo.appendText("\n" + players[1].getPlayerName() +
-                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
                     }
                     hasRolled = true;
                 }
-                else if(!gameStart)
-                    gameInfo.appendText("\nUse /start to start the game");
-                else
+                else{
                     gameInfo.appendText("\nYou cannot roll again\n");
+                }
                 break;
-            // Allows the player to finish the turn and hand control to the next player.
             case "/next":
                 pCommands.setText("");
-                if(!gameStart)
-                    gameInfo.appendText("\nUse /start to start the game");
-                //Ensures the player doesn't skip their turn
-                else if(Board.currentMoves < Board.maxMoves)
-                    gameInfo.appendText("\nYou must use you're allotted amount of moves");
+                Board.nextTurn();
+                // Printing the new player's turn
+                if(players[0].getColor() == Board.currentTurn)
+                    gameInfo.appendText("\n" + players[0].getPlayerName()+"'s turn");
+                else
+                    gameInfo.appendText("\n" + players[1].getPlayerName()+"'s turn");
+                Board.rollDice();
+                animateRoll(Board.die.getDice1(), Board.die.getDice2());
+
+                /* Printing of the results of the player's roll. This is only here for sprint 2 as required */
+                if(players[1].getColor() == Board.currentTurn)
+                {
+                    gameInfo.appendText("\n" + players[1].getPlayerName() +
+                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                }
                 else{
-                    Board.nextTurn();
-                    // Printing the new player's turn
-                    if (players[0].getColor() == Board.currentTurn)
-                        gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
-                    else
-                        gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
-                    Board.rollDice();
-                    /* Printing of the results of the player's roll. This is only here for sprint 2 as required */
-                    if (players[1].getColor() == Board.currentTurn) {
-                        gameInfo.appendText("\n" + players[1].getPlayerName() +
-                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
-                    } else {
-                        gameInfo.appendText("\n" + players[0].getPlayerName() +
-                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
-                    }
+                    gameInfo.appendText("\n" + players[0].getPlayerName() +
+                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
                 }
                 break;
             case "/double":
-                if (doubleBox.getChildren().isEmpty()) {
+                if(doubleBox.getChildren().isEmpty()) {
                     doubleBox.getChildren().add(new DoublingCube().imgView);
                     currentDoublingCube = 2;
-                } else if (currentDoublingCube < 64) {
+                }else if (currentDoublingCube<64){
                     doubleBox.getChildren().remove(0);
                     currentDoublingCube *= 2;
                     doubleBox.getChildren().add(new DoublingCube(currentDoublingCube).imgView);
-                } else {
-                    System.out.println("Can't double anymore");  //I'm assuming we're limiting ourselves to what fits on a normal die
-                }                                               //and not letting the players keep doubling as much as they want
+                }else{
+                    System.out.println("Can't double anymore");
+                    doubleBox.getChildren().remove(0);     //I'm assuming we're limiting ourselves to what fits on a normal die
+                }                                               //and not letting the players keep doubling as much as they want,
+                                                               //so that final remove() is only temporary, for demonstration purposes
                 break;
             case "/test":       //produces IndexOutOfBoundsException when running too many at once
                 //pCommands.setText("");
@@ -224,20 +228,20 @@ public class Controller {
                 }).start();
                 break;
             case "/dice":
-                Random rand = new Random();
-                DiceFace[] diceOne = new DiceFace[7];       //combine both into one 2d array
-                DiceFace[] diceTwo = new DiceFace[7];      // no particular reason it's 7, other than that's just what I
+                /*Random rand = new Random();
+                DiceFace[] dice1s = new DiceFace[7];       //combine both into one 2d array
+                DiceFace[] dice2s = new DiceFace[7];      // no particular reason it's 7, other than that's just what I
                 new Thread(() -> {                      // felt looked best
                     int n;
-                    for (int i = 0; i < 7; i++) {
+                    for (int i = 0; i < 7 ; i++) {             //make '7' into named variable?
                         do {                                        // included just so it wouldn't generate
                             n = rand.nextInt(6) + 1;                // repeat numbers in a row
-                        } while (i > 0 && n == diceOne[i - 1].number);
-                        diceOne[i] = new DiceFace(n);
+                        } while (i > 0 && n == dice1s[i - 1].number);
+                        dice1s[i] = new DiceFace(n);
                         do {                                        // included just so it wouldn't generate
                             n = rand.nextInt(6) + 1;                // repeat numbers in a row
-                        } while (i > 0 && n == diceTwo[i - 1].number);
-                        diceTwo[i] = new DiceFace(n);
+                        } while (i > 0 && n == dice2s[i - 1].number);
+                        dice2s[i] = new DiceFace(n);
                     }
 
                     for (int i = 0; i < 7; i++) {
@@ -246,17 +250,17 @@ public class Controller {
                                 Platform.runLater(() -> diceBox.getChildren().remove(0, 2));    // removes existing dice
                             int finalI = i;   //Without this you get the error "Variable used in lambda expression should be final or effectively final"
                             //Before this was avoided by using a forEach loop, but can't really do that now with two dice arrays involved
-                            Platform.runLater(() -> diceBox.getChildren().add(diceOne[finalI].imgView));
-                            Platform.runLater(() -> diceBox.getChildren().add(diceTwo[finalI].imgView));
-                            Thread.sleep(100 + (60 * i));   // pauses for a longer amount of time after each change
-                            if (i != diceOne.length - 1)
-                                Platform.runLater(() -> diceBox.getChildren().remove(0, 2)); // doesn't remove the final result
+                            Platform.runLater(() -> diceBox.getChildren().add(dice1s[finalI].imgView));
+                            Platform.runLater(() -> diceBox.getChildren().add(dice2s[finalI].imgView));
+                            Thread.sleep(150 + (50*i));   // pauses for a longer amount of time after each change
+                            if(i!=dice1s.length-1)
+                                Platform.runLater(() ->  diceBox.getChildren().remove(0, 2)); // doesn't remove the final result
                         } catch (InterruptedException e1) {
                             e1.printStackTrace();
                         }
 
                     }
-                }).start();
+                }).start();*/
 
                 break;
             default:
@@ -327,5 +331,57 @@ public class Controller {
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void animateRoll(int n1, int n2){
+        Random rand = new Random();
+        DiceFace[] dice1s = new DiceFace[7];       //combine both into one 2d array
+        DiceFace[] dice2s = new DiceFace[7];      // no particular reason it's 7, other than that's just what I felt looked best
+
+        dice1s[6] = new DiceFace(n1);   //making sure final images match up with numbers printed to info board
+        dice2s[6] = new DiceFace(n2);
+
+        new Thread(() -> {
+            int n;
+            for (int i = 5; i >= 0 ; i--) {             //use named named variable instead of all these 5/6/7's?
+                do {                                        // included just so it wouldn't generate
+                    n = rand.nextInt(6) + 1;         // repeat numbers in a row
+                } while (n == dice1s[i + 1].number);
+                dice1s[i] = new DiceFace(n);
+                do {                                        // included just so it wouldn't generate
+                    n = rand.nextInt(6) + 1;         // repeat numbers in a row
+                } while (n == dice2s[i + 1].number);
+                dice2s[i] = new DiceFace(n);
+            }
+
+            // Fills backwards so that the no repeat numbers logic would still work when we give it a definite final roll outcome
+            //i.e. a preset dice1s[6] and dice2s[6]
+
+            for (int i = 0; i < 7; i++) {
+                try {
+                    if (i == 0 && !diceBox.getChildren().isEmpty())                           // if they're already there removes existing dice
+                        Platform.runLater(() -> diceBox.getChildren().remove(0, diceBox.getChildren().size()));
+                    int finalI = i;   //Without this you get the error "Variable used in lambda expression should be final or effectively final"
+                    //Before this was avoided by using a forEach loop, but can't really do that now with two dice arrays involved
+                    Platform.runLater(() -> diceBox.getChildren().add(dice1s[finalI].imgView));
+                    Platform.runLater(() -> diceBox.getChildren().add(dice2s[finalI].imgView));
+                    Thread.sleep(150 + (40*i));   // pauses for a longer amount of time after each change
+                    if(i!=dice1s.length-1)
+                        Platform.runLater(() ->  diceBox.getChildren().remove(0, 2)); // doesn't remove the final result
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+            if (dice1s[6].number == dice2s[6].number) {             //when it's doubles it shows two extra copies of the number
+                DiceFace extra1 = new DiceFace(dice1s[6].number);
+                DiceFace extra2 = new DiceFace(dice2s[6].number);   //necessary because can't add duplicate imgViews
+                Platform.runLater(() -> diceBox.getChildren().addAll(extra1.imgView, extra2.imgView));
+            }
+
+
+        }).start();
+
+
     }
 }
