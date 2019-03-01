@@ -168,8 +168,7 @@ public class Controller {
                     animateRoll(Board.die.getDice1(), Board.die.getDice2());
 
                     //Printing of the results of the player's roll
-                    if(players[0].getColor() == Board.currentTurn)
-                    {
+                    if(players[0].getColor() == Board.currentTurn){
                         gameInfo.appendText("\n" + players[0].getPlayerName() +
                                 " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
                     }
@@ -185,24 +184,31 @@ public class Controller {
                 break;
             case "/next":
                 pCommands.setText("");
-                Board.nextTurn();
-                // Printing the new player's turn
-                if(players[0].getColor() == Board.currentTurn)
-                    gameInfo.appendText("\n" + players[0].getPlayerName()+"'s turn");
-                else
-                    gameInfo.appendText("\n" + players[1].getPlayerName()+"'s turn");
-                Board.rollDice();
-                animateRoll(Board.die.getDice1(), Board.die.getDice2());
-
-                /* Printing of the results of the player's roll. This is only here for sprint 2 as required */
-                if(players[1].getColor() == Board.currentTurn)
-                {
-                    gameInfo.appendText("\n" + players[1].getPlayerName() +
-                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
-                }
+                if(!gameStart)
+                    gameInfo.appendText("\nUse /start to start the game");
+                    //Ensures the player doesn't skip their turn
+                else if(Board.currentMoves < Board.maxMoves)
+                    gameInfo.appendText("\nYou must use you're allotted amount of moves");
                 else{
-                    gameInfo.appendText("\n" + players[0].getPlayerName() +
-                            " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                    Board.nextTurn();
+                    // Printing the new player's turn
+                    if(players[0].getColor() == Board.currentTurn)
+                        gameInfo.appendText("\n" + players[0].getPlayerName()+"'s turn");
+                    else
+                        gameInfo.appendText("\n" + players[1].getPlayerName()+"'s turn");
+                    Board.rollDice();
+                    animateRoll(Board.die.getDice1(), Board.die.getDice2());
+
+                    /* Printing of the results of the player's roll. This is only here for sprint 2 as required */
+                    if(players[1].getColor() == Board.currentTurn)
+                    {
+                        gameInfo.appendText("\n" + players[1].getPlayerName() +
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                    }
+                    else{
+                        gameInfo.appendText("\n" + players[0].getPlayerName() +
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                    }
                 }
                 break;
             case "/double":
