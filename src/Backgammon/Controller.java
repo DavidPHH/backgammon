@@ -81,8 +81,7 @@ public class Controller {
         // Initialising the boolean variables
         vis = true;
         gameStart = false;
-        // TODO in sprint 3, change hasRolled to initialise to false
-        hasRolled = true;
+        hasRolled = false;
 
         playerOne.getChildren().add(new Text(players[0].getPlayerName() + "\nPips:" + players[0].getPipsLeft()));
         playerOne.getChildren().add(new ImageView(new Image("Backgammon/res/piece-white.png", 25, 25, false, false)));
@@ -121,7 +120,7 @@ public class Controller {
                 break;
             case "/move":
                 pCommands.setText("");
-                if (Board.currentMoves < 2) {
+                if (Board.currentMoves < Board.maxMoves) {
                     String[] splot = inputString.split(" ");
                     int org, dest;
                     try {
@@ -136,24 +135,22 @@ public class Controller {
                     Move move = new Move(org, dest, Board.currentTurn);
                     gameInfo.appendText("\n" + move);
                     Board.makeMove(move);
-                }
-                else{
+                } else {
                     gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
                 }
                 break;
             case "/start":
                 pCommands.setText("");
-                if(!gameStart) {
+                if (!gameStart) {
                     Board.rollStart(players);
                     animateRoll(Board.die.getDice1(), Board.die.getDice2());    //show dice in different place from
-                    //Board.rollDice() to distinguish as different from a normal roll? Like next to the player names?
-                    gameInfo.appendText("\n"+players[0].getPlayerName() +" rolled: "+Board.die.getDice1()+", "
-                            +players[1].getPlayerName()+" rolled: " +Board.die.getDice2()+"\n");
-                    if(players[0].getColor() == Board.currentTurn)
-                        gameInfo.appendText("\n" + players[0].getPlayerName()+"'s turn");
+                    gameInfo.appendText("\n" + players[0].getPlayerName() + " rolled: " + Board.die.getDice1() + ", "
+                            + players[1].getPlayerName() + " rolled: " + Board.die.getDice2() + "\n");
+                    if (players[0].getColor() == Board.currentTurn)
+                        gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
 
                     else
-                        gameInfo.appendText("\n" + players[1].getPlayerName()+"'s turn");
+                        gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
 
                 }
 
@@ -162,68 +159,54 @@ public class Controller {
                 break;
             case "/roll":
                 pCommands.setText("");
-                if(!hasRolled){
+                if (!hasRolled) {
                     Board.rollDice();
 
                     animateRoll(Board.die.getDice1(), Board.die.getDice2());
 
                     //Printing of the results of the player's roll
-                    if(players[0].getColor() == Board.currentTurn){
+                    if (players[0].getColor() == Board.currentTurn) {
                         gameInfo.appendText("\n" + players[0].getPlayerName() +
-                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
-                    }
-                    else{
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
+                    } else {
                         gameInfo.appendText("\n" + players[1].getPlayerName() +
-                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
+                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
                     }
                     hasRolled = true;
-                }
-                else{
+                } else {
                     gameInfo.appendText("\nYou cannot roll again\n");
                 }
                 break;
             case "/next":
                 pCommands.setText("");
-                if(!gameStart)
+                if (!gameStart)
                     gameInfo.appendText("\nUse /start to start the game");
                     //Ensures the player doesn't skip their turn
-                else if(Board.currentMoves < Board.maxMoves)
+                else if (Board.currentMoves < Board.maxMoves)
                     gameInfo.appendText("\nYou must use you're allotted amount of moves");
-                else{
+                else {
                     Board.nextTurn();
                     // Printing the new player's turn
-                    if(players[0].getColor() == Board.currentTurn)
-                        gameInfo.appendText("\n" + players[0].getPlayerName()+"'s turn");
+                    if (players[0].getColor() == Board.currentTurn)
+                        gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
                     else
-                        gameInfo.appendText("\n" + players[1].getPlayerName()+"'s turn");
-                    Board.rollDice();
-                    animateRoll(Board.die.getDice1(), Board.die.getDice2());
-
-                    /* Printing of the results of the player's roll. This is only here for sprint 2 as required */
-                    if(players[1].getColor() == Board.currentTurn)
-                    {
-                        gameInfo.appendText("\n" + players[1].getPlayerName() +
-                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
-                    }
-                    else{
-                        gameInfo.appendText("\n" + players[0].getPlayerName() +
-                                " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2()+"\n");
-                    }
+                        gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
+                    hasRolled = false;
                 }
                 break;
             case "/double":
-                if(doubleBox.getChildren().isEmpty()) {
+                if (doubleBox.getChildren().isEmpty()) {
                     doubleBox.getChildren().add(new DoublingCube().imgView);
                     currentDoublingCube = 2;
-                }else if (currentDoublingCube<64){
+                } else if (currentDoublingCube < 64) {
                     doubleBox.getChildren().remove(0);
                     currentDoublingCube *= 2;
                     doubleBox.getChildren().add(new DoublingCube(currentDoublingCube).imgView);
-                }else{
+                } else {
                     System.out.println("Can't double anymore");
-                    doubleBox.getChildren().remove(0);     //I'm assuming we're limiting ourselves to what fits on a normal die
-                }                                               //and not letting the players keep doubling as much as they want,
-                                                               //so that final remove() is only temporary, for demonstration purposes
+                    doubleBox.getChildren().remove(0);     // I'm assuming we're limiting ourselves to what fits on a normal die
+                }                                               // and not letting the players keep doubling as much as they want,
+                // so that final remove() is only temporary, for demonstration purposes
                 break;
             case "/test":       //produces IndexOutOfBoundsException when running too many at once
                 //pCommands.setText("");
@@ -232,6 +215,11 @@ public class Controller {
                     test(Color.BLACK);
                     test(Color.WHITE);
                 }).start();
+                break;
+            case "/cheat":      // Cheat commands cleans the board, then "re-initialises" it to the new board
+                Board.clearBoard();
+                Board.cheat();
+                gameInfo.appendText("\nActivated cheat board. Please roll again");
                 break;
             case "/dice":
                 /*Random rand = new Random();
@@ -339,7 +327,7 @@ public class Controller {
         }
     }
 
-    private void animateRoll(int n1, int n2){
+    private void animateRoll(int n1, int n2) {
         Random rand = new Random();
         DiceFace[] dice1s = new DiceFace[7];       //combine both into one 2d array
         DiceFace[] dice2s = new DiceFace[7];      // no particular reason it's 7, other than that's just what I felt looked best
@@ -349,7 +337,7 @@ public class Controller {
 
         new Thread(() -> {
             int n;
-            for (int i = 5; i >= 0 ; i--) {             //use named named variable instead of all these 5/6/7's?
+            for (int i = 5; i >= 0; i--) {             //use named named variable instead of all these 5/6/7's?
                 do {                                        // included just so it wouldn't generate
                     n = rand.nextInt(6) + 1;         // repeat numbers in a row
                 } while (n == dice1s[i + 1].number);
@@ -371,9 +359,9 @@ public class Controller {
                     //Before this was avoided by using a forEach loop, but can't really do that now with two dice arrays involved
                     Platform.runLater(() -> diceBox.getChildren().add(dice1s[finalI].imgView));
                     Platform.runLater(() -> diceBox.getChildren().add(dice2s[finalI].imgView));
-                    Thread.sleep(150 + (40*i));   // pauses for a longer amount of time after each change
-                    if(i!=dice1s.length-1)
-                        Platform.runLater(() ->  diceBox.getChildren().remove(0, 2)); // doesn't remove the final result
+                    Thread.sleep(150 + (40 * i));   // pauses for a longer amount of time after each change
+                    if (i != dice1s.length - 1)
+                        Platform.runLater(() -> diceBox.getChildren().remove(0, 2)); // doesn't remove the final result
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }

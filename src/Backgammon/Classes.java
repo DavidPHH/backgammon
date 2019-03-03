@@ -124,6 +124,50 @@ class Classes {
             else
                 maxMoves = 2;
         }
+
+        static void cheat(){
+            clearBoard();
+
+            Piece [] black = new Piece[15];
+            Piece [] white = new Piece[15];
+
+            for(int i = 0;i < 15;i++){
+                black[i] = new Piece(Color.BLACK);
+                white[i] = new Piece(Color.WHITE);
+            }
+
+            stripArray[0].insert(white,0,2);
+            stripArray[2].insert(white,3,5);
+            stripArray[3].insert(white,6,8);
+            Bar.insert(white,9,11);
+            BearOff.insert(white,12,14);
+
+            for(int i = 23,j = 0;i >= 19;i--,j = j+2){
+                stripArray[i].insert(black[j]);
+                stripArray[i].insert(black[j+1]);
+            }
+            Bar.insert(black,10,12);
+            BearOff.insert(black,13,14);
+
+        }
+
+        static void clearBoard(){
+            // Remove all pieces in the board itself
+            for(int i = 0;i < stripArray.length;i++){
+                while(stripArray[i].quantity != 0)
+                    stripArray[i].pop();
+            }
+
+            // Remove all pieces in the bar and bear off
+            while(Bar.piecesIn(Color.WHITE) != 0)
+                Bar.remove(Color.WHITE);
+            while(Bar.piecesIn(Color.BLACK) != 0)
+                Bar.remove(Color.BLACK);
+            while(BearOff.piecesIn(Color.WHITE) != 0)
+                BearOff.remove(Color.WHITE);
+            while(BearOff.piecesIn(Color.BLACK) != 0)
+                BearOff.remove(Color.BLACK);
+        }
     }
 }
 
@@ -254,6 +298,12 @@ class Bar {
             pieces[i] = new ArrayList<>();
     }
 
+    void insert(Piece[] pieces, int start, int stop) {
+        for (int i = start; i <= stop; i++) {
+            insert(pieces[i]);
+        }
+    }
+
     void insert(Piece piece) {
         int color = piece.color.getValue();
         pieces[color].add(piece);
@@ -267,6 +317,14 @@ class Bar {
             return;
         pieces[x].remove(len - 1);
         boxes[x].getChildren().remove(len - 1);
+    }
+    
+    int piecesIn(Color color){
+        if(color == Color.WHITE)
+            return pieces[Color.WHITE.getValue()].size();
+        else{
+            return pieces[Color.BLACK.getValue()].size();
+        }
     }
 }
 
