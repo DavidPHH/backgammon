@@ -66,8 +66,8 @@ public class Controller {
         players = Main.players;
         VBox[] bar = {whiteBarVBox, blackBarVBox};
         VBox[] bearOff = {whiteBearOffVBox, blackBearOffVBox};
-        GridPane[] quadrants = {Q2, Q1, Q3, Q4};
-        Board.setInitialpos(quadrants, bar, bearOff, paneId);
+        GridPane[] quadrants = {Q2, Q1, Q3, Q4};    //unusual order is deliberate to help with setInitialPos logic
+        Board.setInitialPos(quadrants, bar, bearOff, paneId);
         // Default gameInfo string to be displayed
         gameInfo.setText("\nGame commands:" +
                 "\n1. /start to start the game" +
@@ -75,6 +75,7 @@ public class Controller {
                 "\n3. /quit" +
                 "\n4. /commands" +
                 "\n5. /move (origin: int) (destination: int)" +
+                "\n6. /valid (origin: int) (destination: int)" +
                 "\n" +
                 "Finally, click on the 'i' button above to open/close this section.\n");
 
@@ -115,8 +116,20 @@ public class Controller {
                         "\n3. /quit" +
                         "\n4. /commands" +
                         "\n5. /move (origin: int) (destination: int)" +
+                        "\n6. /valid (origin: int) (destination: int)" +
                         "\n");
                 pCommands.setText("");
+                break;
+            case "/valid":
+                /*
+                Move[] validMoves = Board.findAllValidMoves(Board.currentTurn);
+                int i=0;
+                System.out.println(Board.currentTurn.toString() + validMoves[i].color);*/
+                String[] splot2 = inputString.split(" ");
+                System.out.println(Board.valid(new Move(Integer.parseInt(splot2[1]), Integer.parseInt(splot2[2]), Board.currentTurn)));
+                //for (Move m : validMoves) {
+                //}
+
                 break;
             case "/move":
                 pCommands.setText("");
@@ -144,6 +157,7 @@ public class Controller {
                 if (!gameStart) {
                     Board.rollStart(players);
                     animateRoll(Board.die.getDice1(), Board.die.getDice2());    //show dice in different place from
+                    //Board.rollDice() to distinguish as different from a normal roll? Like next to the player names?
                     gameInfo.appendText("\n" + players[0].getPlayerName() + " rolled: " + Board.die.getDice1() + ", "
                             + players[1].getPlayerName() + " rolled: " + Board.die.getDice2() + "\n");
                     if (players[0].getColor() == Board.currentTurn)
@@ -204,9 +218,9 @@ public class Controller {
                     doubleBox.getChildren().add(new DoublingCube(currentDoublingCube).imgView);
                 } else {
                     System.out.println("Can't double anymore");
-                    doubleBox.getChildren().remove(0);     // I'm assuming we're limiting ourselves to what fits on a normal die
-                }                                               // and not letting the players keep doubling as much as they want,
-                // so that final remove() is only temporary, for demonstration purposes
+                    doubleBox.getChildren().remove(0);     //I'm assuming we're limiting ourselves to what fits on a normal die
+                }                                               //and not letting the players keep doubling as much as they want,
+                                                               //so that final remove() is only temporary, for demonstration purposes
                 break;
             case "/test":       //produces IndexOutOfBoundsException when running too many at once
                 //pCommands.setText("");
@@ -221,42 +235,7 @@ public class Controller {
                 Board.cheat();
                 gameInfo.appendText("\nActivated cheat board. Please roll again");
                 break;
-            case "/dice":
-                /*Random rand = new Random();
-                DiceFace[] dice1s = new DiceFace[7];       //combine both into one 2d array
-                DiceFace[] dice2s = new DiceFace[7];      // no particular reason it's 7, other than that's just what I
-                new Thread(() -> {                      // felt looked best
-                    int n;
-                    for (int i = 0; i < 7 ; i++) {             //make '7' into named variable?
-                        do {                                        // included just so it wouldn't generate
-                            n = rand.nextInt(6) + 1;                // repeat numbers in a row
-                        } while (i > 0 && n == dice1s[i - 1].number);
-                        dice1s[i] = new DiceFace(n);
-                        do {                                        // included just so it wouldn't generate
-                            n = rand.nextInt(6) + 1;                // repeat numbers in a row
-                        } while (i > 0 && n == dice2s[i - 1].number);
-                        dice2s[i] = new DiceFace(n);
-                    }
 
-                    for (int i = 0; i < 7; i++) {
-                        try {
-                            if (i == 0 && !diceBox.getChildren().isEmpty())                           // if they're already there
-                                Platform.runLater(() -> diceBox.getChildren().remove(0, 2));    // removes existing dice
-                            int finalI = i;   //Without this you get the error "Variable used in lambda expression should be final or effectively final"
-                            //Before this was avoided by using a forEach loop, but can't really do that now with two dice arrays involved
-                            Platform.runLater(() -> diceBox.getChildren().add(dice1s[finalI].imgView));
-                            Platform.runLater(() -> diceBox.getChildren().add(dice2s[finalI].imgView));
-                            Thread.sleep(150 + (50*i));   // pauses for a longer amount of time after each change
-                            if(i!=dice1s.length-1)
-                                Platform.runLater(() ->  diceBox.getChildren().remove(0, 2)); // doesn't remove the final result
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
-
-                    }
-                }).start();*/
-
-                break;
             default:
                 gameInfo.appendText("\n" + pCommands.getText());
                 pCommands.setText("");

@@ -21,8 +21,7 @@ class Classes {
         static Dice die = new Dice();
         static int currentMoves;
         static int maxMoves;
-
-        static void setInitialpos(GridPane[] p, VBox[] bar, VBox[] bearOff, GridPane bfxml) {
+        static void setInitialPos(GridPane[] p, VBox[] bar, VBox[] bearOff, GridPane bfxml) {
             boardfxml = bfxml;
             Bar = new Bar(bar);
             BearOff = new Bar(bearOff);
@@ -98,10 +97,51 @@ class Classes {
                 return (dest.pieceColor == Color.NONE); // it's an invalid move
             // If the player is moving a piece that isn't his
             return move.color == dest.pieceColor;
+
         }
 
-        static Move[] findAllvalidMoves() { // Maybe change this to some other method, depends what comes in handy
-            return null;
+        static boolean valid(Move move){        //temporary method that takes a move as input and returns whether it's valid or not
+
+            int org = move.orgStrip-1;
+            int dest = move.destStrip-1;
+            int diff = org - dest;
+
+            if (move.orgStrip < 0 || move.destStrip < 0 || move.orgStrip > 23 || move.destStrip > 23) { // can probably be removed later
+                System.out.println("Out of bounds");
+                return false;
+            }
+            if(stripArray[org].pieceColor!=move.color){
+                System.out.println("No " + move.color + " pieces on origin strip " + move.orgStrip);
+                return false;
+            }
+            if(diff != Board.die.getDice1() && diff != Board.die.getDice2() ){
+                System.out.println("Difference between orgStrip and destStrip is " + diff + ", which was not one of the dice rolls");
+                return false;
+            }
+            if(stripArray[dest].pieceColor!=move.color&&stripArray[dest].quantity>1){
+                System.out.println("destStrip is not able to be landed on, as it has more than one of the opponent's pieces on it");
+                return false;
+            }
+            return true;
+        }
+
+        static Move[] findAllValidMoves(Color color) { // Maybe change this to some other method, depends what comes in handy
+            Move[] validMoves = new Move[30];
+            int i = 0;
+            for (Strip aStrip : stripArray) {
+                if (aStrip.pieceColor == color) {
+                    for (Strip bStrip : stripArray) {
+                        Move temp = new Move(aStrip.stripID, bStrip.stripID, color);
+                        if (valid(temp)) {
+                            validMoves[i++] = temp;
+                        }
+
+                    }
+                }
+            }
+
+
+            return validMoves;
         }
 
         static Color nextTurn() {
@@ -266,8 +306,8 @@ class DoublingCube {
     ImageView imgView;
 
     DoublingCube(int num) {
-        String url = "Backgammon/res/DoublingCube" + num + ".png";   // ultimately plan to make these a little more stylish
-        Image image = new Image(url);                           // thinking white numbers on dark red at the moment
+        String url = "Backgammon/res/DoublingCube" + num + ".png";  // deliberately have a little blank space on left side of
+        Image image = new Image(url);                              // image to help line it up with spot on background image
         imgView = new ImageView();
         imgView.setImage(image);
     }
@@ -275,15 +315,6 @@ class DoublingCube {
     DoublingCube() {
         this(2);
     }
-
- /*   public void doubleCurrent(){
-        number *= 2;
-        String url = "Backgammon/res/diceNum" + number + ".png";
-        Image image = new Image(url);
-        imgView = new ImageView();
-        imgView.setImage(image);
-
-    }*/
 }
 
 
