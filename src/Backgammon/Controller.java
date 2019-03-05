@@ -209,18 +209,7 @@ public class Controller {
                 }
                 break;
             case "/double":
-                if (doubleBox.getChildren().isEmpty()) {
-                    doubleBox.getChildren().add(new DoublingCube().imgView);
-                    currentDoublingCube = 2;
-                } else if (currentDoublingCube < 64) {
-                    doubleBox.getChildren().remove(0);
-                    currentDoublingCube *= 2;
-                    doubleBox.getChildren().add(new DoublingCube(currentDoublingCube).imgView);
-                } else {
-                    System.out.println("Can't double anymore");
-                    doubleBox.getChildren().remove(0);     //I'm assuming we're limiting ourselves to what fits on a normal die
-                }                                               //and not letting the players keep doubling as much as they want,
-                                                               //so that final remove() is only temporary, for demonstration purposes
+                doubleStakes();
                 break;
             case "/test":       //produces IndexOutOfBoundsException when running too many at once
                 //pCommands.setText("");
@@ -273,6 +262,26 @@ public class Controller {
             removeColour.play();
         } else
             strip.pop();
+    }
+
+    private void doubleStakes(){
+        if (doubleBox.getChildren().isEmpty()) {
+            doubleBox.getChildren().add(new DoublingCube().imgView);
+            currentDoublingCube = 2;
+        } else if (currentDoublingCube < 64) {
+            doubleBox.getChildren().remove(0);
+            currentDoublingCube *= 2;
+            doubleBox.getChildren().add(new DoublingCube(currentDoublingCube).imgView);
+        } else {
+            System.out.println("Can't double anymore");
+            doubleBox.getChildren().remove(0);     //I'm assuming we're limiting ourselves to what fits on a normal die
+        }                                               //and not letting the players keep doubling as much as they want,
+                                                       //so that final remove() is only temporary, for demonstration purposes
+
+    }
+
+    public void clickToDouble() {
+        doubleStakes();
     }
 
     private void test(Color color) {

@@ -101,14 +101,15 @@ class Classes {
         }
 
         static boolean valid(Move move){        //temporary method that takes a move as input and returns whether it's valid or not
-
+                                                //the reason I made a new one instead of updating validMove() is so that makeMove()
+                                                //(which incorporates validMove) would still reliably be usable even as I tamper with valid()
             int org = move.orgStrip-1;
             int dest = move.destStrip-1;
             int diff = org - dest;
 
-            if (move.orgStrip < 0 || move.destStrip < 0 || move.orgStrip > 23 || move.destStrip > 23) { // can probably be removed later
-                System.out.println("Out of bounds");
-                return false;
+            if (move.orgStrip < 0 || move.destStrip < 0 || move.orgStrip > 23 || move.destStrip > 23) { // can probably be removed later since it
+                System.out.println("Out of bounds");                                                    // will likely only be used in findAllValidMoves()
+                return false;                                                                           // which should naturally stay within those bounds
             }
             if(stripArray[org].pieceColor!=move.color){
                 System.out.println("No " + move.color + " pieces on origin strip " + move.orgStrip);
@@ -125,7 +126,7 @@ class Classes {
             return true;
         }
 
-        static Move[] findAllValidMoves(Color color) { // Maybe change this to some other method, depends what comes in handy
+        static Move[] findAllValidMoves(Color color) {
             Move[] validMoves = new Move[30];
             int i = 0;
             for (Strip aStrip : stripArray) {
@@ -193,9 +194,9 @@ class Classes {
 
         static void clearBoard(){
             // Remove all pieces in the board itself
-            for(int i = 0;i < stripArray.length;i++){
-                while(stripArray[i].quantity != 0)
-                    stripArray[i].pop();
+            for (Strip currentStrip : stripArray) {
+                while (currentStrip.quantity != 0)
+                    currentStrip.pop();
             }
 
             // Remove all pieces in the bar and bear off
