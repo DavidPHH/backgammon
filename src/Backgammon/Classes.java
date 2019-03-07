@@ -100,40 +100,46 @@ class Classes {
 
         }
 
-        static boolean valid(Move move){        //temporary method that takes a move as input and returns whether it's valid or not
-                                                //the reason I made a new one instead of updating validMove() is so that makeMove()
-                                                //(which incorporates validMove) would still reliably be usable even as I tamper with valid()
-            int org = move.orgStrip-1;
-            int dest = move.destStrip-1;
-            int diff = org - dest;
+        static boolean valid(Move move, boolean showErrors){        //temporary method that takes a move as input and returns whether it's valid or not
+                                                                   //the reason I made a new one instead of updating validMove() is so that makeMove()
+                                                                  //(which incorporates validMove) would still reliably be usable even as I tamper with valid()
+            int org = move.orgStrip;
+            int dest = move.destStrip;
+            int displayedDest = (move.color == Color.WHITE) ? (dest+1) : (23-dest)+1;    //yes, math for 23-org+1 could be simplified, but I
+            int displayedOrg = (move.color == Color.WHITE) ? (org+1) : (23-org)+1;      //kept it that way so that it's easier to make sense of,
+            int diff = displayedOrg - displayedDest;                                   //expressing it as a reverse of previous steps applied to it.
 
-            if (move.orgStrip < 0 || move.destStrip < 0 || move.orgStrip > 23 || move.destStrip > 23) { // can probably be removed later since it
-                System.out.println("Out of bounds");                                                    // will likely only be used in findAllValidMoves()
-                return false;                                                                           // which should naturally stay within those bounds
+            if (org < 0 || dest < 0 || org > 23 || dest > 23) {                   // can probably be removed later since it
+                if(showErrors)
+                    System.out.println("Out of bounds");                             // will likely only be used in findAllValidMoves()
+                return false;                                                   // which should naturally stay within those bounds
             }
             if(stripArray[org].pieceColor!=move.color){
-                System.out.println("No " + move.color + " pieces on origin strip " + move.orgStrip);
+                if(showErrors)
+                    System.out.println("No " + move.color + " pieces on origin strip " + displayedOrg);
                 return false;
             }
             if(diff != Board.die.getDice1() && diff != Board.die.getDice2() ){
-                System.out.println("Difference between orgStrip and destStrip is " + diff + ", which was not one of the dice rolls");
+                if(showErrors)
+                    System.out.println("Difference between orgStrip and destStrip is " + diff + ", which was not one of the dice rolls");
                 return false;
             }
             if(stripArray[dest].pieceColor!=move.color&&stripArray[dest].quantity>1){
-                System.out.println("destStrip is not able to be landed on, as it has more than one of the opponent's pieces on it");
+                if(showErrors)
+                    System.out.println("destStrip is not able to be landed on, as it has more than one of the opponent's pieces on it");
                 return false;
             }
             return true;
         }
 
         static Move[] findAllValidMoves(Color color) {
-            Move[] validMoves = new Move[30];
+            Move[] validMoves = new Move[50];
             int i = 0;
             for (Strip aStrip : stripArray) {
                 if (aStrip.pieceColor == color) {
                     for (Strip bStrip : stripArray) {
                         Move temp = new Move(aStrip.stripID, bStrip.stripID, color);
-                        if (valid(temp)) {
+                        if (valid(temp, false)) {
                             validMoves[i++] = temp;
                         }
 
@@ -379,7 +385,7 @@ class Dice {
                 Classes.Board.currentTurn = players[0].getColor();
             } else if (dice2 > dice1) {
                 Classes.Board.currentTurn = players[1].getColor();
-                System.out.println(players[1].getColor());
+                //System.out.println(players[1].getColor());
             }
         } while (dice1 == dice2);
 

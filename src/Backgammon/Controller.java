@@ -121,14 +121,20 @@ public class Controller {
                 pCommands.setText("");
                 break;
             case "/valid":
-                /*
+                String[] splot2 = inputString.split(" ");
+                System.out.println(Board.valid(new Move(Integer.parseInt(splot2[1])-1, Integer.parseInt(splot2[2])-1, Board.currentTurn), true));
+
+
+                break;
+
+            case "/find":
                 Move[] validMoves = Board.findAllValidMoves(Board.currentTurn);
                 int i=0;
-                System.out.println(Board.currentTurn.toString() + validMoves[i].color);*/
-                String[] splot2 = inputString.split(" ");
-                System.out.println(Board.valid(new Move(Integer.parseInt(splot2[1]), Integer.parseInt(splot2[2]), Board.currentTurn)));
-                //for (Move m : validMoves) {
-                //}
+                System.out.println("\n\n" + Board.currentTurn.toString() + " matches " + validMoves[i].color + "\n\n\n");
+
+                for (Move m : validMoves) {
+                    System.out.println(m.color + " can move from " + (m.orgStrip+1) + " to " + (m.destStrip+1));    //why InvocationTargetException?
+                }                                                                                                   //and why different depending on colour?
 
                 break;
             case "/move":
