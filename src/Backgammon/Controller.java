@@ -15,6 +15,7 @@ import javafx.scene.layout.*;
 import Backgammon.Classes.Board;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -128,13 +129,14 @@ public class Controller {
                 break;
 
             case "/find":
-                Move[] validMoves = Board.findAllValidMoves(Board.currentTurn);
-                int i=0;
-                System.out.println("\n\n" + Board.currentTurn.toString() + " matches " + validMoves[i].color + "\n\n\n");
+                ArrayList<Move> validMoves = Board.findAllValidMoves(Board.currentTurn);
 
+                //System.out.println("Just to double-check; \n -- currentTurn: " + Board.currentTurn.toString() + ".\n -- Finding valid moves for: " + validMoves.get(0).color);
+                System.out.println("This comes before the list of moves");
                 for (Move m : validMoves) {
-                    System.out.println(m.color + " can move from " + (m.orgStrip+1) + " to " + (m.destStrip+1));    //why InvocationTargetException?
-                }                                                                                                   //and why different depending on colour?
+                    System.out.println(m.color + " can move from " + (m.orgStrip+1) + " to " + (m.destStrip+1));
+                }                                                                        // why different depending on colour?
+                System.out.println("This comes after the list of moves");
 
                 break;
             case "/move":
@@ -213,6 +215,7 @@ public class Controller {
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
                     hasRolled = false;
                 }
+                diceBox.getChildren().remove(0, diceBox.getChildren().size());
                 break;
             case "/double":
                 doubleStakes();

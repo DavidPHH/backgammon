@@ -110,11 +110,11 @@ class Classes {
             int diff = displayedOrg - displayedDest;                                   //expressing it as a reverse of previous steps applied to it.
 
             if (org < 0 || dest < 0 || org > 23 || dest > 23) {                   // can probably be removed later since it
-                if(showErrors)
-                    System.out.println("Out of bounds");                             // will likely only be used in findAllValidMoves()
-                return false;                                                   // which should naturally stay within those bounds
+                if(showErrors)                                                   // will likely only be used in findAllValidMoves()
+                    System.out.println("Out of bounds");                        // which should naturally stay within those bounds
+                return false;
             }
-            if(stripArray[org].pieceColor!=move.color){
+            if(stripArray[org].pieceColor!=move.color){                         //maybe also remove
                 if(showErrors)
                     System.out.println("No " + move.color + " pieces on origin strip " + displayedOrg);
                 return false;
@@ -132,23 +132,21 @@ class Classes {
             return true;
         }
 
-        static Move[] findAllValidMoves(Color color) {
-            Move[] validMoves = new Move[50];
-            int i = 0;
+        static ArrayList<Move> findAllValidMoves(Color color) {
+            ArrayList<Move> validMovesList = new ArrayList<>();
             for (Strip aStrip : stripArray) {
                 if (aStrip.pieceColor == color) {
                     for (Strip bStrip : stripArray) {
                         Move temp = new Move(aStrip.stripID, bStrip.stripID, color);
                         if (valid(temp, false)) {
-                            validMoves[i++] = temp;
+                            validMovesList.add(temp);
                         }
 
                     }
                 }
             }
 
-
-            return validMoves;
+            return validMovesList;
         }
 
         static Color nextTurn() {
