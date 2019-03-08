@@ -131,12 +131,12 @@ public class Controller {
             case "/find":
                 ArrayList<Move> validMoves = Board.findAllValidMoves(Board.currentTurn);
 
-                //System.out.println("Just to double-check; \n -- currentTurn: " + Board.currentTurn.toString() + ".\n -- Finding valid moves for: " + validMoves.get(0).color);
-                System.out.println("This comes before the list of moves");
+                System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
+                System.out.println("\n-------- List Start --------");
                 for (Move m : validMoves) {
-                    System.out.println(m.color + " can move from " + (m.orgStrip+1) + " to " + (m.destStrip+1));
-                }                                                                        // why different depending on colour?
-                System.out.println("This comes after the list of moves");
+                    System.out.println(m.color + " can move from " + ((m.color==Color.WHITE)?(m.orgStrip+1):(23-m.orgStrip)+1) + " to " + ((m.color==Color.WHITE)?(m.destStrip+1):(23-m.destStrip)+1));
+                }
+                System.out.println("--------- List End ---------");
 
                 break;
             case "/move":
@@ -214,8 +214,8 @@ public class Controller {
                     else
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
                     hasRolled = false;
+                    diceBox.getChildren().remove(0, diceBox.getChildren().size());
                 }
-                diceBox.getChildren().remove(0, diceBox.getChildren().size());
                 break;
             case "/double":
                 doubleStakes();

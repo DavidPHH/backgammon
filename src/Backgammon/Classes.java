@@ -114,7 +114,7 @@ class Classes {
                     System.out.println("Out of bounds");                        // which should naturally stay within those bounds
                 return false;
             }
-            if(stripArray[org].pieceColor!=move.color){                         //maybe also remove
+            if(stripArray[org].pieceColor!=move.color){                         //maybe also remove?
                 if(showErrors)
                     System.out.println("No " + move.color + " pieces on origin strip " + displayedOrg);
                 return false;
@@ -135,7 +135,7 @@ class Classes {
         static ArrayList<Move> findAllValidMoves(Color color) {
             ArrayList<Move> validMovesList = new ArrayList<>();
             for (Strip aStrip : stripArray) {
-                if (aStrip.pieceColor == color) {
+                //if (aStrip.pieceColor == color) {
                     for (Strip bStrip : stripArray) {
                         Move temp = new Move(aStrip.stripID, bStrip.stripID, color);
                         if (valid(temp, false)) {
@@ -143,7 +143,7 @@ class Classes {
                         }
 
                     }
-                }
+                //}
             }
 
             return validMovesList;
