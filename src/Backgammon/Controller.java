@@ -127,6 +127,12 @@ public class Controller {
 
 
                 break;
+            case "/letters":
+                for (int i = 0; i < 80; i++) {
+                    String letterCode = (i<26)?Character.toString((char)('A'+i)):Character.toString((char)('A'+(i/26)-1))+Character.toString((char)('A'+i%26));
+                    System.out.println(letterCode);
+                }
+                break;
 
             case "/find":
                 ArrayList<Move> validMoves = Board.findAllValidMoves(Board.currentTurn);
@@ -134,7 +140,8 @@ public class Controller {
                 System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
                 System.out.println("\n-------- List Start --------");
                 for (Move m : validMoves) {
-                    System.out.println(m.color + " can move from " + ((m.color==Color.WHITE)?(m.orgStrip+1):(23-m.orgStrip)+1) + " to " + ((m.color==Color.WHITE)?(m.destStrip+1):(23-m.destStrip)+1));
+                    // System.out.println(m.color + " can move from " + ((m.color==Color.WHITE)?(m.orgStrip+1):(23-m.orgStrip)+1) + " to " + ((m.color==Color.WHITE)?(m.destStrip+1):(23-m.destStrip)+1));
+                    System.out.println(m.isHitToString());
                 }
                 System.out.println("--------- List End ---------");
 
