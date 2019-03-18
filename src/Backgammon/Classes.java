@@ -14,7 +14,7 @@ class Classes {
 
     static class Board {
         private static GridPane boardfxml;
-        protected static Strip[] stripArray = new Strip[24];
+        static Strip[] stripArray = new Strip[24];
         static Color currentTurn;
         static Bar Bar;
         static Bar BearOff;
@@ -219,7 +219,7 @@ class Classes {
                            //above if statement might already be sufficient if we go the route of assigning the bar an index
 
                            for(Move secondMove: copyAllMoves){
-                                String letterCode = (i<26)?Character.toString((char)('A'+i)):Character.toString((char)('A'+(i/26)-1))+Character.toString((char)('A'+i%26));
+                                String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
                                 allCombos.add(letterCode + ": " + first.isHitToString + ", " + secondMove.isHitToString);
                            }
 
@@ -329,7 +329,7 @@ class Move {
             return "Invalid move";
     }
 
-    public String isHitToString() {
+    String isHitToString() {
         if (Classes.Board.valid(this, false)) {
             return ((color==Color.WHITE)?(orgStrip+1):(23-orgStrip+1)) +
                     "-" +
@@ -377,6 +377,24 @@ class Strip {
         pieceColor = piece.color;
         vBox.getChildren().add(piece.imgView);
         quantity++;
+        int pieceSize = 54;           // deliberately using unnecessary variables to help readability
+        int totalLength = quantity * pieceSize;
+        int vBoxLength = 260;         // vBox is actually slightly longer but I prefer 260 as it
+                                      // still lets you see a bit of the triangle underneath
+
+        vBox.setSpacing(totalLength > vBoxLength ? -((totalLength - vBoxLength) / (quantity - 1.0)) : -2);
+        // the default spacing is essentially nothing, but if there are so many pieces that they start to overflow,
+        // then a dynamically updated negative spacing is used to make them overlap instead, proportional to the quantity,
+        // such that they never extend past the VBox's borders
+
+        // totalLength is what the default sum of the lengths of all the pieces would be if there was no spacing
+        // When that is bigger than vBoxLength, vBoxLength is subtracted from it to determine the difference
+        // This difference must be made up for by overlapping pieces so that the total area overlapped is equal to that difference.
+        // To determine the spacing between two pieces, that total overlap distance is divided by the number of overlaps
+        // there are (which is always one less than the number of pieces),
+        // and then negated to make it overlap instead of leaving a gap, which is what a positive value would have done
+
+        // -2 is used as the default instead of 0 because with 0 there was actually a little bit of whitespace in between pieces
     }
 
     void pop() {

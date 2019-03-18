@@ -129,7 +129,7 @@ public class Controller {
                 break;
             case "/letters":
                 for (int i = 0; i < 80; i++) {
-                    String letterCode = (i<26)?Character.toString((char)('A'+i)):Character.toString((char)('A'+(i/26)-1))+Character.toString((char)('A'+i%26));
+                    String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
                     System.out.println(letterCode);
                 }
                 break;
