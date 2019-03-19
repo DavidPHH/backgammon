@@ -70,12 +70,25 @@ class Classes {
             return null;
         }
 
-        static void makeMove(Move move) { //TODO add logic for pushing off pieces to the bar - ATM it's an invalid move if there's 1 piece.
+        static void makeMove(Move move) {
             if (!validMove(move))
                 return;
-            stripArray[move.orgStrip].pop();
-            stripArray[move.destStrip].insert(new Piece(move.color));
-            currentMoves++;
+            // Normal move
+            if(move.orgStrip != -1 && move.destStrip >= 0){
+                stripArray[move.orgStrip].pop();
+                stripArray[move.destStrip].insert(new Piece(move.color));
+                currentMoves++;
+            }
+            else if(move.orgStrip == -1){ // Moving from the bar
+                Bar.remove(currentTurn);
+                stripArray[move.destStrip].insert(new Piece(move.color));
+                currentMoves++;
+            }
+            else if(move.destStrip == -2){ // Moving to the bear-off
+                stripArray[move.orgStrip].pop();
+                BearOff.insert(new Piece(currentTurn));
+                currentMoves++;
+            }
         }
 
         static void testMove(Move move) { // same as makeMove but allows both colors on the same strip for test purposes
@@ -83,21 +96,60 @@ class Classes {
             stripArray[move.destStrip].insert(new Piece(move.color));
         }
 
-        static boolean validMove(Move move) {
-            if (move.orgStrip < 0 || move.destStrip < 0 || move.orgStrip > 23 || move.destStrip > 23) // If outside of array, it's an invalid move
+        static boolean validMove(Move move) { //TODO Logic for checking bear-off moves
+            if (move.orgStrip < -1 || move.destStrip < -1 || move.orgStrip > 23 || move.destStrip > 23) // If outside of array, it's an invalid move
                 return false;
-
+            
             Strip dest = getStrip(move.destStrip);
-            Strip org = getStrip(move.orgStrip);
+            Strip org = null;
+            if(move.orgStrip != -1){
+                org = getStrip(move.orgStrip);
+            }
 
-            if (org.quantity == 0)   // If there is no piece to move, it's an invalid move
+            //If the player has a piece in the Bar and they try move a piece not on the bar
+            //Bar is referred to as -1
+            if(Bar.piecesIn(currentTurn) > 0){
+                if(move.orgStrip != -1) // Checks to see if user is moving from the bar
+                    return false;
+                else if((currentTurn != dest.pieceColor) && dest.quantity > 1) // Destination has opposing pieces
+                    return false;
+                else if((currentTurn != dest.pieceColor) && dest.quantity == 1) // Destination has only 1 opposing piece so a hit
+                    hitMove(dest);
+                else {
+                    return true;
+                }
+            }
+
+            // Ensures user does not go backwards
+            if(currentTurn == Color.BLACK){
+                if(move.orgStrip > move.destStrip)
+                    return false;
+            }
+            else if(currentTurn == Color.WHITE)
+                if(move.orgStrip < move.destStrip)
+                    return false;
+
+            //At this point, we are checking to see if the end point allows for a valid move
+            if(org.quantity == 0 || (org.pieceColor != currentTurn)) // Trying to move opponents piece or move nothing
                 return false;
 
-            if ((org.pieceColor != dest.pieceColor)) // If the dest strip has pieces of the opposite color,
-                return (dest.pieceColor == Color.NONE); // it's an invalid move
+            if ((org.pieceColor != dest.pieceColor) && dest.quantity > 1){ // If the dest strip has pieces of the opposite color,
+                return false; // it's an invalid move
+            }
+            else if((org.pieceColor != dest.pieceColor) && dest.quantity == 1){ // This move is a hit to bar
+                hitMove(dest);
+                return true;
+            }
+            else if((org.pieceColor != dest.pieceColor) && dest.quantity == 0)// If the dest piece is empty
+                return true;
             // If the player is moving a piece that isn't his
             return move.color == dest.pieceColor;
 
+        }
+
+        static void hitMove(Strip dest){
+            Piece ripPiece = new Piece(dest.pop());
+            Bar.insert(ripPiece);
         }
 
         static boolean valid(Move move, boolean showErrors){        //temporary method that takes a move as input and returns whether it's valid or not
@@ -311,6 +363,7 @@ class Move {
     Move(int orgStrip, int destStrip, Color color) {
         this.color = color;
         //This is here since the pip numbers change depending on which color's turn it is.
+        //Max orgStrip can be 23 since user input is always subtraced by 1 before coming to this point.
         if(this.color == Color.BLACK){
             this.orgStrip = 23-orgStrip;
             this.destStrip = 23-destStrip;
@@ -397,10 +450,13 @@ class Strip {
         // -2 is used as the default instead of 0 because with 0 there was actually a little bit of whitespace in between pieces
     }
 
-    void pop() {
+    Color pop() {
+        Color removedColor = pieceColor;
         vBox.getChildren().remove(--quantity);
         if (quantity == 0)
             pieceColor = Color.NONE;
+
+        return removedColor;
     }
 }
 
@@ -469,7 +525,8 @@ class Bar {
         pieces[x].remove(len - 1);
         boxes[x].getChildren().remove(len - 1);
     }
-    
+
+    //Finds the number of pieces in the Bar for COLOR's turn
     int piecesIn(Color color){
         if(color == Color.WHITE)
             return pieces[Color.WHITE.getValue()].size();
