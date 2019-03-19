@@ -77,6 +77,7 @@ public class Controller {
                 "\n4. /commands" +
                 "\n5. /move (origin: int) (destination: int)" +
                 "\n6. /valid (origin: int) (destination: int)" +
+                "\n7. /cheat" +
                 "\n" +
                 "Finally, click on the 'i' button above to open/close this section.\n");
 
@@ -118,6 +119,7 @@ public class Controller {
                         "\n4. /commands" +
                         "\n5. /move (origin: int) (destination: int)" +
                         "\n6. /valid (origin: int) (destination: int)" +
+                        "\n7. /cheat" +
                         "\n");
                 pCommands.setText("");
                 break;
@@ -142,6 +144,7 @@ public class Controller {
                 for (Move m : validMoves) {
                     // System.out.println(m.color + " can move from " + ((m.color==Color.WHITE)?(m.orgStrip+1):(23-m.orgStrip)+1) + " to " + ((m.color==Color.WHITE)?(m.destStrip+1):(23-m.destStrip)+1));
                     System.out.println(m.isHitToString());
+                    gameInfo.appendText("\n"+m.isHitToString());
                 }
                 System.out.println("--------- List End ---------");
 
@@ -154,7 +157,7 @@ public class Controller {
                     try {
                         org = Integer.parseInt(splot[1]) - 1;
                         dest = Integer.parseInt(splot[2]) - 1;
-                        if (org < 0 || dest < 0 || org > 23 || dest > 23)
+                        if (org < -1 || dest < -2 || org > 23 || dest > 23)
                             throw new ArrayIndexOutOfBoundsException();
                     } catch (Exception ex) {
                         gameInfo.appendText("\nInvalid syntax. Expected /move int int");
@@ -238,7 +241,11 @@ public class Controller {
             case "/cheat":      // Cheat commands cleans the board, then "re-initialises" it to the new board
                 Board.clearBoard();
                 Board.cheat();
-                gameInfo.appendText("\nActivated cheat board. Please roll again");
+                gameInfo.appendText("\nActivated cheat board. Please roll again\nSetting move to player 1");
+                Board.currentTurn = Color.WHITE;
+                gameStart = true; // In case /cheat was used before game was started
+                hasRolled = false;
+                pCommands.setText("");
                 break;
 
             default:
