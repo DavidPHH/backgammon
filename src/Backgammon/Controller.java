@@ -18,6 +18,8 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static Backgammon.Classes.Board.findAllValidMoves;
+
 
 public class Controller {
 
@@ -57,6 +59,7 @@ public class Controller {
     private VBox diceBox;
 
     private Player[] players;
+    private ArrayList<Move> moveList;
     private Boolean vis;
     private Boolean gameStart;
     private Boolean hasRolled;
@@ -76,8 +79,10 @@ public class Controller {
                 "\n3. /quit" +
                 "\n4. /commands" +
                 "\n5. /move (origin: int) (destination: int)" +
-                "\n6. /valid (origin: int) (destination: int)" +
-                "\n7. /cheat" +
+                "\n6. /listMove (letter)  NOTE: The letter should correspond to a letter from the given move list" +
+                "\n7. /valid (origin: int) (destination: int)" +
+                "\n8. /cheat" +
+                "\n9. /print" +
                 "\n" +
                 "Finally, click on the 'i' button above to open/close this section.\n");
 
@@ -117,9 +122,11 @@ public class Controller {
                         "\n2. /next to pass turn to other player" +
                         "\n3. /quit" +
                         "\n4. /commands" +
-                        "\n5. /move (origin: int) (destination: int)" +
-                        "\n6. /valid (origin: int) (destination: int)" +
-                        "\n7. /cheat" +
+                        "\n5. /move (origin: int) (destination: int) NOTE: Bar = -1, Bear-off = -2" +
+                        "\n6. /listMove (letter)  NOTE: The letter should correspond to a letter from the given move list" +
+                        "\n7. /valid (origin: int) (destination: int)" +
+                        "\n8. /cheat" +
+                        "\n9. /print" +
                         "\n");
                 pCommands.setText("");
                 break;
@@ -137,7 +144,7 @@ public class Controller {
                 break;
 
             case "/find":
-                ArrayList<Move> validMoves = Board.findAllValidMoves(Board.currentTurn);
+                ArrayList<Move> validMoves = findAllValidMoves(Board.currentTurn);
 
                 System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
                 System.out.println("\n-------- List Start --------");
@@ -175,7 +182,7 @@ public class Controller {
                 if (!gameStart) {
                     Board.rollStart(players);
                     animateRoll(Board.die.getDice1(), Board.die.getDice2());    //show dice in different place from
-                    //Board.rollDice() to distinguish as different from a normal roll? Like next to the player names?
+
                     gameInfo.appendText("\n" + players[0].getPlayerName() + " rolled: " + Board.die.getDice1() + ", "
                             + players[1].getPlayerName() + " rolled: " + Board.die.getDice2() + "\n");
                     if (players[0].getColor() == Board.currentTurn)
@@ -184,6 +191,8 @@ public class Controller {
                     else
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
 
+                    moveList = findAllValidMoves(Board.currentTurn);
+                    printMoves(); // Printing the valid moves
                 }
 
                 gameStart = true;
@@ -204,6 +213,9 @@ public class Controller {
                         gameInfo.appendText("\n" + players[1].getPlayerName() +
                                 " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
                     }
+
+                    moveList = findAllValidMoves(Board.currentTurn);
+                    printMoves(); // Printing the moves after roll
                     hasRolled = true;
                 } else {
                     gameInfo.appendText("\nYou cannot roll again\n");
@@ -247,7 +259,38 @@ public class Controller {
                 hasRolled = false;
                 pCommands.setText("");
                 break;
+            case "/listmove": // Using the generated list of moves to move as required by the assignment
+                if (Board.currentMoves < Board.maxMoves) {
+                    String[] splot = inputString.split(" ");
+                    String moveL = null;
+                    try{
+                        moveL = splot[1];
+                    }catch(Exception ex){
+                        gameInfo.appendText("Expected syntax: /listmove letter");
+                    }
 
+                    int length = moveL.length();
+                    // Gets the index for taking the move from the arrayList
+                    int c = ((moveL.charAt(length - 1)) - 97) + (26 * (length -1));
+                    if(c < moveList.size() && c >= 0){
+                        Move move = moveList.get(c);
+                        gameInfo.appendText("\n" + move);
+                        Board.makeMove(move);
+                    }
+                    else
+                        gameInfo.appendText("\nPlease select a move contained within the list i.e. use a correct letter.");
+                } else {
+                    gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
+                }
+                pCommands.setText("");
+                break;
+            case "/print": // Printing the moves
+                if(hasRolled && gameStart)
+                    printMoves();
+                else{
+                    gameInfo.appendText("\nYou must roll before printing the list of moves");
+                }
+                break;
             default:
                 gameInfo.appendText("\n" + pCommands.getText());
                 pCommands.setText("");
@@ -386,7 +429,27 @@ public class Controller {
 
 
         }).start();
+    }
 
+    //Printing the valid moves
+    public void printMoves(){
+        //Printing the valid moves
+        /*for (Move m : moveList) {
+            gameInfo.appendText("\n"+m.isHitToString());
+        }*/
+        //TODO Correct the printing on black's turn. It currently prints the numbers as if it was displaying the numbers for white
+        String test;
+        for(int count = 0,i = 0; i < moveList.size();i++){
+            if(i % 26 == 0)
+                count++;
 
+            test = Character.toString((char) ((i%26) + 97));
+
+            gameInfo.appendText("\n");
+            for(int j = 0;j < count;j++)
+                gameInfo.appendText(test);
+
+            gameInfo.appendText(" " + moveList.get(i));
+        }
     }
 }
