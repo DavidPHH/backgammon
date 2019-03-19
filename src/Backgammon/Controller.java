@@ -136,26 +136,6 @@ public class Controller {
 
 
                 break;
-            case "/letters":
-                for (int i = 0; i < 80; i++) {
-                    String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
-                    System.out.println(letterCode);
-                }
-                break;
-
-            case "/find":
-                ArrayList<Move> validMoves = findAllValidMoves(Board.currentTurn);
-
-                System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
-                System.out.println("\n-------- List Start --------");
-                for (Move m : validMoves) {
-                    // System.out.println(m.color + " can move from " + ((m.color==Color.WHITE)?(m.orgStrip+1):(23-m.orgStrip)+1) + " to " + ((m.color==Color.WHITE)?(m.destStrip+1):(23-m.destStrip)+1));
-                    System.out.println(m.isHitToString());
-                    gameInfo.appendText("\n"+m.isHitToString());
-                }
-                System.out.println("--------- List End ---------");
-
-                break;
             case "/move":
                 pCommands.setText("");
                 if (Board.currentMoves < Board.maxMoves) {
@@ -431,24 +411,21 @@ public class Controller {
     }
 
     //Printing the valid moves
-    public void printMoves(){
-        //Printing the valid moves
-        /*for (Move m : moveList) {
-            gameInfo.appendText("\n"+m.isHitToString());
-        }*/
-        //TODO Correct the printing on black's turn. It currently prints the numbers as if it was displaying the numbers for white
-        String test;
-        for(int count = 0,i = 0; i < moveList.size();i++){
-            if(i % 26 == 0)
-                count++;
+    private void printMoves(){
+        ArrayList<Move> validMoves = findAllValidMoves(Board.currentTurn);
 
-            test = Character.toString((char) ((i%26) + 97));
-
-            gameInfo.appendText("\n");
-            for(int j = 0;j < count;j++)
-                gameInfo.appendText(test);
-
-            gameInfo.appendText(" " + moveList.get(i).isHitToString());
+        System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
+        System.out.println("\n-------- List Start --------");
+        int i = 0;
+        gameInfo.appendText("\n\nPossible Moves:\n--------------------");
+        for (Move m : validMoves) {
+            // System.out.println(m.color + " can move from " + ((m.color==Color.WHITE)?(m.orgStrip+1):(23-m.orgStrip)+1) + " to " + ((m.color==Color.WHITE)?(m.destStrip+1):(23-m.destStrip)+1));
+            String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
+            System.out.println(letterCode + ": " + m.isHitToString());
+            gameInfo.appendText("\n" + letterCode + ":  " + m.isHitToString());
+            i++;
         }
+        System.out.println("--------- List End ---------");
+
     }
 }

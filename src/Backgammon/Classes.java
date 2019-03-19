@@ -5,8 +5,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -204,14 +202,17 @@ class Classes {
             findAllValidMoves() Proposed Pseudo-code:
 
                 Assumes existence of following methods:
-                - findBarMoves()  i.e. moves starting on the bar and ending on the board
-                - findBoardMoves()   i.e. moves starting and ending on board, more or less what findAllValidMoves() does now
-                - findBearOffMoves()  i.e. moves starting on tbe board and ending in the bear-off
-                - removeMovesStartingOn()  i.e. exactly what it sound like, takes an arrayList of moves and an int,
+                - findBarMoves()            i.e. moves starting on the bar and ending on the board
+                - findBoardMoves()          i.e. moves starting and ending on board, more or less what findAllValidMoves() does now
+                - findBearOffMoves()        i.e. moves starting on tbe board and ending in the bear-off
+                - removeMovesStartingOn()   i.e. exactly what it sound like, takes an arrayList of moves and an int,
                                             and modifies that arrayList (shouldn't need to return it) to remove any moves
                                             with an orgStrip of that int
-                - allHomeBoard()   returns boolean on whether all your pieces are in your home board, needed to determine
-                                    whether you can start bearing-off pieces yet
+                - allHomeBoard()            Returns boolean on whether all your pieces are in your home board, needed to determine
+                                            whether you can start bearing-off pieces yet
+                - removeDuplicateMoves()    Removes combinations of moves that have the same orgStrip for the first move,
+                                            same destStrip for the last move, and none of the strips landed on in between
+                                            resulted in hits. (Need two different versions for 2-move combos vs 4-move combos?)
 
 
                   ArrayList<Moves> allMoves = new ArrayList<>;
@@ -226,20 +227,20 @@ class Classes {
                     allMoves.add(findBoardMoves());
                  }
 
-                 ArrayList<Move> copyAllMoves = allMoves;         // made so that when combining moves into pairs (or quadruplets when a double is rolled),
-                                                                    // you can temporarily change which moves are valid without affecting the master copy
-
+                 ArrayList<Move> copyAllMoves = new ArrayList<Move>;        // made so that when combining moves into pairs (or quadruplets when a double is rolled),
+                                                                           // you can temporarily change which moves are valid without affecting the master copy
 
 
                  //code to combine multiple moves in pairs to print -
 
-                 ArrayList<> allCombos = new ArrayList<>  // Should it be an ArrayList of strings? Currently findAllValidMoves returns an ArraList of Moves
+                 ArrayList<> allCombos = new ArrayList<>  // Should it be an ArrayList of strings? Currently findAllValidMoves returns an ArrayList of Moves
                                                          // and then it's converted to strings in the controller, but once we start involving bar moves
                                                          // and bearOff moves, that might not be possible, so maybe best to convert to strings here, and then pass that
 
                  if(maxMoves==2){
                     int i = 0;
-                    for(Move firstMove: copyAllMoves){
+                    for(Move firstMove: allMoves){
+                        copyAllMoves = allMoves;
                         if(bar.quantity==0 || firstMove.orgStrip == Bar){      // how to code orgStrip==Bar, since currently orgStrip is an int only?
                                                                                 // maybe reserve an int like 0 to represent the bar, and then 1-24
                                                                                 // can actually correspond to what you'd expect on the board?
@@ -272,7 +273,9 @@ class Classes {
 
                            for(Move secondMove: copyAllMoves){
                                 String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
-                                allCombos.add(letterCode + ": " + first.isHitToString + ", " + secondMove.isHitToString);
+                                allCombos.add(letterCode + ": " + firstMove.isHitToString + ", " + secondMove.isHitToString);
+                                //either add letterCode here or in printMoves function, but not both
+                                //probably will ultimately be removed from printMoves so that everything can be passed as one string
                            }
 
                          }
@@ -281,9 +284,11 @@ class Classes {
 
                  }
 
-              return allCombos;
+               //also need to provide code for when maxMoves = 4
 
-              //Note: Doesn't yet remove "duplicate moves" like ‘24-23 23-21’ and ’24-22 22-21’
+              removeDuplicateMoves();
+
+              return allCombos;
 
              */
         }
@@ -420,20 +425,11 @@ class Strip {
         this.stripID = stripID;
     }
 
-    void insert(Piece[] pieces, int start, int stop) {
-        for (int i = start; i <= stop; i++) {
-            insert(pieces[i]);
-        }
-    }
-
-    void insert(Piece piece) {
-        pieceColor = piece.color;
-        vBox.getChildren().add(piece.imgView);
-        quantity++;
+    private void updateSpacing(){
         int pieceSize = 54;           // deliberately using unnecessary variables to help readability
         int totalLength = quantity * pieceSize;
         int vBoxLength = 260;         // vBox is actually slightly longer but I prefer 260 as it
-                                      // still lets you see a bit of the triangle underneath
+        // still lets you see a bit of the triangle underneath
 
         vBox.setSpacing(totalLength > vBoxLength ? -((totalLength - vBoxLength) / (quantity - 1.0)) : -2);
         // the default spacing is essentially nothing, but if there are so many pieces that they start to overflow,
@@ -450,11 +446,25 @@ class Strip {
         // -2 is used as the default instead of 0 because with 0 there was actually a little bit of whitespace in between pieces
     }
 
+    void insert(Piece[] pieces, int start, int stop) {
+        for (int i = start; i <= stop; i++) {
+            insert(pieces[i]);
+        }
+    }
+
+    void insert(Piece piece) {
+        pieceColor = piece.color;
+        vBox.getChildren().add(piece.imgView);
+        quantity++;
+        updateSpacing();
+    }
+
     Color pop() {
         Color removedColor = pieceColor;
         vBox.getChildren().remove(--quantity);
         if (quantity == 0)
             pieceColor = Color.NONE;
+        updateSpacing();
 
         return removedColor;
     }
