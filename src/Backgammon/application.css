@@ -11,7 +11,7 @@
 }
 
 #displayArea {
-    -fx-opacity: .65;
+    -fx-opacity: .4;
     -fx-border-color: transparent;
     -fx-text-fill: black;
     -fx-font-size: 15;

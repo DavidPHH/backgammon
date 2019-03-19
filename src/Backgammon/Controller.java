@@ -193,10 +193,9 @@ public class Controller {
 
                     moveList = findAllValidMoves(Board.currentTurn);
                     printMoves(); // Printing the valid moves
+                    gameStart = true;
+                    hasRolled = true;
                 }
-
-                gameStart = true;
-                hasRolled = true;
                 break;
             case "/roll":
                 pCommands.setText("");
@@ -449,7 +448,7 @@ public class Controller {
             for(int j = 0;j < count;j++)
                 gameInfo.appendText(test);
 
-            gameInfo.appendText(" " + moveList.get(i));
+            gameInfo.appendText(" " + moveList.get(i).isHitToString());
         }
     }
 }
