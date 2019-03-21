@@ -182,115 +182,176 @@ class Classes {
             return true;
         }
 
-        static ArrayList<Move> findAllValidMoves(Color color) {
-            ArrayList<Move> validMovesList = new ArrayList<>();
-            for (Strip aStrip : stripArray) {
-                //if (aStrip.pieceColor == color) {
-                    for (Strip bStrip : stripArray) {
-                        Move temp = new Move(aStrip.stripID, bStrip.stripID, color);
-                        if (valid(temp, false)) {
-                            validMovesList.add(temp);
-                        }
-
+        static ArrayList<Move> findBoardMoves() {
+            ArrayList<Move> boardMoves = new ArrayList<>();
+            /*for (Strip aStrip : stripArray) {
+                for (Strip bStrip : stripArray) {
+                    Move curr = new Move(aStrip.stripID, bStrip.stripID, currentTurn);
+                    if (valid(curr, false)) {
+                        boardMoves.add(curr);
                     }
-                //}
-            }
+                }
+            }*/         //above is what it will be, below is just to make testing more controlled
 
-            return validMovesList;
+            boardMoves.add(new Move(6, 7, currentTurn));
+            boardMoves.add(new Move(6, 8, currentTurn));
+            boardMoves.add(new Move(8, 9, currentTurn));
 
-            /*
-            findAllValidMoves() Proposed Pseudo-code:
+            return boardMoves;
+        }
+
+        //Temp dummy/hardcoded implementations
+
+        static ArrayList<Move> findBarMoves(){
+            ArrayList<Move> barMoves = new ArrayList<>();
+            //barMoves.add(new Move(-1, 3, currentTurn));
+            //barMoves.add(new Move(-1, 4, currentTurn));
+
+            return barMoves;
+        }
+
+        //Also dummy
+
+        static ArrayList<Move>findBearOffMoves(){
+            ArrayList<Move> bearOffMoves = new ArrayList<>();
+            bearOffMoves.add(new Move(21, -2, currentTurn));
+            bearOffMoves.add(new Move(22, -2, currentTurn));
+            bearOffMoves.add(new Move(23, -2, currentTurn));
+
+            return bearOffMoves;
+        }
+
+        //still dummy
+
+        static boolean allHomeBoard(){
+            return false;
+        }
+
+        //more dummy
+
+
+        static void removeDuplicateMoves(ArrayList<String> combos){
+
+        }
+
+        static ArrayList<String> findAllValidMoves(Color color) {   //remove color parameter?
+
+
+            /*findAllValidMoves() Proposed Pseudo-code:
 
                 Assumes existence of following methods:
-                - findBarMoves()            i.e. moves starting on the bar and ending on the board
-                - findBoardMoves()          i.e. moves starting and ending on board, more or less what findAllValidMoves() does now
-                - findBearOffMoves()        i.e. moves starting on tbe board and ending in the bear-off
-                - removeMovesStartingOn()   i.e. exactly what it sound like, takes an arrayList of moves and an int,
-                                            and modifies that arrayList (shouldn't need to return it) to remove any moves
-                                            with an orgStrip of that int
-                - allHomeBoard()            Returns boolean on whether all your pieces are in your home board, needed to determine
+                - findBarMoves()            i.e. moves starting on the bar and ending on the board                                      TODO
+                - findBoardMoves()          i.e. moves starting and ending on board, more or less what findAllValidMoves() does now     DONE
+                - findBearOffMoves()        i.e. moves starting on tbe board and ending in the bear-off                                 TODO
+                - removeMovesStartingOn()   i.e. exactly what it sound like, takes an arrayList of moves and an int,                    Done in-line instead
+                                            and modifies that arrayList to remove any moves with an orgStrip of that int
+                - allHomeBoard()            Returns boolean on whether all your pieces are in your home board, needed to determine      TODO
                                             whether you can start bearing-off pieces yet
-                - removeDuplicateMoves()    Removes combinations of moves that have the same orgStrip for the first move,
+                - removeDuplicateMoves()    Removes combinations of moves that have the same orgStrip for the first move,               TODO
                                             same destStrip for the last move, and none of the strips landed on in between
                                             resulted in hits. (Need two different versions for 2-move combos vs 4-move combos?)
+                */
 
 
-                  ArrayList<Moves> allMoves = new ArrayList<>;
 
-                 if(bar.quantity >= maxMoves){              // i.e., if you have more (or same number of) pieces on the bar than you have dice
-                    allMoves.add(findBarMoves());          // rolls to use, you will only be able to move those pieces, and not any of findBoardMoves()
-                 }else if(allHomeBoard){
-                    allMoves.add(findBoardMoves());
-                    allMoves.add(findBearOffMoves());
+            //Bar.insert(new Piece(currentTurn));
+            //Bar.insert(new Piece(currentTurn));
+
+
+                  ArrayList<Move> allMoves = new ArrayList<>();
+
+                 if(Bar.piecesIn(currentTurn) >= maxMoves){              // i.e., if you have more (or same number of) pieces on the bar than you have dice
+                    allMoves.addAll(findBarMoves());                     // rolls to use, you will only be able to move those pieces, and not any of findBoardMoves()
+                     System.out.println("Only Bar");
+                 }else if(allHomeBoard()){
+                    allMoves.addAll(findBoardMoves());
+                    allMoves.addAll(findBearOffMoves());
+                     System.out.println("Board + BearOff");
                  }else{
-                    allMoves.add(findBarMoves());
-                    allMoves.add(findBoardMoves());
+                    allMoves.addAll(findBarMoves());
+                    allMoves.addAll(findBoardMoves());
+                     System.out.println("Bar + Board");
                  }
 
-                 ArrayList<Move> copyAllMoves = new ArrayList<Move>;        // made so that when combining moves into pairs (or quadruplets when a double is rolled),
+                 ArrayList<Move> copyAllMoves;                             // made so that when combining moves into pairs (or quadruplets when a double is rolled),
                                                                            // you can temporarily change which moves are valid without affecting the master copy
 
 
-                 //code to combine multiple moves in pairs to print -
 
-                 ArrayList<> allCombos = new ArrayList<>  // Should it be an ArrayList of strings? Currently findAllValidMoves returns an ArrayList of Moves
+                 ArrayList<String> allCombos = new ArrayList<>();  // Should it be an ArrayList of strings? Currently findAllValidMoves returns an ArrayList of Moves
                                                          // and then it's converted to strings in the controller, but once we start involving bar moves
                                                          // and bearOff moves, that might not be possible, so maybe best to convert to strings here, and then pass that
 
-                 if(maxMoves==2){
-                    int i = 0;
-                    for(Move firstMove: allMoves){
-                        copyAllMoves = allMoves;
-                        if(bar.quantity==0 || firstMove.orgStrip == Bar){      // how to code orgStrip==Bar, since currently orgStrip is an int only?
-                                                                                // maybe reserve an int like 0 to represent the bar, and then 1-24
-                                                                                // can actually correspond to what you'd expect on the board?
+            //code to combine multiple moves in pairs to print -
 
-                                                                          // if statement means that if there are no possible bar moves which
-                                                                          // would have taken priority, then the first move of the pair can be anything,
-                                                                          // but if there are bar moves possible (i.e. if bar.quantity>0),
-                                                                          // then the first move has to be one of those.
+            System.out.println("allMoves initially looks like: " + allMoves);
 
-                           if(stripArray[firstMove.destStrip].colour!=currentTurn && valid(new Move(firstMove.destStrip, firstMove.destStrip+dice1, currentTurn){
-                                copyAllMoves.add(new Move(firstMove.destStrip, firstMove.destStrip+dice1, currentTurn));
-                           }
+            if(maxMoves==2) {
+                int i = 0;
+                for (Move firstMove : allMoves) {
+                    copyAllMoves = new ArrayList<>(allMoves);
+                    if (Bar.piecesIn(currentTurn) == 0 || firstMove.orgStrip == -1 || firstMove.orgStrip == 24) {      // how to code orgStrip==Bar, since currently orgStrip is an int only?
+                        // maybe reserve an int like 0 to represent the bar, and then 1-24
+                        // can actually correspond to what you'd expect on the board?
 
-                           // i.e. assuming the first move is made and there is now a piece on destStrip where there wasn't before,
-                           // does that produce any new valid moves that weren't available before? Checks both dice1 and dice2.
+                        System.out.println("made it");
 
-                           if(stripArray[firstMove.destStrip].colour!=currentTurn && valid(new Move(firstMove.destStrip, firstMove.destStrip+dice2, currentTurn){
-                                copyAllMoves.add(new Move(firstMove.destStrip, firstMove.destStrip+dice2, currentTurn));
-                           }
+                        // Update: seem to have gone with -1 representing bar
+                        // which importantly can also end up as 24 due to the way Moves constructor handles different colors
 
-                           //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
-                           //no more pieces left on orgStrip after the move is made, i.e. if there is currently only one piece on orgStrip
+                        // if statement means that if there are no possible bar moves which
+                        // would have taken priority, then the first move of the pair can be anything,
+                        // but if there are bar moves possible (i.e. if bar.quantity>0),
+                        // then the first move has to be one of those.
 
-                           if(stripArray[firstMove.orgStrip].quantity == 1){
-                              removeMovesStartingOn(copyAllMoves, firstMove.orgStrip);
-                           }
+                        if (stripArray[firstMove.destStrip].pieceColor != currentTurn && valid(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice1(), currentTurn), false)) {
+                            copyAllMoves.add(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice1(), currentTurn));
+                        }
 
-                           //keep in mind we also need to remove barMoves which are no longer possible,
-                           //above if statement might already be sufficient if we go the route of assigning the bar an index
+                        // i.e. assuming the first move is made and there is now a piece on destStrip where there wasn't before,
+                        // does that produce any new valid moves that weren't available before? Checks both dice1 and dice2.
 
-                           for(Move secondMove: copyAllMoves){
-                                String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
-                                allCombos.add(letterCode + ": " + firstMove.isHitToString + ", " + secondMove.isHitToString);
-                                //either add letterCode here or in printMoves function, but not both
-                                //probably will ultimately be removed from printMoves so that everything can be passed as one string
-                           }
+                        if (stripArray[firstMove.destStrip].pieceColor != currentTurn && valid(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice2(), currentTurn), false)) {
+                            copyAllMoves.add(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice2(), currentTurn));
+                        }
 
-                         }
+                        //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
+                        //no more pieces left on orgStrip after the move is made, i.e. if there is currently only one piece on orgStrip
 
-                     }
+                        if (firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && stripArray[firstMove.orgStrip].quantity <= 1){
+                            //System.out.println("Removing moves starting on same");
+                            copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
+                            //System.out.println("Removed successfully");
+                        }
 
-                 }
+                        // >=0 and <24 conditions included so that it doesn't try to dereference something like stripArray[-1] for bar and bearOff moves
+
+                        //keep in mind we also need to remove any barMoves which are no longer possible,
+                        //above if statement might already be sufficient if we go the route of assigning the bar an index that's actually included in stripArray
+                        //if not, need separate function
+
+                        for (Move secondMove : copyAllMoves) {
+                            String letterCode = (i < 26) ? Character.toString('A' + i) : Character.toString('A' + (i / 26) - 1) + Character.toString('A' + i % 26);
+                            allCombos.add(letterCode + ": " + firstMove.isHitToString() + ", " + secondMove.isHitToString());
+                            i++;
+                            //either add letterCode here or in printMoves function, but not both
+                            //probably will ultimately be removed from printMoves so that everything can be passed as one string
+
+                        }
+
+                    }
+
+                }
+            }
 
                //also need to provide code for when maxMoves = 4
 
-              removeDuplicateMoves();
+              //also need to provide code for situations when only one valid move is found (and 3 as well I guess)
+
+              removeDuplicateMoves(allCombos);
 
               return allCombos;
 
-             */
         }
 
         static Color nextTurn() {
@@ -368,7 +429,7 @@ class Move {
     Move(int orgStrip, int destStrip, Color color) {
         this.color = color;
         //This is here since the pip numbers change depending on which color's turn it is.
-        //Max orgStrip can be 23 since user input is always subtraced by 1 before coming to this point.
+        //Max orgStrip can be 23 since user input is always subtracted by 1 before coming to this point.
         if(this.color == Color.BLACK){
             this.orgStrip = 23-orgStrip;
             this.destStrip = 23-destStrip;
@@ -381,20 +442,31 @@ class Move {
 
     @Override
     public String toString() {
-        if (Classes.Board.validMove(this))
-            return "Move: Origin: " + (orgStrip + 1) + " Destination: " + (destStrip + 1);
-        else
-            return "Invalid move";
+//        if (Classes.Board.validMove(this))
+//            return "Move: Origin: " + (orgStrip + 1) + " Destination: " + (destStrip + 1);
+//        else
+//            return "Invalid move";
+
+
+        //if (Classes.Board.valid(this, false)) {
+        return ((orgStrip==-1 || orgStrip == 24)?"Bar":((color==Color.WHITE)?(orgStrip+1):(23-orgStrip+1))) +
+                "-" +
+                ((color==Color.WHITE)?(destStrip+1):(23-destStrip+1)) +
+                (destStrip==-2?"Off":((Classes.Board.stripArray[destStrip].quantity == 1 && Classes.Board.stripArray[destStrip].pieceColor != color)?"*":""));
+        //} else
+        //    return "Invalid move";
+
+
     }
 
     String isHitToString() {
-        if (Classes.Board.valid(this, false)) {
-            return ((color==Color.WHITE)?(orgStrip+1):(23-orgStrip+1)) +
+        //if (Classes.Board.valid(this, false)) {
+            return ((orgStrip==-1 || orgStrip == 24)?"Bar":((color==Color.WHITE)?(orgStrip+1):(23-orgStrip+1))) +
                     "-" +
                     ((color==Color.WHITE)?(destStrip+1):(23-destStrip+1)) +
-                    ((Classes.Board.stripArray[destStrip].quantity == 1 && Classes.Board.stripArray[destStrip].pieceColor != color)?"*":"");
-        } else
-            return "Invalid move";
+                    (destStrip==-2?"Off":((Classes.Board.stripArray[destStrip].quantity == 1 && Classes.Board.stripArray[destStrip].pieceColor != color)?"*":""));
+        //} else
+        //    return "Invalid move";
     }
 }
 
@@ -505,7 +577,7 @@ class DoublingCube {
 
 
 @SuppressWarnings("unchecked")
-class Bar {
+class  Bar {
     private VBox[] boxes;
     private ArrayList<Piece>[] pieces = new ArrayList[2];
 

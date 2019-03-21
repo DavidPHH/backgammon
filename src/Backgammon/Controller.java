@@ -171,7 +171,7 @@ public class Controller {
                     else
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
 
-                    moveList = findAllValidMoves(Board.currentTurn);
+                    //moveList = findAllValidMoves(Board.currentTurn);
                     printMoves(); // Printing the valid moves
                     gameStart = true;
                     hasRolled = true;
@@ -193,7 +193,7 @@ public class Controller {
                                 " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
                     }
 
-                    moveList = findAllValidMoves(Board.currentTurn);
+                    //moveList = findAllValidMoves(Board.currentTurn);
                     printMoves(); // Printing the moves after roll
                     hasRolled = true;
                 } else {
@@ -206,7 +206,7 @@ public class Controller {
                     gameInfo.appendText("\nUse /start to start the game");
                     //Ensures the player doesn't skip their turn
                 else if (Board.currentMoves < Board.maxMoves)
-                    gameInfo.appendText("\nYou must use you're allotted amount of moves");
+                    gameInfo.appendText("\nYou must use your allotted amount of moves");
                 else {
                     Board.nextTurn();
                     // Printing the new player's turn
@@ -412,17 +412,17 @@ public class Controller {
 
     //Printing the valid moves
     private void printMoves(){
-        ArrayList<Move> validMoves = findAllValidMoves(Board.currentTurn);
+        ArrayList<String> validMoves = findAllValidMoves(Board.currentTurn);
 
-        System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
+       // System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
         System.out.println("\n-------- List Start --------");
         int i = 0;
         gameInfo.appendText("\n\nPossible Moves:\n--------------------");
-        for (Move m : validMoves) {
+        for (String m : validMoves) {
             // System.out.println(m.color + " can move from " + ((m.color==Color.WHITE)?(m.orgStrip+1):(23-m.orgStrip)+1) + " to " + ((m.color==Color.WHITE)?(m.destStrip+1):(23-m.destStrip)+1));
             String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
-            System.out.println(letterCode + ": " + m.isHitToString());
-            gameInfo.appendText("\n" + letterCode + ":  " + m.isHitToString());
+            System.out.println(m);
+            gameInfo.appendText("\n" + m);
             i++;
         }
         System.out.println("--------- List End ---------");
