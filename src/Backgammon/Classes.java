@@ -68,9 +68,14 @@ class Classes {
             return null;
         }
 
-        static void makeMove(Move move) {
-            if (!validMove(move))
-                return;
+        static void makeMove(Move move,int type) {
+            // Type refers to whether a move comes from /move or /listmove
+            // Moves from /listmove have already been checked if it is valid so it doesn't need to check again
+            // -1 == /move  1 == listMove
+            if(type == -1){
+                if (!validMove(move))
+                    return;
+            }
             // Normal move
             if(move.orgStrip != -1 && move.destStrip >= 0){
                 stripArray[move.orgStrip].pop();
