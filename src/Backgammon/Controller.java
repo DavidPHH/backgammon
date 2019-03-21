@@ -78,7 +78,7 @@ public class Controller {
                 "\n2. /next to pass turn to other player" +
                 "\n3. /quit" +
                 "\n4. /commands" +
-                "\n5. /move (origin: int) (destination: int)" +
+                "\n5. /move (origin: int) (destination: int) Bar = 0 Bear-off = -1" +
                 "\n6. /listMove (letter)  NOTE: The letter should correspond to a letter from the given move list" +
                 "\n7. /valid (origin: int) (destination: int)" +
                 "\n8. /cheat" +
@@ -122,7 +122,7 @@ public class Controller {
                         "\n2. /next to pass turn to other player" +
                         "\n3. /quit" +
                         "\n4. /commands" +
-                        "\n5. /move (origin: int) (destination: int) NOTE: Bar = -1, Bear-off = -2" +
+                        "\n5. /move (origin: int) (destination: int) NOTE: Bar = 0, Bear-off = -1" +
                         "\n6. /listMove (letter)  NOTE: The letter should correspond to a letter from the given move list" +
                         "\n7. /valid (origin: int) (destination: int)" +
                         "\n8. /cheat" +

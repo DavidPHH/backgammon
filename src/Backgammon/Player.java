@@ -6,11 +6,13 @@ public class Player{
     private String playerName;
     private Color color;
     private int pipsLeft;
+    private int piecesLeft;
 
     public Player(String player, Color color){
         this.playerName = player;
         this.color = color;
         pipsLeft = 167;
+        piecesLeft = 15;
     }
 
     public void setPlayerName(String name){
@@ -28,4 +30,6 @@ public class Player{
     public Color getColor(){
         return this.color;
     }
+    public int getPiecesLeft(){return this.piecesLeft;}
+    public void setPiecesLeft(int newPiecesLeft){this.piecesLeft = newPiecesLeft;}
 }
