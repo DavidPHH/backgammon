@@ -144,7 +144,7 @@ public class Controller {
                     try {
                         org = Integer.parseInt(splot[1]) - 1;
                         dest = Integer.parseInt(splot[2]) - 1;
-                        if (org < -1 || dest < -2 || org > 23 || dest > 23)
+                        if (org < -1 || dest < -3 || org > 23 || dest > 23)
                             throw new ArrayIndexOutOfBoundsException();
                     } catch (Exception ex) {
                         gameInfo.appendText("\nInvalid syntax. Expected /move int int");

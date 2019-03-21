@@ -78,19 +78,26 @@ class Classes {
             }
             // Normal move
             if(move.orgStrip != -1 && move.destStrip >= 0){
+                isMoveAHit(getStrip(move.destStrip));
                 stripArray[move.orgStrip].pop();
                 stripArray[move.destStrip].insert(new Piece(move.color));
                 currentMoves++;
             }
             else if(move.orgStrip == -1){ // Moving from the bar
+                isMoveAHit(getStrip(move.destStrip));
                 Bar.remove(currentTurn);
                 stripArray[move.destStrip].insert(new Piece(move.color));
                 currentMoves++;
             }
             else if(move.destStrip == -2){ // Moving to the bear-off
-                stripArray[move.orgStrip].pop();
-                BearOff.insert(new Piece(currentTurn));
+                Piece freedom = new Piece(stripArray[move.orgStrip].pop());
+                BearOff.insert(freedom);
                 currentMoves++;
+                if(currentTurn == Color.WHITE)
+                    Main.players[0].setPiecesLeft(Main.players[0].getPiecesLeft()-1);
+                else if(currentTurn == Color.BLACK){
+                    Main.players[1].setPiecesLeft(Main.players[1].getPiecesLeft()-1);
+                }
             }
         }
 
@@ -99,14 +106,40 @@ class Classes {
             stripArray[move.destStrip].insert(new Piece(move.color));
         }
 
-        static boolean validMove(Move move) { //TODO Logic for checking bear-off moves
-            if (move.orgStrip < -1 || move.destStrip < -1 || move.orgStrip > 23 || move.destStrip > 23) // If outside of array, it's an invalid move
+        static boolean validMove(Move move) {
+            if (move.orgStrip < -1 || move.destStrip < -3 || move.orgStrip > 23 || move.destStrip > 23) // If outside of array, it's an invalid move
                 return false;
-            
-            Strip dest = getStrip(move.destStrip);
+            if(move.destStrip == -1) // Can probably be put in previous if, brain not working rn
+                return false;
+            Strip dest = null;
             Strip org = null;
             if(move.orgStrip != -1){
                 org = getStrip(move.orgStrip);
+            }
+            if(move.destStrip != - 2)
+                dest = getStrip(move.destStrip);
+
+            /* TODO Logic for ensuring move matches dice roll. Bear-off will have slightly different logic
+                as you can bear-off with a dice roll higher than distance to bear-off. Bear-off logic will be
+                in bear-off if statement.
+            */
+
+            // User wants to move to the bear-off, this checks if it is allowed.
+            if(move.destStrip == -2){
+                if(currentTurn == Color.WHITE){
+                    int count = 0;
+                    for(int i = 0;i < 6;i++){
+                        count += stripArray[i].quantity;
+                    }
+                    return count == Main.players[0].getPiecesLeft();
+                }
+                else if(currentTurn == Color.BLACK){
+                    int count = 0;
+                    for(int i = 23;i >= 18;i--){
+                        count += stripArray[i].quantity;
+                    }
+                    return count == Main.players[1].getPiecesLeft();
+                }
             }
 
             //If the player has a piece in the Bar and they try move a piece not on the bar
@@ -117,12 +150,11 @@ class Classes {
                 else if((currentTurn != dest.pieceColor) && dest.quantity > 1) // Destination has opposing pieces
                     return false;
                 else if((currentTurn != dest.pieceColor) && dest.quantity == 1) // Destination has only 1 opposing piece so a hit
-                    hitMove(dest);
+                    return true;
                 else {
                     return true;
                 }
             }
-
             // Ensures user does not go backwards
             if(currentTurn == Color.BLACK){
                 if(move.orgStrip > move.destStrip)
@@ -132,7 +164,7 @@ class Classes {
                 if(move.orgStrip < move.destStrip)
                     return false;
 
-            //At this point, we are checking to see if the end point allows for a valid move
+            // Just checking a normal move, no bar/bear-off
             if(org.quantity == 0 || (org.pieceColor != currentTurn)) // Trying to move opponents piece or move nothing
                 return false;
 
@@ -140,7 +172,6 @@ class Classes {
                 return false; // it's an invalid move
             }
             else if((org.pieceColor != dest.pieceColor) && dest.quantity == 1){ // This move is a hit to bar
-                hitMove(dest);
                 return true;
             }
             else if((org.pieceColor != dest.pieceColor) && dest.quantity == 0)// If the dest piece is empty
@@ -153,6 +184,11 @@ class Classes {
         static void hitMove(Strip dest){
             Piece ripPiece = new Piece(dest.pop());
             Bar.insert(ripPiece);
+        }
+
+        static void isMoveAHit(Strip dest){
+            if((currentTurn != dest.pieceColor) && dest.quantity == 1) // Destination has only 1 opposing piece so a hit
+                hitMove(dest);
         }
 
         static boolean valid(Move move, boolean showErrors){        //temporary method that takes a move as input and returns whether it's valid or not
@@ -343,6 +379,9 @@ class Classes {
             Bar.insert(black,10,12);
             BearOff.insert(black,13,14);
 
+            Main.players[0].setPiecesLeft(12);
+            Main.players[1].setPiecesLeft(13);
+
         }
 
         static void clearBoard(){
@@ -373,10 +412,16 @@ class Move {
     Move(int orgStrip, int destStrip, Color color) {
         this.color = color;
         //This is here since the pip numbers change depending on which color's turn it is.
-        //Max orgStrip can be 23 since user input is always subtraced by 1 before coming to this point.
+        //Max orgStrip can be 23 since user input is always subtracted by 1 before coming to this point.
         if(this.color == Color.BLACK){
             this.orgStrip = 23-orgStrip;
             this.destStrip = 23-destStrip;
+
+            if(orgStrip == -1){
+                this.orgStrip = -1;
+            }
+            if(destStrip == -2)
+                this.destStrip = -2;
         }
         else{
             this.orgStrip = orgStrip;
