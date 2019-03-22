@@ -412,17 +412,21 @@ public class Controller {
 
     //Printing the valid moves
     private void printMoves(){
-        ArrayList<String> validMoves = findAllValidMoves(Board.currentTurn);
+        ArrayList<MoveCombo> validMoves = findAllValidMoves(Board.currentTurn);
 
        // System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
         System.out.println("\n-------- List Start --------");
         int i = 0;
         gameInfo.appendText("\n\nPossible Moves:\n--------------------");
-        for (String m : validMoves) {
-            // System.out.println(m.color + " can move from " + ((m.color==Color.WHITE)?(m.orgStrip+1):(23-m.orgStrip)+1) + " to " + ((m.color==Color.WHITE)?(m.destStrip+1):(23-m.destStrip)+1));
+        for (MoveCombo m : validMoves) {
             String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
-            System.out.println(m);
-            gameInfo.appendText("\n" + m);
+            System.out.print(letterCode + ":  ");
+            gameInfo.appendText("\n" + letterCode + ":  ");
+            for (int j = 0; j < m.numMovesPerCombo; j++) {
+                System.out.print(m.moves[j].isHitToString() + " ");
+                gameInfo.appendText(m.moves[j].isHitToString() + " ");
+            }
+            System.out.println();
             i++;
         }
         System.out.println("--------- List End ---------");

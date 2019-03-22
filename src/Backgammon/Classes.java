@@ -230,11 +230,11 @@ class Classes {
         //more dummy
 
 
-        static void removeDuplicateMoves(ArrayList<String> combos){
+        static void removeDuplicateMoves(ArrayList<MoveCombo> combos){
 
         }
 
-        static ArrayList<String> findAllValidMoves(Color color) {   //remove color parameter?
+        static ArrayList<MoveCombo> findAllValidMoves(Color color) {   //remove color parameter?
 
 
             /*findAllValidMoves() Proposed Pseudo-code:
@@ -262,15 +262,15 @@ class Classes {
 
                  if(Bar.piecesIn(currentTurn) >= maxMoves){              // i.e., if you have more (or same number of) pieces on the bar than you have dice
                     allMoves.addAll(findBarMoves());                     // rolls to use, you will only be able to move those pieces, and not any of findBoardMoves()
-                     System.out.println("Only Bar");
+                     System.out.println("Only Bar moves are allowed for this turn");
                  }else if(allHomeBoard()){
                     allMoves.addAll(findBoardMoves());
                     allMoves.addAll(findBearOffMoves());
-                     System.out.println("Board + BearOff");
+                     System.out.println("Board & BearOff moves are allowed for this turn");
                  }else{
                     allMoves.addAll(findBarMoves());
                     allMoves.addAll(findBoardMoves());
-                     System.out.println("Bar + Board");
+                     System.out.println("Bar & Board moves are allowed for this turn");
                  }
 
                  ArrayList<Move> copyAllMoves;                             // made so that when combining moves into pairs (or quadruplets when a double is rolled),
@@ -278,7 +278,7 @@ class Classes {
 
 
 
-                 ArrayList<String> allCombos = new ArrayList<>();  // Should it be an ArrayList of strings? Currently findAllValidMoves returns an ArrayList of Moves
+                 ArrayList<MoveCombo> allCombos = new ArrayList<>();  // Should it be an ArrayList of strings? Currently findAllValidMoves returns an ArrayList of Moves
                                                          // and then it's converted to strings in the controller, but once we start involving bar moves
                                                          // and bearOff moves, that might not be possible, so maybe best to convert to strings here, and then pass that
 
@@ -287,14 +287,14 @@ class Classes {
             System.out.println("allMoves initially looks like: " + allMoves);
 
             if(maxMoves==2) {
-                int i = 0;
+                //int i = 0;
                 for (Move firstMove : allMoves) {
                     copyAllMoves = new ArrayList<>(allMoves);
                     if (Bar.piecesIn(currentTurn) == 0 || firstMove.orgStrip == -1 || firstMove.orgStrip == 24) {      // how to code orgStrip==Bar, since currently orgStrip is an int only?
                         // maybe reserve an int like 0 to represent the bar, and then 1-24
                         // can actually correspond to what you'd expect on the board?
 
-                        System.out.println("made it");
+                        //System.out.println("made it");
 
                         // Update: seem to have gone with -1 representing bar
                         // which importantly can also end up as 24 due to the way Moves constructor handles different colors
@@ -331,11 +331,12 @@ class Classes {
                         //if not, need separate function
 
                         for (Move secondMove : copyAllMoves) {
-                            String letterCode = (i < 26) ? Character.toString('A' + i) : Character.toString('A' + (i / 26) - 1) + Character.toString('A' + i % 26);
-                            allCombos.add(letterCode + ": " + firstMove.isHitToString() + ", " + secondMove.isHitToString());
-                            i++;
+                            //String letterCode = (i < 26) ? Character.toString('A' + i) : Character.toString('A' + (i / 26) - 1) + Character.toString('A' + i % 26);
+                            allCombos.add(new MoveCombo(2, firstMove, secondMove));
+                            //i++;
                             //either add letterCode here or in printMoves function, but not both
-                            //probably will ultimately be removed from printMoves so that everything can be passed as one string
+                            //~~probably will ultimately be removed from printMoves so that everything can be passed as one string~~
+                            //on second thoughts pass new MoveCombo class, then convert to string
 
                         }
 
@@ -468,6 +469,20 @@ class Move {
         //} else
         //    return "Invalid move";
     }
+}
+
+class MoveCombo{
+    Move[] moves = new  Move[4];
+    int numMovesPerCombo;   //needed? or just change moves to ArrayList and can then use moves.size()?
+
+    MoveCombo(int num, Move... args){
+        int i=0;
+        for (Move m: args) {
+            moves[i++] = m;
+        }
+        numMovesPerCombo = num;
+    }
+
 }
 
 class Piece {
