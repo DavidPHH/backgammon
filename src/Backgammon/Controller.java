@@ -18,7 +18,7 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static Backgammon.Classes.Board.findAllValidMoves;
+import static Backgammon.Classes.Board.findAllValidCombos;
 
 
 public class Controller {
@@ -412,19 +412,19 @@ public class Controller {
 
     //Printing the valid moves
     private void printMoves(){
-        ArrayList<MoveCombo> validMoves = findAllValidMoves(Board.currentTurn);
+        ArrayList<MoveCombo> validMoveCombos = findAllValidCombos();
 
        // System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
         System.out.println("\n-------- List Start --------");
         int i = 0;
         gameInfo.appendText("\n\nPossible Moves:\n--------------------");
-        for (MoveCombo m : validMoves) {
+        for (MoveCombo mc : validMoveCombos) {
             String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
             System.out.print(letterCode + ":  ");
             gameInfo.appendText("\n" + letterCode + ":  ");
-            for (int j = 0; j < m.numMovesPerCombo; j++) {
-                System.out.print(m.moves[j].isHitToString() + " ");
-                gameInfo.appendText(m.moves[j].isHitToString() + " ");
+            for (int j = 0; j < mc.numMovesPerCombo; j++) {
+                System.out.print(mc.moves[j].isHitToString() + " ");
+                gameInfo.appendText(mc.moves[j].isHitToString() + " ");
             }
             System.out.println();
             i++;

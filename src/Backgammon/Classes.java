@@ -160,7 +160,7 @@ class Classes {
             int diff = displayedOrg - displayedDest;                                   //expressing it as a reverse of previous steps applied to it.
 
             if (org < 0 || dest < 0 || org > 23 || dest > 23) {                   // can probably be removed later since it
-                if(showErrors)                                                   // will likely only be used in findAllValidMoves()
+                if(showErrors)                                                   // will likely only be used in findBoardMoves()
                     System.out.println("Out of bounds");                        // which should naturally stay within those bounds
                 return false;
             }
@@ -200,10 +200,18 @@ class Classes {
             return boardMoves;
         }
 
-        //Temp dummy/hardcoded implementations
-
         static ArrayList<Move> findBarMoves(){
+            int dice1 = Board.die.getDice1()-1;
+            int dice2 = Board.die.getDice2()-1;
             ArrayList<Move> barMoves = new ArrayList<>();
+
+            if (stripArray[dice1].pieceColor == currentTurn || stripArray[dice1].quantity <= 1) {
+                barMoves.add(new Move(-1, dice1, currentTurn));
+            }
+            if (stripArray[dice2].pieceColor == currentTurn || stripArray[dice2].quantity <= 1) {
+                barMoves.add(new Move(-1, dice2, currentTurn));
+            }
+
             //barMoves.add(new Move(-1, 3, currentTurn));
             //barMoves.add(new Move(-1, 4, currentTurn));
 
@@ -230,26 +238,32 @@ class Classes {
         //more dummy
 
 
-        static void removeDuplicateMoves(ArrayList<MoveCombo> combos){
+        static void removeDuplicateCombos(ArrayList<MoveCombo> combos){
 
         }
 
-        static ArrayList<MoveCombo> findAllValidMoves(Color color) {   //remove color parameter?
+        static ArrayList<MoveCombo> findAllValidCombos() {
 
 
-            /*findAllValidMoves() Proposed Pseudo-code:
+            /*findAllValidCombos() Proposed Pseudo-code:
 
                 Assumes existence of following methods:
-                - findBarMoves()            i.e. moves starting on the bar and ending on the board                                      TODO
-                - findBoardMoves()          i.e. moves starting and ending on board, more or less what findAllValidMoves() does now     DONE
-                - findBearOffMoves()        i.e. moves starting on tbe board and ending in the bear-off                                 TODO
-                - removeMovesStartingOn()   i.e. exactly what it sound like, takes an arrayList of moves and an int,                    Done in-line instead
+                - findBarMoves()            i.e. moves starting on the bar and ending on the board                                        DONE
+                - findBoardMoves()          i.e. moves starting and ending on board, more or less what findAllValidCombos() used to do    DONE
+                - findBearOffMoves()        i.e. moves starting on tbe board and ending in the bear-off                                   TODO
+                - removeMovesStartingOn()   i.e. exactly what it sound like, takes an arrayList of moves and an int,                      DONE in-line instead
                                             and modifies that arrayList to remove any moves with an orgStrip of that int
-                - allHomeBoard()            Returns boolean on whether all your pieces are in your home board, needed to determine      TODO
+                - allHomeBoard()            Returns boolean on whether all your pieces are in your home board, needed to determine        TODO
                                             whether you can start bearing-off pieces yet
-                - removeDuplicateMoves()    Removes combinations of moves that have the same orgStrip for the first move,               TODO
-                                            same destStrip for the last move, and none of the strips landed on in between
-                                            resulted in hits. (Need two different versions for 2-move combos vs 4-move combos?)
+                - removeDuplicateCombos()   Removes combinations of moves that have the same orgStrip for the first move,                 TODO
+                                            same destStrip for the last move, the firstMove's destStrip is the secondMove's orgStrip
+                                            and none of the strips landed on in between resulted in hits.
+                                            (Need two different versions for 2-move combos vs 4-move combos?)
+                                            (should be a method of MoveCombo class?)
+
+                                            Should it also remove Combos that are moving separate pieces, but still result in the same board state?
+                                            Like "6-7 9-10" and "9-10 6-7"?
+
                 */
 
 
@@ -278,16 +292,13 @@ class Classes {
 
 
 
-                 ArrayList<MoveCombo> allCombos = new ArrayList<>();  // Should it be an ArrayList of strings? Currently findAllValidMoves returns an ArrayList of Moves
-                                                         // and then it's converted to strings in the controller, but once we start involving bar moves
-                                                         // and bearOff moves, that might not be possible, so maybe best to convert to strings here, and then pass that
+                 ArrayList<MoveCombo> allCombos = new ArrayList<>();
 
             //code to combine multiple moves in pairs to print -
 
             System.out.println("allMoves initially looks like: " + allMoves);
 
             if(maxMoves==2) {
-                //int i = 0;
                 for (Move firstMove : allMoves) {
                     copyAllMoves = new ArrayList<>(allMoves);
                     if (Bar.piecesIn(currentTurn) == 0 || firstMove.orgStrip == -1 || firstMove.orgStrip == 24) {      // how to code orgStrip==Bar, since currently orgStrip is an int only?
@@ -318,26 +329,27 @@ class Classes {
                         //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
                         //no more pieces left on orgStrip after the move is made, i.e. if there is currently only one piece on orgStrip
 
-                        if (firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && stripArray[firstMove.orgStrip].quantity <= 1){
+                        if (firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && stripArray[firstMove.orgStrip].quantity <= 1){  //<=1 to make testing easier, really could be ==1
                             //System.out.println("Removing moves starting on same");
                             copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
                             //System.out.println("Removed successfully");
+                        } else if (Bar.piecesIn(currentTurn) <= 1){  // i.e. when orgStrip = -1 (Bar)
+                            copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
                         }
 
-                        // >=0 and <24 conditions included so that it doesn't try to dereference something like stripArray[-1] for bar and bearOff moves
+                        // >=0 and <24 conditions included so that it doesn't try to dereference something like stripArray[-1] for bar moves
 
                         //keep in mind we also need to remove any barMoves which are no longer possible,
                         //above if statement might already be sufficient if we go the route of assigning the bar an index that's actually included in stripArray
                         //if not, need separate function
 
                         for (Move secondMove : copyAllMoves) {
-                            //String letterCode = (i < 26) ? Character.toString('A' + i) : Character.toString('A' + (i / 26) - 1) + Character.toString('A' + i % 26);
-                            allCombos.add(new MoveCombo(2, firstMove, secondMove));
-                            //i++;
-                            //either add letterCode here or in printMoves function, but not both
-                            //~~probably will ultimately be removed from printMoves so that everything can be passed as one string~~
-                            //on second thoughts pass new MoveCombo class, then convert to string
-
+                            //if (Math.abs(firstMove.orgStrip-firstMove.destStrip) + Math.abs(secondMove.orgStrip-secondMove.destStrip) == Board.die.getDice1() + Board.die.getDice2()){
+                            //commented out because still testing, so will rarely actually match dice numbers. Seems to work fine though
+                            System.out.println("Combined distance = " + (Math.abs(firstMove.orgStrip-firstMove.destStrip) + Math.abs(secondMove.orgStrip-secondMove.destStrip)));
+                            System.out.println("Should be: " + (Board.die.getDice1() + Board.die.getDice2()));
+                                allCombos.add(new MoveCombo(2, firstMove, secondMove));
+                            //}
                         }
 
                     }
@@ -349,7 +361,7 @@ class Classes {
 
               //also need to provide code for situations when only one valid move is found (and 3 as well I guess)
 
-              removeDuplicateMoves(allCombos);
+              removeDuplicateCombos(allCombos);
 
               return allCombos;
 
@@ -464,8 +476,8 @@ class Move {
         //if (Classes.Board.valid(this, false)) {
             return ((orgStrip==-1 || orgStrip == 24)?"Bar":((color==Color.WHITE)?(orgStrip+1):(23-orgStrip+1))) +
                     "-" +
-                    ((color==Color.WHITE)?(destStrip+1):(23-destStrip+1)) +
-                    (destStrip==-2?"Off":((Classes.Board.stripArray[destStrip].quantity == 1 && Classes.Board.stripArray[destStrip].pieceColor != color)?"*":""));
+                    (destStrip==-2?"Off":((color==Color.WHITE)?(destStrip+1):(23-destStrip+1)) +
+                    ((Classes.Board.stripArray[destStrip].quantity == 1 && Classes.Board.stripArray[destStrip].pieceColor != color)?"*":""));
         //} else
         //    return "Invalid move";
     }
