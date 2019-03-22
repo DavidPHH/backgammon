@@ -184,7 +184,7 @@ public class Controller {
                 pCommands.setText("");
                 if (!hasRolled) {
                     Board.rollDice();
-
+                    hasRolled = true;
                     animateRoll(Board.die.getDice1(), Board.die.getDice2());
 
                     //Printing of the results of the player's roll
@@ -198,7 +198,6 @@ public class Controller {
 
                     moveList = findAllValidMoves(Board.currentTurn);
                     printMoves(); // Printing the moves after roll
-                    hasRolled = true;
                 } else {
                     gameInfo.appendText("\nYou cannot roll again\n");
                 }
