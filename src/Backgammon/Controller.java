@@ -138,7 +138,10 @@ public class Controller {
                 break;
             case "/move":
                 pCommands.setText("");
-                if (Board.currentMoves < Board.maxMoves) {
+                if(!hasRolled){
+                    gameInfo.appendText("\nPlease roll before you move");
+                }
+                else if (Board.currentMoves < Board.maxMoves) {
                     String[] splot = inputString.split(" ");
                     int org, dest;
                     try {
@@ -234,6 +237,7 @@ public class Controller {
                 Board.cheat();
                 gameInfo.appendText("\nActivated cheat board. Please roll again\nSetting move to player 1");
                 Board.currentTurn = Color.WHITE;
+                Board.currentMoves = 0;
                 gameStart = true; // In case /cheat was used before game was started
                 hasRolled = false;
                 pCommands.setText("");
