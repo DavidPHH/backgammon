@@ -1,5 +1,8 @@
 package Backgammon;
 
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -525,8 +528,7 @@ class Piece {
     Piece(Color color) {
         this.color = color;
         String url = ((color == Color.WHITE) ? "Backgammon/res/piece-white.png" : "Backgammon/res/piece-black.png");
-        Image image = new Image(url);
-        imgView = new ImageView(image);
+        imgView = new ImageView(url);
         imgView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             //TODO what happens when a piece is clicked
         });
@@ -534,14 +536,14 @@ class Piece {
 
     ImageView toBearOff() {
         String url = ((color == Color.WHITE) ? "Backgammon/res/side-piece-white.png" : "Backgammon/res/side-piece-black.png");
-        Image image = new Image(url);
-        return new ImageView(image);
+        return new ImageView(url);
     }
+
 }
 
 class Strip {
     VBox vBox;
-    int stripID; // Maybe not needed
+    int stripID;
     int quantity = 0; // Amount of pieces in this strip
     Color pieceColor = Color.NONE;
 
@@ -592,6 +594,25 @@ class Strip {
         updateSpacing();
 
         return removedColor;
+    }
+
+    void removeHighlight() {
+        for (Node n : vBox.getChildren()) {
+            n.setEffect(null);
+        }
+    }
+
+    void highlightStrip() {
+        DropShadow ds = new DropShadow(10, javafx.scene.paint.Color.GREENYELLOW);
+        final ObservableList<Node> children = vBox.getChildren();
+        Node temp = children.get(0);
+        if (this.stripID >= 0 && this.stripID <= 11) {
+            for (Node n : vBox.getChildren()) {
+                n.setEffect(null);
+                temp = n;
+            }
+        }
+        temp.setEffect(ds);
     }
 }
 
