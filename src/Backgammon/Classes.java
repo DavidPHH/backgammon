@@ -78,10 +78,27 @@ class Classes {
             }
             // Normal move
             if(move.orgStrip != -1 && move.destStrip >= 0){
+                int dist = 0;
+                // Getting which dice number was used.
+                if(currentTurn == Color.WHITE)
+                    dist = move.orgStrip - move.destStrip;
+                else if(currentTurn == Color.BLACK)
+                    dist = move.destStrip - move.orgStrip;
+
                 isMoveAHit(getStrip(move.destStrip));
                 stripArray[move.orgStrip].pop();
                 stripArray[move.destStrip].insert(new Piece(move.color));
-                currentMoves++;
+                if(maxMoves == 2){ // No doubles
+                    if(dist == die.getDice1()) // Removes the used dice from being used again in this turn
+                        die.resetDice(1);
+                    else
+                        die.resetDice(2);
+                    currentMoves++;
+                }
+                else if(maxMoves == 4){ // Player rolled doubles
+                    int moves = (die.getDice1()/dist); // The number of times the player moved in one go
+                    currentMoves += moves; // No need to reset die here since they both have the same number
+                }
             }
             else if(move.orgStrip == -1){ // Moving from the bar
                 isMoveAHit(getStrip(move.destStrip));
@@ -126,7 +143,7 @@ class Classes {
             */
 
             // User wants to move to the bear-off, this checks if it is allowed. This is done before the bar check
-            // as moving to the bear-off has a different check for move according to the die.
+            // as moving to the bear-off has a different check for move according to the die. Bear-off == -2
             if(move.destStrip == -2){
                 int diff;
                 if(currentTurn == Color.WHITE){
@@ -217,6 +234,14 @@ class Classes {
             else if(currentTurn == Color.WHITE)
                 if(move.orgStrip < move.destStrip)
                     return false;
+
+            //Ensure the player uses a move related to the dice roll. Moved from Eric's valid function
+            int displayedDest = (move.color == Color.WHITE) ? (move.destStrip+1) : (23-move.destStrip)+1;    //yes, math for 23-org+1 could be simplified, but I
+            int displayedOrg = (move.color == Color.WHITE) ? (move.orgStrip+1) : (23-move.orgStrip)+1;      //kept it that way so that it's easier to make sense of,
+            int diff = displayedOrg - displayedDest;
+            if(diff != Board.die.getDice1() && diff != Board.die.getDice2()){
+                return false;
+            }
 
             // Just checking a normal move, no bar/bear-off
             if(org.quantity == 0 || (org.pieceColor != currentTurn)) // Trying to move opponents piece or move nothing
@@ -687,8 +712,13 @@ class Dice {
     int getDice1() {
         return dice1;
     }
-
     int getDice2() {
         return dice2;
+    }
+    void resetDice(int diceNo){
+        if(diceNo == 1)
+            this.dice1 = 0;
+        else
+            this.dice2 = 0;
     }
 }
