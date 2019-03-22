@@ -107,7 +107,7 @@ class Classes {
         }
 
         static boolean validMove(Move move) {
-            if (move.orgStrip < -1 || move.destStrip < -3 || move.orgStrip > 23 || move.destStrip > 23) // If outside of array, it's an invalid move
+            if (move.orgStrip < -1 || move.destStrip < -3 || move.orgStrip > 23 || move.destStrip > 23 || (move.orgStrip == move.destStrip)) // If outside of array, it's an invalid move
                 return false;
             if(move.destStrip == -1) // Can probably be put in previous if, brain not working rn
                 return false;
@@ -119,26 +119,80 @@ class Classes {
             if(move.destStrip != - 2)
                 dest = getStrip(move.destStrip);
 
-            /* TODO Logic for ensuring move matches dice roll. Bear-off will have slightly different logic
-                as you can bear-off with a dice roll higher than distance to bear-off. Bear-off logic will be
-                in bear-off if statement.
+            /* TODO Logic for ensuring move matches dice roll. Eric has this in his valid function.
+                It just needs to be adapted to be able handle -1, and black moving from the other side
+                of the board.
+                Logic to allow moves to use the double moves i.e. move 16 forward if roll double 4
             */
 
-            // User wants to move to the bear-off, this checks if it is allowed.
+            // User wants to move to the bear-off, this checks if it is allowed. This is done before the bar check
+            // as moving to the bear-off has a different check for move according to the die.
             if(move.destStrip == -2){
+                int diff;
                 if(currentTurn == Color.WHITE){
+                    diff = move.orgStrip + 1; // Adding 1 since destination will be from org to 0th position +1 to the bear-off
+
                     int count = 0;
-                    for(int i = 0;i < 6;i++){
+                    for(int i = 0;i < 6;i++){ //Checks if the bear-off can be attained in the first place
                         count += stripArray[i].quantity;
                     }
-                    return count == Main.players[0].getPiecesLeft();
+                    if(count == Main.players[0].getPiecesLeft()){
+                        if(diff <= die.getDice1()) // If the first die will bring you to bear-off
+                            return true;
+                        else if(diff <= die.getDice2()) // If the second die will bring you to bear-off
+                            return true;
+                        else if(diff <= (die.getDice1() + die.getDice2())){ // Combination of the die
+                            Move mDie1 = new Move(move.orgStrip,move.orgStrip-die.getDice1(),currentTurn);
+                            Move mDie2 = new Move(move.orgStrip,move.orgStrip-die.getDice2(),currentTurn);
+                            //The individual moves could potentially be blocked by an opposing piece
+                            if(validMove(mDie1)){ // If the first dice leads to a valid move
+                                mDie2.orgStrip = mDie1.destStrip;
+                                mDie2.destStrip = -2;
+                                return validMove(mDie2); // Returns whether or not the second move is valid
+                            }
+                            else if(validMove(mDie2)){ // If the first die leads to a valid move at the start, but not the first
+                                mDie1.orgStrip = mDie2.destStrip;
+                                mDie1.destStrip = -2;
+                                return validMove(mDie1); // Returns whether or not the second move is valid
+                            }
+                            else{
+                                return false;
+                            }
+                        }
+                    }
+                    return false;
                 }
                 else if(currentTurn == Color.BLACK){
+                    diff = (23 - move.orgStrip) + 1;
                     int count = 0;
                     for(int i = 23;i >= 18;i--){
                         count += stripArray[i].quantity;
                     }
-                    return count == Main.players[1].getPiecesLeft();
+                    if(count == Main.players[1].getPiecesLeft()){
+                        if(diff <= die.getDice1()) // If the first die will bring you to bear-off
+                            return true;
+                        else if(diff <= die.getDice2()) // If the second die will bring you to bear-off
+                            return true;
+                        else if(diff <= (die.getDice1() + die.getDice2())){ // Combination of the die
+                            Move mDie1 = move;
+                            mDie1.destStrip = move.orgStrip+die.getDice1();
+                            Move mDie2 = move;
+                            mDie2.destStrip = move.orgStrip + die.getDice2();
+                            //The individual moves could potentially be blocked by an opposing piece
+                            if(validMove(mDie1)){ // If the first dice leads to a valid move
+                                mDie2.orgStrip = mDie1.destStrip;
+                                mDie2.destStrip = -2;
+                                return validMove(mDie2); // Returns whether or not the second move is valid
+                            }
+                            else if(validMove(mDie2)){ // If the first die leads to a valid move at the start, but not the first
+                                mDie1.orgStrip = mDie2.destStrip;
+                                mDie1.destStrip = -2;
+                                return validMove(mDie1); // Returns whether or not the second move is valid
+                            }
+                            else
+                                return false;
+                        }
+                    }
                 }
             }
 
