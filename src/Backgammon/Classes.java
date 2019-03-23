@@ -91,18 +91,24 @@ class Classes {
                 else if (currentTurn == Color.BLACK)
                     dist = move.destStrip - move.orgStrip;
 
-                isMoveAHit(getStrip(move.destStrip));
+                isMoveAHit(getStrip(move.destStrip)); // Checks if the move is a hit
                 stripArray[move.orgStrip].pop();
                 stripArray[move.destStrip].insert(new Piece(move.color));
                 if (maxMoves == 2) { // No doubles
-                    if (dist == die.getDice1()) // Removes the used dice from being used again in this turn
+                    if (dist == die.getDice1()) { // Removes the used dice from being used again in this turn
                         die.resetDice(1);
-                    else
+                        currentMoves++;
+                    }
+                    else if(dist == die.getDice2()){
                         die.resetDice(2);
-                    currentMoves++;
+                        currentMoves++;
+                    }
+                    else if(dist == die.getDice1() + die.getDice2()){ // Player used both dice rolls in their move
+                        currentMoves = currentMoves+2;
+                    }
                 } else if (maxMoves == 4) { // Player rolled doubles
-                    int moves = (die.getDice1() / dist); // The number of times the player moved in one go
-                    currentMoves += moves; // No need to reset die here since they both have the same number
+                    int moves = (dist / die.getDice1()); // The number of times the player moved in one go
+                    currentMoves += moves; // Changes currentMoves by the number of times contained within dist
                 }
             } else if (move.orgStrip == -1) { // Moving from the bar
                 isMoveAHit(getStrip(move.destStrip));
@@ -267,13 +273,31 @@ class Classes {
             int displayedDest = (move.color == Color.WHITE) ? (move.destStrip + 1) : (23 - move.destStrip) + 1;    //yes, math for 23-org+1 could be simplified, but I
             int displayedOrg = (move.color == Color.WHITE) ? (move.orgStrip + 1) : (23 - move.orgStrip) + 1;      //kept it that way so that it's easier to make sense of,
             int diff = displayedOrg - displayedDest;
-            if (diff != Board.die.getDice1() && diff != Board.die.getDice2()) {
+            if (maxMoves == 2 && diff != die.getDice1() && diff != die.getDice2() && diff!= die.getDice1()+die.getDice2()) {
                 return false;
+            } else if(maxMoves - currentMoves == 4){ // Player rolled doubles and has access to 4 moves
+                // In a double move both dice values are the same. If diff % dice value does not = 0, then the
+                // player has not input a multiple of the dice value. If it s greater than 4 times the dice value,
+                // the player has exceeded the allowed move.
+                if(diff <= (4 * die.getDice1()) && diff % die.getDice1() != 0)
+                    return false;
+                else if(diff > (4* die.getDice1())) // If the move is bigger than the max allowed move
+                    return false;
+            }else if(maxMoves - currentMoves == 3){ // Player rolled doubles and has access to 3 moves
+                if(diff <= (3*die.getDice1()) && diff % die.getDice1() != 0)
+                    return false;
+                else if(diff > (3*die.getDice1()))
+                    return false;
+            }else if(maxMoves == 4 && maxMoves - currentMoves <= 2){
+                if(diff <= ((maxMoves-currentMoves)*die.getDice1()) && diff % die.getDice1() != 0){
+                    return false;
+                }else if(diff > ((maxMoves-currentMoves)*die.getDice1()))
+                    return false; // Player rolled doubles, has already moved twice, and then tries to combine more than allowed number of moves
             }
+
             // Just checking a normal move, no bar/bear-off
             if (org.quantity == 0 || (org.pieceColor != currentTurn)) // Trying to move opponents piece or move nothing
                 return false;
-
             if ((org.pieceColor != dest.pieceColor) && dest.quantity > 1) { // If the dest strip has pieces of the opposite color,
                 return false; // it's an invalid move
             } else if ((org.pieceColor != dest.pieceColor) && dest.quantity == 1) { // This move is a hit to bar
@@ -282,9 +306,9 @@ class Classes {
                 return true;
             // If the player is moving a piece that isn't his
             return move.color == dest.pieceColor;
-
         }
 
+        //Checking if the second move from the Bar is a valid move
         static boolean checkSecondMoveFromBar(Move firstMove, Move secondMove, Move move){
             secondMove.orgStrip = firstMove.destStrip;
             secondMove.destStrip = move.destStrip;
@@ -337,7 +361,7 @@ class Classes {
             Bar.insert(ripPiece);
         }
 
-        static void isMoveAHit(Strip dest) {
+        static void isMoveAHit(Strip dest) { // If the move is a hit, removes the opposing piece in preparation for the move
             if ((currentTurn != dest.pieceColor) && dest.quantity == 1) // Destination has only 1 opposing piece so a hit
                 hitMove(dest);
         }
@@ -804,8 +828,6 @@ class Dice {
         Random rand = new Random();
         dice1 = rand.nextInt(6) + 1;
         dice2 = rand.nextInt(6) + 1;
-
-
     }
 
     int getDice1() {
