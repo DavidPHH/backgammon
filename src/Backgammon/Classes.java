@@ -139,9 +139,7 @@ class Classes {
             if (move.destStrip != -2)
                 dest = getStrip(move.destStrip);
 
-            /* TODO Logic for ensuring move matches dice roll. Eric has this in his valid function.
-                It just needs to be adapted to be able handle -1, and black moving from the other side
-                of the board.
+            /* TODO
                 Logic to allow moves to use the double moves i.e. move 16 forward if roll double 4
             */
 
@@ -216,12 +214,45 @@ class Classes {
             if (Bar.piecesIn(currentTurn) > 0) {
                 if (move.orgStrip != -1) // Checks to see if user is moving from the bar
                     return false;
-                else if ((currentTurn != dest.pieceColor) && dest.quantity > 1) // Destination has opposing pieces
+                else{ // Checking to see if the move matches the dice roll
+                    int dist = 0;
+                    if(currentTurn == Color.WHITE){ // Moves from bar (-1) -> stripArray[23] ....
+                        dist = 23 - move.destStrip+1; // +1 takes into account moving off bar
+                    }else if(currentTurn == Color.BLACK){
+                        dist = move.destStrip +1;
+                    }
+                    if(dist == die.getDice1() || dist == die.getDice2()){
+                        if((currentTurn != dest.pieceColor) && dest.quantity > 1) // Destination has opposing pieces
+                            return false;
+                        else if((currentTurn != dest.pieceColor) && dest.quantity == 1) // Destination has only 1 opposing piece so a hit
+                            return true;
+                        else {
+                            return true;
+                        }
+                    }else if(dist == die.getDice1() + die.getDice2()){
+                        Move wDie1;
+                        Move wDie2;
+                        if(currentTurn == Color.WHITE){
+                            wDie1 = new Move(move.orgStrip,move.destStrip + die.getDice2(),currentTurn);
+                            wDie2 = new Move(move.orgStrip,move.destStrip + die.getDice1(),currentTurn);
+                        }else if(currentTurn == Color.BLACK){
+                            wDie1 = new Move(0,0,currentTurn);
+                            wDie2 = new Move(0,0,currentTurn);
+                            wDie1.orgStrip = move.orgStrip;
+                            wDie1.destStrip = (move.orgStrip + die.getDice2());
+                            wDie2.destStrip = (move.orgStrip + die.getDice1());
+                        }else
+                            return false;
+
+                        if(validMove(wDie1)){ // Checking if the individual moves are valid moves, before combining them
+                            System.out.println("First was valid");
+                            return checkSecondMoveFromBar(wDie1,wDie2,move);
+                        }else if(validMove(wDie2)){
+                            return checkSecondMoveFromBar(wDie2,wDie1,move);
+                        }
+                        return false;
+                    }
                     return false;
-                else if ((currentTurn != dest.pieceColor) && dest.quantity == 1) // Destination has only 1 opposing piece so a hit
-                    return true;
-                else {
-                    return true;
                 }
             }
             // Ensures user does not go backwards
@@ -239,7 +270,6 @@ class Classes {
             if (diff != Board.die.getDice1() && diff != Board.die.getDice2()) {
                 return false;
             }
-
             // Just checking a normal move, no bar/bear-off
             if (org.quantity == 0 || (org.pieceColor != currentTurn)) // Trying to move opponents piece or move nothing
                 return false;
@@ -253,6 +283,53 @@ class Classes {
             // If the player is moving a piece that isn't his
             return move.color == dest.pieceColor;
 
+        }
+
+        static boolean checkSecondMoveFromBar(Move firstMove, Move secondMove, Move move){
+            secondMove.orgStrip = firstMove.destStrip;
+            secondMove.destStrip = move.destStrip;
+            boolean tempAdded = false;
+            // Input a temp piece if empty, for checking if it's a valid move.
+            if(stripArray[secondMove.orgStrip].pieceColor == Color.NONE){
+                stripArray[secondMove.orgStrip].insert(new Piece(currentTurn));
+                tempAdded = true;
+            }else if(currentTurn == Color.BLACK && stripArray[secondMove.orgStrip].pieceColor == Color.WHITE){
+                stripArray[secondMove.orgStrip].pop();
+                stripArray[secondMove.orgStrip].insert(new Piece(currentTurn));
+                tempAdded = true;
+            }else if(currentTurn == Color.WHITE && stripArray[secondMove.orgStrip].pieceColor == Color.BLACK){
+                stripArray[secondMove.orgStrip].pop();
+                stripArray[secondMove.orgStrip].insert(new Piece(currentTurn));
+                tempAdded = true;
+            }
+
+            int count = 0;
+            int piecesInBar = Bar.piecesIn(currentTurn);
+            Piece[] temp = new Piece[piecesInBar];
+
+            while(Bar.piecesIn(currentTurn) > 0){ // Remove the pieces in the Bar temporarily so second move can be tested
+                temp[count] = new Piece(Bar.remove(currentTurn));
+                count++;
+            }
+            count--;
+
+            if(validMove(secondMove)){
+                while(count >= 0){
+                    Bar.insert(temp[count]);
+                    count--;
+                }
+                if(tempAdded)
+                    stripArray[secondMove.orgStrip].pop(); // Remove the temp piece
+                return true;
+            }else{ // If invalid move, puts the pieces back
+                while(count >= 0){
+                    Bar.insert(temp[count]);
+                    count--;
+                }
+                if(tempAdded)
+                    stripArray[secondMove.orgStrip].pop(); // Remove the temp piece
+            }
+            return false;
         }
 
         static void hitMove(Strip dest) {
@@ -448,7 +525,7 @@ class Classes {
 
             for (int i = 23, j = 0; i >= 19; i--, j = j + 2) {
                 stripArray[i].insert(black[j]);
-                stripArray[i].insert(black[j + 1]);
+                //stripArray[i].insert(black[j + 1]);
             }
             Bar.insert(black, 10, 12);
             BearOff.insert(black, 13, 14);
@@ -677,13 +754,14 @@ class Bar {
         boxes[color].getChildren().add(v);
     }
 
-    void remove(Color color) {
+    Color remove(Color color) {
         int x = color.getValue();
         int len = pieces[x].size();
         if (len == 0)
-            return;
+            return null;
         pieces[x].remove(len - 1);
         boxes[x].getChildren().remove(len - 1);
+        return color;
     }
 
     //Finds the number of pieces in the Bar for COLOR's turn

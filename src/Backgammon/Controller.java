@@ -79,7 +79,7 @@ public class Controller {
                 "\n3. /quit" +
                 "\n4. /commands" +
                 "\n5. /move (origin: int) (destination: int) Bar = 0 Bear-off = -1" +
-                "\n6. /listMove (letter)  NOTE: The letter should correspond to a letter from the given move list" +
+                "\n6. /listMove (letter)  NOTE: The letter(s) should correspond to the letter(s) from the given move list" +
                 "\n7. /valid (origin: int) (destination: int)" +
                 "\n8. /cheat" +
                 "\n9. /print" +
@@ -123,7 +123,7 @@ public class Controller {
                         "\n3. /quit" +
                         "\n4. /commands" +
                         "\n5. /move (origin: int) (destination: int) NOTE: Bar = 0, Bear-off = -1" +
-                        "\n6. /listMove (letter)  NOTE: The letter should correspond to a letter from the given move list" +
+                        "\n6. /listMove (letter)  NOTE: The letter(s) should correspond to the letter(s) from the given move list" +
                         "\n7. /valid (origin: int) (destination: int)" +
                         "\n8. /cheat" +
                         "\n9. /print" +
