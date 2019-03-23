@@ -272,7 +272,7 @@ class Classes {
             int displayedDest = (move.color == Color.WHITE) ? (move.destStrip + 1) : (23 - move.destStrip) + 1;    //yes, math for 23-org+1 could be simplified, but I
             int displayedOrg = (move.color == Color.WHITE) ? (move.orgStrip + 1) : (23 - move.orgStrip) + 1;      //kept it that way so that it's easier to make sense of,
             int diff = displayedOrg - displayedDest;
-            if (maxMoves == 2 && diff != die.getDice1() && diff != die.getDice2() && diff!= die.getDice1()+die.getDice2()) {
+            if (maxMoves == 2 && diff != die.getDice1() && diff != die.getDice2() && diff!= die.getDice1()+die.getDice2() && tests != -1) {
                 return false;
             } else if(maxMoves - currentMoves == 4 && tests != -1){ // Player rolled doubles and has access to 4 moves
                 // In a double move both dice values are the same. If diff % dice value does not = 0, then the
@@ -287,13 +287,14 @@ class Classes {
                     return false;
                 else if(diff > (3*die.getDice1()))
                     return false;
+                //TODO Add true for correct moves with <= 3
             }else if(maxMoves == 4 && maxMoves - currentMoves <= 2 && tests!= -1){
                 if(diff <= ((maxMoves-currentMoves)*die.getDice1()) && diff % die.getDice1() != 0){
                     return false;
                 }else if(diff > ((maxMoves-currentMoves)*die.getDice1()))
                     return false; // Player rolled doubles, has already moved twice, and then tries to combine more than allowed number of moves
                 else if(diff == (2*die.getDice1())){} // 2 moves in 1
-                    //TODO Removed the function call for quick intermediate push
+                    //return checkCombinedMove(move,2);//TODO Uncomment this and re-add function
             }
 
             // Just checking a normal move, no bar/bear-off
@@ -837,6 +838,7 @@ class Dice {
         Random rand = new Random();
         dice1 = rand.nextInt(6) + 1;
         dice2 = rand.nextInt(6) + 1;
+
     }
 
     int getDice1() {
