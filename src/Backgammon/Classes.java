@@ -79,7 +79,6 @@ class Classes {
             // Moves from /listmove have already been checked if it is valid so it doesn't need to check again
             // < 0 ==  /move  >= 0 == listMove
             if (type < 0) {
-                System.out.println(type);
                 if (!validMove(move,0))
                     return;
             }
@@ -95,37 +94,107 @@ class Classes {
                 isMoveAHit(getStrip(move.destStrip)); // Checks if the move is a hit
                 stripArray[move.orgStrip].pop();
                 stripArray[move.destStrip].insert(new Piece(move.color));
-                if (maxMoves == 2) { // No doubles
-                    if (dist == die.getDice1()) { // Removes the used dice from being used again in this turn
-                        die.resetDice(1);
-                        currentMoves++;
-                    }
-                    else if(dist == die.getDice2()){
-                        die.resetDice(2);
-                        currentMoves++;
-                    }
-                    else if(dist == die.getDice1() + die.getDice2()){ // Player used both dice rolls in their move
-                        currentMoves = currentMoves+2;
-                    }
-                } else if (maxMoves == 4) { // Player rolled doubles
-                    int moves = (dist / die.getDice1()); // The number of times the player moved in one go
-                    currentMoves += moves; // Changes currentMoves by the number of times contained within dist
-                }
+
+                changingCurrentMoves(dist);
             } else if (move.orgStrip == -1) { // Moving from the bar
-                isMoveAHit(getStrip(move.destStrip));
-                Bar.remove(currentTurn);
-                stripArray[move.destStrip].insert(new Piece(move.color));
-                currentMoves++;
+                moveFromBar(move);
             } else if (move.destStrip == -2) { // Moving to the bear-off
-                Piece freedom = new Piece(stripArray[move.orgStrip].pop());
-                BearOff.insert(freedom);
-                currentMoves++;
-                if (currentTurn == Color.WHITE)
-                    Main.players[0].setPiecesLeft(Main.players[0].getPiecesLeft() - 1);
-                else if (currentTurn == Color.BLACK) {
-                    Main.players[1].setPiecesLeft(Main.players[1].getPiecesLeft() - 1);
-                }
+                moveToBearOff(move);
             }
+        }
+
+        static void moveFromBar(Move move){
+            int dist = getMoveDistFromBar(move);
+            isMoveAHit(getStrip(move.destStrip));
+            Piece freedom = new Piece(Bar.remove(currentTurn));
+            stripArray[move.destStrip].insert(freedom);
+            changingCurrentMoves(dist);
+        }
+
+        static int getMoveDistFromBar(Move move){
+            int dist = 0; // Getting the number the user input for the move
+            if(currentTurn == Color.WHITE){ // Moves from bar (-1) -> stripArray[23] ....
+                dist = 23 - move.destStrip+1; // +1 takes into account moving off bar
+            }else if(currentTurn == Color.BLACK){
+                dist = move.destStrip +1;
+            }
+            return dist;
+        }
+
+        static void changingCurrentMoves(int dist){
+            if (maxMoves == 2) { // No doubles
+                if (dist == die.getDice1()) { // Removes the used dice from being used again in this turn
+                    die.resetDice(1);
+                    currentMoves++;
+                }
+                else if(dist == die.getDice2()){
+                    die.resetDice(2);
+                    currentMoves++;
+                }
+                else if(dist == die.getDice1() + die.getDice2()){ // Player used both dice rolls in their move
+                    currentMoves = currentMoves+2;
+                }
+            } else if (maxMoves == 4) { // Player rolled doubles
+                int moves = (dist / die.getDice1()); // The number of times the player moved in one go
+                currentMoves += moves; // Changes currentMoves by the number of times contained within dist
+            }
+        }
+
+        static void moveToBearOff(Move move){
+            Piece freedom = new Piece(stripArray[move.orgStrip].pop());
+            BearOff.insert(freedom);
+
+            if (currentTurn == Color.WHITE) // Takes away a piece from the overall pieces left that a player has
+                Main.players[0].setPiecesLeft(Main.players[0].getPiecesLeft() - 1);
+            else if (currentTurn == Color.BLACK) {
+                Main.players[1].setPiecesLeft(Main.players[1].getPiecesLeft() - 1);
+            }
+
+            if(Main.players[currentTurn.getValue()].getPiecesLeft() == 0) // Ends the game if the player bore off their last piece
+                endGame(); // TODO
+
+            int dist = 0;
+            if(currentTurn == Color.WHITE) // Gets the amount moved
+                dist = move.orgStrip+1;
+            else if(currentTurn == Color.BLACK)
+                dist = (23-move.orgStrip)+1;
+
+            if(dist == 0) // There has been an error
+                return;
+
+            if(die.getDice1() > die.getDice2()){ // Changes currentMoves based on which dice roll was used
+                if(dist <= die.getDice2()){
+                    die.resetDice(2);
+                    currentMoves++;
+                }
+                else if(dist <= die.getDice1()){
+                    die.resetDice(1);
+                    currentMoves++;
+                }else if(dist <= (die.getDice1()) + die.getDice2())
+                    currentMoves = currentMoves +2;
+
+            }else if(die.getDice2() > die.getDice1()){
+                if(dist <= die.getDice1()){
+                    die.resetDice(1);
+                    currentMoves++;
+                }
+                else if(dist <= die.getDice2()){
+                    die.resetDice(2);
+                    currentMoves++;
+                }else if(dist <= (die.getDice1()) + die.getDice2())
+                    currentMoves = currentMoves +2;
+            }else if(maxMoves == 4){ // doubles involved
+                if(dist > die.getDice1() * 3)
+                    currentMoves = currentMoves + 4;
+                else if(dist > (2 * die.getDice1()) && dist < (3 * die.getDice1()))
+                    currentMoves = currentMoves + 3;
+                else if(dist > (die.getDice1()) && dist < (2* die.getDice1()))
+                    currentMoves = currentMoves + 2;
+            }
+        }
+
+        static void endGame(){ // TODO
+            return;
         }
 
         static void testMove(Move move) { // same as makeMove but allows both colors on the same strip for test purposes
@@ -143,11 +212,12 @@ class Classes {
             if (move.orgStrip != -1) {
                 org = getStrip(move.orgStrip);
             }
-            if (move.destStrip != -2)
+            if (move.destStrip != -2){
                 dest = getStrip(move.destStrip);
-
+            }
             /* TODO
-                Logic to allow moves to use the double moves i.e. move 16 forward if roll double 4
+                Logic to allow moves to use the double moves for Bar and Bear-off i.e. move 16 forward if roll double 4
+                This is only for when the user uses /move not /listmove
             */
 
             // User wants to move to the bear-off, this checks if it is allowed. This is done before the bar check
@@ -213,6 +283,7 @@ class Classes {
                                 return false;
                         }
                     }
+                    return false;
                 }
                 return false;
             }
@@ -223,12 +294,8 @@ class Classes {
                 if (Bar.piecesIn(currentTurn) == 0) // Checks to see if user is moving from the bar
                     return false;
                 else{ // Checking to see if the move matches the dice roll
-                    int dist = 0; // Getting the number the user input for the move
-                    if(currentTurn == Color.WHITE){ // Moves from bar (-1) -> stripArray[23] ....
-                        dist = 23 - move.destStrip+1; // +1 takes into account moving off bar
-                    }else if(currentTurn == Color.BLACK){
-                        dist = move.destStrip +1;
-                    }
+                    int dist = getMoveDistFromBar(move);
+
                     if(dist == die.getDice1() || dist == die.getDice2()){ // Roll matches a single dice
                         if((currentTurn != dest.pieceColor) && dest.quantity > 1) // Destination has opposing pieces
                             return false;
@@ -262,6 +329,9 @@ class Classes {
                     return false;
                 }
             }
+
+            if(Bar.piecesIn(currentTurn) > 0)
+                return false;
 
             // Ensures user does not go backwards
             if (currentTurn == Color.BLACK) {
@@ -732,8 +802,8 @@ class Classes {
             Bar.insert(black, 10, 12);
             BearOff.insert(black, 13, 14);
 
-            Main.players[0].setPiecesLeft(9);
-            Main.players[1].setPiecesLeft(10);
+            Main.players[0].setPiecesLeft(12);
+            Main.players[1].setPiecesLeft(13);
 
             Board.currentTurn = Color.WHITE;
             Board.currentMoves = 0;
