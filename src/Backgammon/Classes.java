@@ -221,13 +221,13 @@ class Classes {
                 if (move.orgStrip != -1) // Checks to see if user is moving from the bar
                     return false;
                 else{ // Checking to see if the move matches the dice roll
-                    int dist = 0;
+                    int dist = 0; // Getting the number the user input for the move
                     if(currentTurn == Color.WHITE){ // Moves from bar (-1) -> stripArray[23] ....
                         dist = 23 - move.destStrip+1; // +1 takes into account moving off bar
                     }else if(currentTurn == Color.BLACK){
                         dist = move.destStrip +1;
                     }
-                    if(dist == die.getDice1() || dist == die.getDice2()){
+                    if(dist == die.getDice1() || dist == die.getDice2()){ // Roll matches a single dice
                         if((currentTurn != dest.pieceColor) && dest.quantity > 1) // Destination has opposing pieces
                             return false;
                         else if((currentTurn != dest.pieceColor) && dest.quantity == 1) // Destination has only 1 opposing piece so a hit
@@ -235,7 +235,7 @@ class Classes {
                         else {
                             return true;
                         }
-                    }else if(dist == die.getDice1() + die.getDice2() && tests != -1){
+                    }else if(dist == die.getDice1() + die.getDice2() && tests != -1){ // Roll matches both dice
                         Move wDie1;
                         Move wDie2;
                         if(currentTurn == Color.WHITE){
@@ -272,9 +272,14 @@ class Classes {
             int displayedDest = (move.color == Color.WHITE) ? (move.destStrip + 1) : (23 - move.destStrip) + 1;    //yes, math for 23-org+1 could be simplified, but I
             int displayedOrg = (move.color == Color.WHITE) ? (move.orgStrip + 1) : (23 - move.orgStrip) + 1;      //kept it that way so that it's easier to make sense of,
             int diff = displayedOrg - displayedDest;
+
+            // Testing combination moves
             if (maxMoves == 2 && diff != die.getDice1() && diff != die.getDice2() && (diff!= die.getDice1()+die.getDice2() || tests == -1)) {
                 return false;
-            } else if(maxMoves - currentMoves == 4 && tests != -1){ // Player rolled doubles and has access to 4 moves
+            }else if(maxMoves == 2 && diff == (die.getDice1() + die.getDice2()) && (die.getDice1() != 0 || die.getDice2() == 0)){
+                System.out.println(diff);
+                return checkCombinedMove(move,2);
+            }else if(maxMoves - currentMoves == 4 && tests != -1){ // Player rolled doubles and has access to 4 moves
                 // In a double move both dice values are the same. If diff % dice value does not = 0, then the
                 // player has not input a multiple of the dice value. If it s greater than 4 times the dice value,
                 // the player has exceeded the allowed move.
@@ -282,19 +287,24 @@ class Classes {
                     return false;
                 else if(diff > (4* die.getDice1())) // If the move is bigger than the max allowed move
                     return false;
+                else if(diff % die.getDice1() == 0 && diff <= 4*die.getDice1() && diff > die.getDice1())
+                    checkCombinedMove(move,diff/die.getDice1());
             }else if(maxMoves - currentMoves == 3 && tests != -1){ // Player rolled doubles and has access to 3 moves
                 if(diff <= (3*die.getDice1()) && diff % die.getDice1() != 0)
                     return false;
                 else if(diff > (3*die.getDice1()))
                     return false;
-                //TODO Add true for correct moves with <= 3
+                // Check for combo moves, lets through a single move
+                else if(diff % die.getDice1() == 0 && diff <= 3*die.getDice1() && diff > die.getDice1()){
+                    return checkCombinedMove(move,diff/die.getDice1());
+                }
             }else if(maxMoves == 4 && maxMoves - currentMoves <= 2 && tests!= -1){
                 if(diff <= ((maxMoves-currentMoves)*die.getDice1()) && diff % die.getDice1() != 0){
                     return false;
                 }else if(diff > ((maxMoves-currentMoves)*die.getDice1()))
                     return false; // Player rolled doubles, has already moved twice, and then tries to combine more than allowed number of moves
-                else if(diff == (2*die.getDice1())){} // 2 moves in 1
-                    //return checkCombinedMove(move,2);//TODO Uncomment this and re-add function
+                else if(diff == (2*die.getDice1())) // 2 moves in 1
+                    return checkCombinedMove(move,2);
             }
 
             // Just checking a normal move, no bar/bear-off
@@ -342,6 +352,57 @@ class Classes {
                 if(tempAdded)
                     stripArray[secondMove.orgStrip].pop(); // Remove the temp piece
             }
+            return false;
+        }
+        // Checks if the individual moves that make up a combined move are valid
+        static boolean checkCombinedMove(Move move,int no_of_moves){
+            System.out.println(no_of_moves);
+            if(no_of_moves == 2){ // 2 moves in 1
+                Move moveA;
+                Move moveB;
+                if(currentTurn == Color.WHITE){ // Create the 2 possible original moves
+                    moveA = new Move(move.orgStrip,move.destStrip+die.getDice2(),currentTurn);
+                    moveB = new Move(move.orgStrip,move.destStrip+die.getDice1(),currentTurn);
+                }else if(currentTurn == Color.BLACK){
+                    moveA = new Move(0,0,currentTurn);
+                    moveB = new Move(0,0,currentTurn);
+                    moveA.orgStrip = move.orgStrip;
+                    moveA.destStrip = move.orgStrip + die.getDice1();
+                    moveB.orgStrip = move.orgStrip;
+                    moveB.destStrip = move.orgStrip + die.getDice2();
+                }else // Shouldn't get here, but to remove warnings. But fair play if it makes it here.
+                    return false;
+
+                /*System.out.println("move: "+move.orgStrip+" d: "+move.destStrip);
+                System.out.println("moveA: "+moveA.orgStrip+" d: "+moveA.destStrip);
+                System.out.println("moveB: "+moveB.orgStrip+" d: "+moveB.destStrip);*/
+                if(validMove(moveA,0)){
+                    moveB.orgStrip = moveA.destStrip;
+                    moveB.destStrip = move.destStrip;
+                    return checkFinalMove(move,moveB);
+                }else if(validMove(moveB,0)){
+                    moveA.orgStrip = moveB.destStrip;
+                    moveA.destStrip = move.destStrip;
+                    return checkFinalMove(move,moveA);
+                }
+            }else if(no_of_moves == 3){ //TODO
+                return false;
+            }else if(no_of_moves == 4){ //TODO
+                return false;
+            }
+            return false;
+        }
+
+        static boolean checkFinalMove(Move fullMove, Move finalMove){
+            boolean tempAdded = addTempPiece(finalMove);
+            if(validMove(finalMove,0)){
+                if(tempAdded)
+                    stripArray[finalMove.orgStrip].pop();
+                return true;
+            }
+            if(tempAdded)
+                stripArray[finalMove.orgStrip].pop();
+
             return false;
         }
 
@@ -559,14 +620,17 @@ class Classes {
 
             for (int i = 23, j = 0; i >= 19; i--, j = j + 2) {
                 stripArray[i].insert(black[j]);
-                //stripArray[i].insert(black[j + 1]);
+                stripArray[i].insert(black[j + 1]);
             }
             Bar.insert(black, 10, 12);
             BearOff.insert(black, 13, 14);
 
-            Main.players[0].setPiecesLeft(12);
-            Main.players[1].setPiecesLeft(13);
+            Main.players[0].setPiecesLeft(9);
+            Main.players[1].setPiecesLeft(10);
 
+            Board.currentTurn = Color.WHITE;
+            Board.currentMoves = 0;
+            boardfxml.setId("board" + currentTurn.getValue());
         }
 
         static void clearBoard() {

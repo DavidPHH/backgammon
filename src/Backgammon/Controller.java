@@ -154,8 +154,8 @@ public class Controller {
                         break;
                     }
                     Move move = new Move(org, dest, Board.currentTurn);
-                    gameInfo.appendText("\n" + move);
                     Board.makeMove(move,-1);
+                    gameInfo.appendText("\n" + move);
                 } else {
                     gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
                 }
@@ -237,8 +237,6 @@ public class Controller {
                 Board.clearBoard();
                 Board.cheat();
                 gameInfo.appendText("\nActivated cheat board. Please roll again\nSetting move to player 1");
-                Board.currentTurn = Color.WHITE;
-                Board.currentMoves = 0;
                 gameStart = true; // In case /cheat was used before game was started
                 hasRolled = false;
                 pCommands.setText("");
@@ -310,8 +308,7 @@ public class Controller {
 
             removeAfter.play();
             removeColour.play();
-        } else
-            strip.pop();
+        }
     }
 
     private void doubleStakes(){
