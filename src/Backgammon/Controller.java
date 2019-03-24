@@ -18,7 +18,7 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static Backgammon.Classes.Board.findAllValidMoves;
+import static Backgammon.Classes.Board.findAllValidCombos;
 
 
 public class Controller {
@@ -59,7 +59,7 @@ public class Controller {
     private VBox diceBox;
 
     private Player[] players;
-    private ArrayList<Move> moveList;
+    private ArrayList<MoveCombo> moveList;
     private Boolean vis;
     private Boolean gameStart;
     private Boolean hasRolled;
@@ -179,7 +179,7 @@ public class Controller {
                     else
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
 
-                    moveList = findAllValidMoves(Board.currentTurn);
+                    moveList = findAllValidCombos();
                     printMoves(); // Printing the valid moves
                     gameStart = true;
                     hasRolled = true;
@@ -201,7 +201,7 @@ public class Controller {
                                 " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
                     }
 
-                    moveList = findAllValidMoves(Board.currentTurn);
+                    moveList = findAllValidCombos();
                     printMoves(); // Printing the moves after roll
                 }else if(!gameStart)
                     gameInfo.appendText("\nPlease use /start to start the game first");
@@ -215,7 +215,7 @@ public class Controller {
                     gameInfo.appendText("\nUse /start to start the game");
                     //Ensures the player doesn't skip their turn
                 else if (Board.currentMoves < Board.maxMoves)
-                    gameInfo.appendText("\nYou must use you're allotted amount of moves");
+                    gameInfo.appendText("\nYou must use your allotted amount of moves");
                 else {
                     Board.nextTurn();
                     // Printing the new player's turn
@@ -260,15 +260,12 @@ public class Controller {
                     // Gets the index for taking the move from the arrayList
                     int c = ((moveL.charAt(length - 1)) - 97) + (26 * (length -1));
                     if(c < moveList.size() && c >= 0){
-                        Move move = moveList.get(c);
-                        gameInfo.appendText("\n" + move);
-                        //System.out.println("int "+c);
-                        Board.makeMove(move,c);
-
-                        if(Board.currentMoves < Board.maxMoves)
-                            printMoves();
-                        else
-                            gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
+                        MoveCombo mc = moveList.get(c);
+                        for (int i = 0; i < mc.numMovesPerCombo; i++) {
+                            Move move = mc.moves[i];
+                            gameInfo.appendText("\n" + move);
+                            Board.makeMove(move);
+                        }
                     }
                     else
                         gameInfo.appendText("\nPlease select a move contained within the list i.e. use a correct letter.");
@@ -425,17 +422,21 @@ public class Controller {
 
     //Printing the valid moves
     private void printMoves(){
-        moveList = findAllValidMoves(Board.currentTurn);
+        ArrayList<MoveCombo> validMoveCombos = findAllValidCombos();
 
-        System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + moveList.get(0).color);
+       // System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
         System.out.println("\n-------- List Start --------");
         int i = 0;
         gameInfo.appendText("\n\nPossible Moves:\n--------------------");
-        for (Move m : moveList) {
-            // System.out.println(m.color + " can move from " + ((m.color==Color.WHITE)?(m.orgStrip+1):(23-m.orgStrip)+1) + " to " + ((m.color==Color.WHITE)?(m.destStrip+1):(23-m.destStrip)+1));
+        for (MoveCombo mc : validMoveCombos) {
             String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
-            System.out.println(letterCode + ": " + m.isHitToString());
-            gameInfo.appendText("\n" + letterCode + ":  " + m.isHitToString());
+            System.out.print(letterCode + ":  ");
+            gameInfo.appendText("\n" + letterCode + ":  ");
+            for (int j = 0; j < mc.numMovesPerCombo; j++) {
+                System.out.print(mc.moves[j].isHitToString() + " ");
+                gameInfo.appendText(mc.moves[j].isHitToString() + " ");
+            }
+            System.out.println();
             i++;
         }
         System.out.println("--------- List End ---------");
