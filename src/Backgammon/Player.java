@@ -7,10 +7,16 @@ public class Player{
     private Color color;
     private int pipsLeft;
     private int piecesLeft;
+    private int score;
 
     public Player(String player, Color color){
         this.playerName = player;
         this.color = color;
+        pipsLeft = 167;
+        piecesLeft = 15;
+        this.score = 0;
+    }
+    public void reset(){
         pipsLeft = 167;
         piecesLeft = 15;
     }
@@ -32,4 +38,11 @@ public class Player{
     }
     public int getPiecesLeft(){return this.piecesLeft;}
     public void setPiecesLeft(int newPiecesLeft){this.piecesLeft = newPiecesLeft;}
+    public void setScore(int score){this.score = score;}
+    public int getScore(){return this.score;}
+
+    @Override
+    public String toString() {
+        return this.playerName + ": " + this.score;
+    }
 }
