@@ -227,6 +227,7 @@ public class Controller {
                         gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
                     else
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
+                    gameInfo.appendText("\nType /roll to roll");
                     hasRolled = false;
                     diceBox.getChildren().remove(0, diceBox.getChildren().size());
                 }
@@ -346,7 +347,7 @@ public class Controller {
             System.out.println("Can't double anymore");
             doubleBox.getChildren().remove(0);     //I'm assuming we're limiting ourselves to what fits on a normal die
         }                                               //and not letting the players keep doubling as much as they want,
-        //so that final remove() is only temporary, for demonstration purposes
+                                                       //so that final remove() is only temporary, for demonstration purposes
 
     }
 
