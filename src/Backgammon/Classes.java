@@ -693,19 +693,18 @@ class Move {
             return "Invalid move";
     }
 
+
     String isHitToString() {
-        String m = ((color == Color.WHITE) ? (orgStrip + 1) : (23 - orgStrip + 1)) +
-                "-" +
-                ((color == Color.WHITE) ? (destStrip + 1) : (23 - destStrip + 1)) +
-                ((Classes.Board.stripArray[destStrip].quantity == 1 && Classes.Board.stripArray[destStrip].pieceColor != color) ? "*" : "");
-
-        if (!Classes.Board.valid(this, false)) {
-            m = "Shouldn't be here -> " + m;
-        }
-
-            return m;
-
+        if (Classes.Board.validMove(this, 0)) {
+            return ((orgStrip==-1 || orgStrip == 24)?"Bar":((color==Color.WHITE)?(orgStrip+1):(23-orgStrip+1))) +   //might be able to remove || == 24 check
+                    "-" +
+                    (destStrip==-2?"Off":((color==Color.WHITE)?(destStrip+1):(23-destStrip+1)) +
+                    ((Classes.Board.stripArray[destStrip].quantity == 1 && Classes.Board.stripArray[destStrip].pieceColor != color)?"*":""));
+        } else
+            return "Invalid move";
     }
+
+
 }
 
 class Piece {
