@@ -425,13 +425,13 @@ public class Controller {
 
     //Printing the valid moves
     private void printMoves(){
-        ArrayList<Move> validMoves = findAllValidMoves(Board.currentTurn);
+        moveList = findAllValidMoves(Board.currentTurn);
 
-        System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
+        System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + moveList.get(0).color);
         System.out.println("\n-------- List Start --------");
         int i = 0;
         gameInfo.appendText("\n\nPossible Moves:\n--------------------");
-        for (Move m : validMoves) {
+        for (Move m : moveList) {
             // System.out.println(m.color + " can move from " + ((m.color==Color.WHITE)?(m.orgStrip+1):(23-m.orgStrip)+1) + " to " + ((m.color==Color.WHITE)?(m.destStrip+1):(23-m.destStrip)+1));
             String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
             System.out.println(letterCode + ": " + m.isHitToString());
