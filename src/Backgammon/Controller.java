@@ -434,18 +434,23 @@ public class Controller {
         System.out.println("\n-------- List Start --------");
         int i = 0;
         gameInfo.appendText("\n\nPossible Moves:\n--------------------");
-        for (MoveCombo mc : validMoveCombos) {
-            String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
-            System.out.print(letterCode + ":  ");
-            gameInfo.appendText("\n" + letterCode + ":  ");
-            for (int j = 0; j < mc.numMovesPerCombo; j++) {
-                System.out.print(mc.moves[j].isHitToString() + " ");
-                gameInfo.appendText(mc.moves[j].isHitToString() + " ");
+        if(validMoveCombos.size() > 0){
+            for (MoveCombo mc : validMoveCombos) {
+                String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
+                System.out.print(letterCode + ":  ");
+                gameInfo.appendText("\n" + letterCode + ":  ");
+                for (int j = 0; j < mc.numMovesPerCombo; j++) {
+                    System.out.print(mc.moves[j].isHitToString() + " ");
+                    gameInfo.appendText(mc.moves[j].isHitToString() + " ");
+                }
+                System.out.println();
+                i++;
             }
-            System.out.println();
-            i++;
+            System.out.println("--------- List End ---------");
+        }else{
+            gameInfo.appendText("\n There were no possible moves");
+            //TODO Skip the turn
         }
-        System.out.println("--------- List End ---------");
 
     }
 }
