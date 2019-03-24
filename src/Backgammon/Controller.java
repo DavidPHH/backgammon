@@ -5,6 +5,9 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -15,6 +18,8 @@ import javafx.scene.layout.*;
 import Backgammon.Classes.Board;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -108,7 +113,7 @@ public class Controller {
 
     // Function for user input in the text field
     @FXML
-    public void onEnter(ActionEvent e) {
+    public void onEnter(ActionEvent e) throws IOException {
         String inputString = pCommands.getText().toLowerCase();
         if (inputString.equals(""))
             return;
@@ -132,16 +137,15 @@ public class Controller {
                 break;
             case "/valid":
                 String[] splot2 = inputString.split(" ");
-                System.out.println(Board.validMove(new Move(Integer.parseInt(splot2[1])-1, Integer.parseInt(splot2[2])-1, Board.currentTurn), -1));
+                System.out.println(Board.validMove(new Move(Integer.parseInt(splot2[1]) - 1, Integer.parseInt(splot2[2]) - 1, Board.currentTurn), -1));
 
 
                 break;
             case "/move":
                 pCommands.setText("");
-                if(!hasRolled){
+                if (!hasRolled) {
                     gameInfo.appendText("\nPlease roll before you move");
-                }
-                else if (Board.currentMoves < Board.maxMoves) {
+                } else if (Board.currentMoves < Board.maxMoves) {
                     String[] splot = inputString.split(" ");
                     int org, dest;
                     try {
@@ -154,10 +158,10 @@ public class Controller {
                         break;
                     }
                     Move move = new Move(org, dest, Board.currentTurn);
-                    Board.makeMove(move,-1);
+                    Board.makeMove(move, -1);
                     gameInfo.appendText("\n" + move);
 
-                    if(Board.currentMoves < Board.maxMoves)
+                    if (Board.currentMoves < Board.maxMoves)
                         printMoves();
                     else
                         gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
@@ -203,7 +207,7 @@ public class Controller {
 
                     moveList = findAllValidCombos();
                     printMoves(); // Printing the moves after roll
-                }else if(!gameStart)
+                } else if (!gameStart)
                     gameInfo.appendText("\nPlease use /start to start the game first");
                 else {
                     gameInfo.appendText("\nYou cannot roll again\n");
@@ -250,16 +254,16 @@ public class Controller {
                 if (Board.currentMoves < Board.maxMoves) {
                     String[] splot = inputString.split(" ");
                     String moveL = null;
-                    try{
+                    try {
                         moveL = splot[1];
-                    }catch(Exception ex){
+                    } catch (Exception ex) {
                         gameInfo.appendText("Expected syntax: /listmove letter");
                     }
 
                     int length = moveL.length();
                     // Gets the index for taking the move from the arrayList
-                    int c = ((moveL.charAt(length - 1)) - 97) + (26 * (length -1));
-                    if(c < moveList.size() && c >= 0){
+                    int c = ((moveL.charAt(length - 1)) - 97) + (26 * (length - 1));
+                    if (c < moveList.size() && c >= 0) {
                         MoveCombo mc = moveList.get(c);
                         for (int i = 0; i < mc.numMovesPerCombo; i++) {
                             Move move = mc.moves[i];
@@ -267,13 +271,12 @@ public class Controller {
                             Board.makeMove(move, c);
                         }
 
-                        if(Board.currentMoves < Board.maxMoves)
+                        if (Board.currentMoves < Board.maxMoves)
                             printMoves();
                         else
                             gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
 
-                    }
-                    else
+                    } else
                         gameInfo.appendText("\nPlease select a move contained within the list i.e. use a correct letter.");
                 } else {
                     gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
@@ -281,9 +284,9 @@ public class Controller {
                 pCommands.setText("");
                 break;
             case "/print": // Printing the moves
-                if(hasRolled && gameStart)
+                if (hasRolled && gameStart)
                     printMoves();
-                else{
+                else {
                     gameInfo.appendText("\nYou must roll before printing the list of moves");
                 }
                 break;
@@ -325,7 +328,7 @@ public class Controller {
         }
     }
 
-    private void doubleStakes(){
+    private void doubleStakes() {
         if (doubleBox.getChildren().isEmpty()) {
             doubleBox.getChildren().add(new DoublingCube().imgView);
             currentDoublingCube = 2;
@@ -337,7 +340,7 @@ public class Controller {
             System.out.println("Can't double anymore");
             doubleBox.getChildren().remove(0);     //I'm assuming we're limiting ourselves to what fits on a normal die
         }                                               //and not letting the players keep doubling as much as they want,
-                                                       //so that final remove() is only temporary, for demonstration purposes
+        //so that final remove() is only temporary, for demonstration purposes
 
     }
 
@@ -427,16 +430,21 @@ public class Controller {
     }
 
     //Printing the valid moves
-    private void printMoves(){
+    private void printMoves() throws IOException {
+        int x = Board.currentTurn.getValue();
+        if (Main.players[x].getPiecesLeft() == 0) { // Ends the game if the player bore off their last piece
+            int y = x == 0 ? 1 : 0;
+            endGame(Main.players[x], Main.players[y]);
+            return;
+        }
         ArrayList<MoveCombo> validMoveCombos = findAllValidCombos();
-
-       // System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
+        // System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
         System.out.println("\n-------- List Start --------");
         int i = 0;
         gameInfo.appendText("\n\nPossible Moves:\n--------------------");
-        if(validMoveCombos.size() > 0){
+        if (validMoveCombos.size() > 0) {
             for (MoveCombo mc : validMoveCombos) {
-                String letterCode = (i<26)?Character.toString('A'+i):Character.toString('A'+(i/26)-1)+Character.toString('A'+i%26);
+                String letterCode = (i < 26) ? Character.toString('A' + i) : Character.toString('A' + (i / 26) - 1) + Character.toString('A' + i % 26);
                 System.out.print(letterCode + ":  ");
                 gameInfo.appendText("\n" + letterCode + ":  ");
                 for (int j = 0; j < mc.numMovesPerCombo; j++) {
@@ -447,10 +455,25 @@ public class Controller {
                 i++;
             }
             System.out.println("--------- List End ---------");
-        }else{
-            gameInfo.appendText("\n There were no possible moves");
-            //TODO Skip the turn
+        } else {
+            gameInfo.appendText("\nThere were no possible moves");
+            Board.nextTurn();
+            Player player = players[0].getColor() == Board.currentTurn ? players[0] : players[1];
+            gameInfo.appendText("\n" + player.getPlayerName() + "'s turn");
+            hasRolled = false;
         }
-
     }
+
+    private void endGame(Player winner, Player loser) throws IOException {
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("winscreen.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root, 1000, 715);
+        scene.getStylesheets().addAll(this.getClass().getResource("application.css").toExternalForm());
+        Winscreen controller = loader.getController();
+        controller.setup(winner, loser);
+        Main.window.setScene(scene);
+    }
+
 }
