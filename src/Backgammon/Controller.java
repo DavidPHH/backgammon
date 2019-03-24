@@ -266,6 +266,12 @@ public class Controller {
                             gameInfo.appendText("\n" + move);
                             Board.makeMove(move, c);
                         }
+
+                        if(Board.currentMoves < Board.maxMoves)
+                            printMoves();
+                        else
+                            gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
+
                     }
                     else
                         gameInfo.appendText("\nPlease select a move contained within the list i.e. use a correct letter.");

@@ -384,18 +384,25 @@ class Classes {
                     moveA.destStrip = move.destStrip;
                     return checkFinalMove(move,moveA);
                 }
-            }else if(no_of_moves == 3){ // At this point, each move will move the same amount
+            }else{
                 Move moveA = new Move(move.orgStrip,move.orgStrip+die.getDice1(),currentTurn);
                 if(currentTurn == Color.BLACK){
                     moveA.orgStrip = move.orgStrip;
                     moveA.destStrip = move.orgStrip+die.getDice1();
                 }
-                if(validMove(moveA,0)){
-                    Move moveB = new Move(moveA.orgStrip,move.destStrip,currentTurn); // Combo move of the remaining moves
-                    return validMove(moveB,0);
+                if(no_of_moves == 3){ // At this point, each move will move the same amount
+                    if(validMove(moveA,0)){
+                        Move moveB = new Move(moveA.destStrip,move.destStrip,currentTurn); // Combo move of the remaining moves
+                        return validMove(moveB,0);
+                    }
+                    // No need to test other moves as they are all the same move. 3
+                    return false;
+                }else if(no_of_moves == 4){
+                    if(validMove(moveA,0)){
+                        Move moveB = new Move(moveA.destStrip,move.destStrip,currentTurn);
+                        return validMove(moveB,0);
+                    }
                 }
-                return false;
-            }else if(no_of_moves == 4){ //TODO
                 return false;
             }
             return false;
