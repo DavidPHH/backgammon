@@ -182,7 +182,7 @@ public class Controller {
                 break;
             case "/roll":
                 pCommands.setText("");
-                if (!hasRolled) {
+                if (!hasRolled && gameStart) {
                     Board.rollDice();
                     hasRolled = true;
                     animateRoll(Board.die.getDice1(), Board.die.getDice2());
@@ -198,7 +198,9 @@ public class Controller {
 
                     moveList = findAllValidMoves(Board.currentTurn);
                     printMoves(); // Printing the moves after roll
-                } else {
+                }else if(!gameStart)
+                    gameInfo.appendText("\nPlease use /start to start the game first");
+                else {
                     gameInfo.appendText("\nYou cannot roll again\n");
                 }
                 break;
