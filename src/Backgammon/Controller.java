@@ -264,7 +264,7 @@ public class Controller {
                         for (int i = 0; i < mc.numMovesPerCombo; i++) {
                             Move move = mc.moves[i];
                             gameInfo.appendText("\n" + move);
-                            Board.makeMove(move);
+                            Board.makeMove(move, c);
                         }
                     }
                     else
