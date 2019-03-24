@@ -213,12 +213,13 @@ class Classes {
                         }
                     }
                 }
+                return false;
             }
 
             //If the player has a piece in the Bar and they try move a piece not on the bar
             //Bar is referred to as -1
-            if (Bar.piecesIn(currentTurn) > 0) {
-                if (move.orgStrip != -1) // Checks to see if user is moving from the bar
+            if (move.orgStrip == -1) {
+                if (Bar.piecesIn(currentTurn) == 0) // Checks to see if user is moving from the bar
                     return false;
                 else{ // Checking to see if the move matches the dice roll
                     int dist = 0; // Getting the number the user input for the move
@@ -260,6 +261,7 @@ class Classes {
                     return false;
                 }
             }
+
             // Ensures user does not go backwards
             if (currentTurn == Color.BLACK) {
                 if (move.orgStrip > move.destStrip)
@@ -373,9 +375,6 @@ class Classes {
                 }else // Shouldn't get here, but to remove warnings. But fair play if it makes it here.
                     return false;
 
-                /*System.out.println("move: "+move.orgStrip+" d: "+move.destStrip);
-                System.out.println("moveA: "+moveA.orgStrip+" d: "+moveA.destStrip);
-                System.out.println("moveB: "+moveB.orgStrip+" d: "+moveB.destStrip);*/
                 if(validMove(moveA,0)){
                     moveB.orgStrip = moveA.destStrip;
                     moveB.destStrip = move.destStrip;
@@ -906,7 +905,6 @@ class Dice {
         Random rand = new Random();
         dice1 = rand.nextInt(6) + 1;
         dice2 = rand.nextInt(6) + 1;
-
     }
 
     int getDice1() {
