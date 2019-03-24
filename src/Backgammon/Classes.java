@@ -203,7 +203,7 @@ class Classes {
         }
 
         static boolean validMove(Move move,int tests) {
-            if (move.orgStrip < -1 || move.destStrip < -3 || move.orgStrip > 23 || move.destStrip > 23 || (move.orgStrip == move.destStrip)) // If outside of array, it's an invalid move
+            if (move.orgStrip < -1 || move.destStrip < -2 || move.orgStrip > 23 || move.destStrip > 23 || (move.orgStrip == move.destStrip)) // If outside of array, it's an invalid move
                 return false;
             if (move.destStrip == -1) // Can probably be put in previous if, brain not working rn
                 return false;
@@ -508,6 +508,10 @@ class Classes {
             return false;
         }
 
+        static void removeTempPiece(Move move){
+            stripArray[move.orgStrip].pop();
+        }
+
         static void hitMove(Strip dest) {
             Piece ripPiece = new Piece(dest.pop());
             Bar.insert(ripPiece);
@@ -740,9 +744,30 @@ class Classes {
                                 allCombos.add(new MoveCombo(2, firstMove, secondMove));
                             }
                         }
-
+                    }
+                }
+                // Need to add the possible follow on move. i.e. 13 -7 7 -5 if player rolls a 6 and 2, and 7 doesn't have a piece originally
+                for(int i = 0;i < allMoves.size();i++){
+                    Move temp = new Move(allMoves.get(i).destStrip,allMoves.get(i).orgStrip - (die.getDice1() + die.getDice2()),currentTurn);
+                    if(currentTurn == Color.BLACK){ // This is done as initialising a new black move will change the desired org and dest strip
+                        temp.orgStrip = allMoves.get(i).destStrip;
+                        temp.destStrip = allMoves.get(i).orgStrip + (die.getDice1() + die.getDice2());
                     }
 
+                    /*System.out.println("orgMove "+allMoves.get(i).orgStrip+" d"+allMoves.get(i).destStrip);
+                    System.out.println("temp: "+temp.orgStrip+"d "+temp.destStrip);
+                    System.out.println();*/
+                    boolean tempAdded = addTempPiece(temp); // Add a temporary piece if required for checking if it's a valid follow up move
+                    if(validMove(temp,0)){
+                        if(tempAdded){
+                            removeTempPiece(temp);
+                        }
+                        allCombos.add(new MoveCombo(2,allMoves.get(i),temp));
+                    }else{
+                        if(tempAdded){
+                            removeTempPiece(temp);
+                        }
+                    }
                 }
             }
 
@@ -759,6 +784,11 @@ class Classes {
 
               removeDuplicateCombos(allCombos);
 
+
+            System.out.println("All moves starts here");
+            for(int i = 0;i < allMoves.size();i++)
+                System.out.println(allMoves.get(i).isHitToString());
+            System.out.println("all moves stops here");
               return allCombos;
 
         }
@@ -878,9 +908,12 @@ class Move {
 
     String isHitToString() {
         String m = "";
+        boolean tempAdded = Classes.Board.addTempPiece(this);
         if (!Classes.Board.validMove(this, 0))
             m = "this - ";
 
+        if(tempAdded)
+            Classes.Board.removeTempPiece(this);
             return  m + ((orgStrip==-1 || orgStrip == 24)?"Bar":((color==Color.WHITE)?(orgStrip+1):(23-orgStrip+1))) +   //might be able to remove || == 24 check
                     "-" +
                     (destStrip==-2?"Off":((color==Color.WHITE)?(destStrip+1):(23-destStrip+1)) +
