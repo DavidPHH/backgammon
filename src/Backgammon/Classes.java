@@ -272,7 +272,7 @@ class Classes {
             int displayedDest = (move.color == Color.WHITE) ? (move.destStrip + 1) : (23 - move.destStrip) + 1;    //yes, math for 23-org+1 could be simplified, but I
             int displayedOrg = (move.color == Color.WHITE) ? (move.orgStrip + 1) : (23 - move.orgStrip) + 1;      //kept it that way so that it's easier to make sense of,
             int diff = displayedOrg - displayedDest;
-            if (maxMoves == 2 && diff != die.getDice1() && diff != die.getDice2() && diff!= die.getDice1()+die.getDice2() && tests != -1) {
+            if (maxMoves == 2 && diff != die.getDice1() && diff != die.getDice2() && (diff!= die.getDice1()+die.getDice2() || tests == -1)) {
                 return false;
             } else if(maxMoves - currentMoves == 4 && tests != -1){ // Player rolled doubles and has access to 4 moves
                 // In a double move both dice values are the same. If diff % dice value does not = 0, then the
@@ -410,11 +410,11 @@ class Classes {
 
         static ArrayList<Move> findAllValidMoves(Color color) {
             ArrayList<Move> validMovesList = new ArrayList<>();
-            for (Strip aStrip : stripArray) {
+            for (int i=-1; i<24; i++) {
                 //if (aStrip.pieceColor == color) {
-                for (Strip bStrip : stripArray) {
-                    Move temp = new Move(aStrip.stripID, bStrip.stripID, color);
-                    if (valid(temp, false)) {
+                for (int j=-2; j<24; j++) {
+                    Move temp = new Move(i, j, color);
+                    if (i!= -1 && validMove(temp, -1)) { //j!=-1 to avoid nullPointerExceptions down the road
                         validMovesList.add(temp);
                     }
 
@@ -622,13 +622,17 @@ class Move {
     }
 
     String isHitToString() {
-        if (Classes.Board.valid(this, false)) {
-            return ((color == Color.WHITE) ? (orgStrip + 1) : (23 - orgStrip + 1)) +
-                    "-" +
-                    ((color == Color.WHITE) ? (destStrip + 1) : (23 - destStrip + 1)) +
-                    ((Classes.Board.stripArray[destStrip].quantity == 1 && Classes.Board.stripArray[destStrip].pieceColor != color) ? "*" : "");
-        } else
-            return "Invalid move";
+        String m = ((color == Color.WHITE) ? (orgStrip + 1) : (23 - orgStrip + 1)) +
+                "-" +
+                ((color == Color.WHITE) ? (destStrip + 1) : (23 - destStrip + 1)) +
+                ((Classes.Board.stripArray[destStrip].quantity == 1 && Classes.Board.stripArray[destStrip].pieceColor != color) ? "*" : "");
+
+        if (!Classes.Board.valid(this, false)) {
+            m = "Shouldn't be here -> " + m;
+        }
+
+            return m;
+
     }
 }
 

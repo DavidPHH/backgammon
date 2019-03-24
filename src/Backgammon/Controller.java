@@ -132,7 +132,7 @@ public class Controller {
                 break;
             case "/valid":
                 String[] splot2 = inputString.split(" ");
-                System.out.println(Board.valid(new Move(Integer.parseInt(splot2[1])-1, Integer.parseInt(splot2[2])-1, Board.currentTurn), true));
+                System.out.println(Board.validMove(new Move(Integer.parseInt(splot2[1])-1, Integer.parseInt(splot2[2])-1, Board.currentTurn), -1));
 
 
                 break;
