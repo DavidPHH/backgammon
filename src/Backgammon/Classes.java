@@ -692,7 +692,7 @@ class Classes {
             if(maxMoves==2) {
                 for (Move firstMove : allMoves) {
                     copyAllMoves = new ArrayList<>(allMoves);
-                    if (Bar.piecesIn(currentTurn) == 0 || firstMove.orgStrip == -1 || firstMove.orgStrip == 24) {      // how to code orgStrip==Bar, since currently orgStrip is an int only?
+                    if (Bar.piecesIn(currentTurn) == 0) {      // how to code orgStrip==Bar, since currently orgStrip is an int only?
                         // maybe reserve an int like 0 to represent the bar, and then 1-24
                         // can actually correspond to what you'd expect on the board?
 
@@ -743,6 +743,32 @@ class Classes {
                             //System.out.println("Should be: " + (Board.die.getDice1() + Board.die.getDice2()));
                                 allCombos.add(new MoveCombo(2, firstMove, secondMove));
                             }
+                        }
+                    }else if(Bar.piecesIn(currentTurn) > 0){ // Getting the bar moves to show up on the list
+                        if(Bar.piecesIn(currentTurn) == 1 && maxMoves-currentMoves == 2){ // There can be a follow up move
+                            Piece yoink = new Piece(Bar.remove(currentTurn)); // Just to check a follow up move
+                            int dist = 23-firstMove.destStrip+1;
+                            if(currentTurn == Color.BLACK){
+                                dist = firstMove.destStrip +1;
+                            }
+                            int want = (die.getDice1() + die.getDice2()) - dist;
+                            Move temp = new Move(firstMove.destStrip,firstMove.destStrip-want,currentTurn);
+                            if(currentTurn == Color.BLACK){
+                                temp.orgStrip = firstMove.destStrip;
+                                temp.destStrip = firstMove.destStrip+want;
+                            }
+                            boolean tempAdded = addTempPiece(temp);
+                            if(validMove(temp,0)){
+                                if(tempAdded)
+                                    removeTempPiece(temp);
+                                Bar.insert(yoink);
+                                allCombos.add(new MoveCombo(2,firstMove,temp));
+                            }else{
+                                if(tempAdded)
+                                    removeTempPiece(temp);
+                            }
+                        }else{
+                            allCombos.add(new MoveCombo(1,firstMove));
                         }
                     }
                 }
@@ -908,7 +934,11 @@ class Move {
 
     String isHitToString() {
         String m = "";
-        boolean tempAdded = Classes.Board.addTempPiece(this);
+
+        boolean tempAdded = false;
+        if(this.orgStrip != -1){
+            tempAdded = Classes.Board.addTempPiece(this);
+        }
         if (!Classes.Board.validMove(this, 0))
             m = "this - ";
 

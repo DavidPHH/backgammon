@@ -223,6 +223,7 @@ public class Controller {
                         gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
                     else
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
+                    gameInfo.appendText("\nType /roll to roll");
                     hasRolled = false;
                     diceBox.getChildren().remove(0, diceBox.getChildren().size());
                 }
@@ -448,8 +449,15 @@ public class Controller {
             }
             System.out.println("--------- List End ---------");
         }else{
-            gameInfo.appendText("\n There were no possible moves");
-            //TODO Skip the turn
+            gameInfo.appendText("\n There were no possible moves\nChanging turn to other player");
+            Board.nextTurn();
+            if (players[0].getColor() == Board.currentTurn)
+                gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
+            else
+                gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
+            gameInfo.appendText("\nPlease type /roll to roll dice");
+            hasRolled = false;
+            diceBox.getChildren().remove(0, diceBox.getChildren().size());
         }
 
     }
