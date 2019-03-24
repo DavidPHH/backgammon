@@ -59,7 +59,7 @@ public class Controller {
     private VBox diceBox;
 
     private Player[] players;
-    private ArrayList<Move> moveList;
+    private ArrayList<MoveCombo> moveList;
     private Boolean vis;
     private Boolean gameStart;
     private Boolean hasRolled;
@@ -171,7 +171,7 @@ public class Controller {
                     else
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
 
-                    //moveList = findAllValidMoves(Board.currentTurn);
+                    moveList = findAllValidCombos();
                     printMoves(); // Printing the valid moves
                     gameStart = true;
                     hasRolled = true;
@@ -193,7 +193,7 @@ public class Controller {
                                 " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
                     }
 
-                    //moveList = findAllValidMoves(Board.currentTurn);
+                    moveList = findAllValidCombos();
                     printMoves(); // Printing the moves after roll
                     hasRolled = true;
                 } else {
@@ -252,9 +252,12 @@ public class Controller {
                     // Gets the index for taking the move from the arrayList
                     int c = ((moveL.charAt(length - 1)) - 97) + (26 * (length -1));
                     if(c < moveList.size() && c >= 0){
-                        Move move = moveList.get(c);
-                        gameInfo.appendText("\n" + move);
-                        Board.makeMove(move);
+                        MoveCombo mc = moveList.get(c);
+                        for (int i = 0; i < mc.numMovesPerCombo; i++) {
+                            Move move = mc.moves[i];
+                            gameInfo.appendText("\n" + move);
+                            Board.makeMove(move);
+                        }
                     }
                     else
                         gameInfo.appendText("\nPlease select a move contained within the list i.e. use a correct letter.");

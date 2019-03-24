@@ -184,18 +184,19 @@ class Classes {
 
         static ArrayList<Move> findBoardMoves() {
             ArrayList<Move> boardMoves = new ArrayList<>();
-            /*for (Strip aStrip : stripArray) {
+            for (Strip aStrip : stripArray) {
                 for (Strip bStrip : stripArray) {
                     Move curr = new Move(aStrip.stripID, bStrip.stripID, currentTurn);
                     if (valid(curr, false)) {
                         boardMoves.add(curr);
                     }
                 }
-            }*/         //above is what it will be, below is just to make testing more controlled
+            }         //above is what it will be, below is just to make testing more controlled
 
-            boardMoves.add(new Move(6, 7, currentTurn));
+            /*boardMoves.add(new Move(6, 7, currentTurn));
             boardMoves.add(new Move(6, 8, currentTurn));
             boardMoves.add(new Move(8, 9, currentTurn));
+            */
 
             return boardMoves;
         }
@@ -205,11 +206,13 @@ class Classes {
             int dice2 = Board.die.getDice2()-1;
             ArrayList<Move> barMoves = new ArrayList<>();
 
-            if (stripArray[dice1].pieceColor == currentTurn || stripArray[dice1].quantity <= 1) {
-                barMoves.add(new Move(-1, dice1, currentTurn));
-            }
-            if (stripArray[dice2].pieceColor == currentTurn || stripArray[dice2].quantity <= 1) {
-                barMoves.add(new Move(-1, dice2, currentTurn));
+            if(Bar.piecesIn(currentTurn) > 0) {
+                if (stripArray[dice1].pieceColor == currentTurn || stripArray[dice1].quantity <= 1) {
+                    barMoves.add(new Move(-1, dice1, currentTurn));
+                }
+                if (stripArray[dice2].pieceColor == currentTurn || stripArray[dice2].quantity <= 1) {
+                    barMoves.add(new Move(-1, dice2, currentTurn));
+                }
             }
 
             //barMoves.add(new Move(-1, 3, currentTurn));
@@ -239,7 +242,15 @@ class Classes {
 
 
         static void removeDuplicateCombos(ArrayList<MoveCombo> combos){
+           /* ArrayList<MoveCombo> temp = new ArrayList<MoveCombo>(combos);
 
+            if(true)
+                for(MoveCombo mc: temp){
+                    combos.removeIf(m -> (m!=mc && m.moves[0].orgStrip==mc.moves[0].orgStrip && m.moves[0].destStrip==mc.moves[0].destStrip));
+                }
+            */
+
+           //How to remove objects from arrayList while iterating through that arraylist without getting concurrentModificationException?
         }
 
         static ArrayList<MoveCombo> findAllValidCombos() {
@@ -315,15 +326,17 @@ class Classes {
                         // but if there are bar moves possible (i.e. if bar.quantity>0),
                         // then the first move has to be one of those.
 
-                        if (stripArray[firstMove.destStrip].pieceColor != currentTurn && valid(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice1(), currentTurn), false)) {
+                        if (firstMove.destStrip != -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn && validMove(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice1(), currentTurn))) {
                             copyAllMoves.add(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice1(), currentTurn));
-                        }
+                            System.out.println("Added: " + new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice1(), currentTurn));
+                        }   //doesn't seem to be catching anything, why?
 
                         // i.e. assuming the first move is made and there is now a piece on destStrip where there wasn't before,
                         // does that produce any new valid moves that weren't available before? Checks both dice1 and dice2.
 
-                        if (stripArray[firstMove.destStrip].pieceColor != currentTurn && valid(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice2(), currentTurn), false)) {
+                        if (firstMove.destStrip != -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn && validMove(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice2(), currentTurn))) {
                             copyAllMoves.add(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice2(), currentTurn));
+                            System.out.println("Added: " + new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice2(), currentTurn));
                         }
 
                         //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
@@ -344,12 +357,12 @@ class Classes {
                         //if not, need separate function
 
                         for (Move secondMove : copyAllMoves) {
-                            //if (Math.abs(firstMove.orgStrip-firstMove.destStrip) + Math.abs(secondMove.orgStrip-secondMove.destStrip) == Board.die.getDice1() + Board.die.getDice2()){
+                            if (Math.abs(firstMove.orgStrip-firstMove.destStrip) + Math.abs(secondMove.orgStrip-secondMove.destStrip) == Board.die.getDice1() + Board.die.getDice2()){
                             //commented out because still testing, so will rarely actually match dice numbers. Seems to work fine though
-                            System.out.println("Combined distance = " + (Math.abs(firstMove.orgStrip-firstMove.destStrip) + Math.abs(secondMove.orgStrip-secondMove.destStrip)));
-                            System.out.println("Should be: " + (Board.die.getDice1() + Board.die.getDice2()));
+                            //System.out.println("Combined distance = " + (Math.abs(firstMove.orgStrip-firstMove.destStrip) + Math.abs(secondMove.orgStrip-secondMove.destStrip)));
+                            //System.out.println("Should be: " + (Board.die.getDice1() + Board.die.getDice2()));
                                 allCombos.add(new MoveCombo(2, firstMove, secondMove));
-                            //}
+                            }
                         }
 
                     }
@@ -360,6 +373,11 @@ class Classes {
                //also need to provide code for when maxMoves = 4
 
               //also need to provide code for situations when only one valid move is found (and 3 as well I guess)
+
+            //if (plays with 2 moves are present)
+                //remove plays with less than 2 moves
+
+            //repeat for 3 and less, and 3 and less
 
               removeDuplicateCombos(allCombos);
 
