@@ -290,6 +290,12 @@ public class Controller {
                     gameInfo.appendText("\nYou must roll before printing the list of moves");
                 }
                 break;
+            case "/win": // Test to end game quick, current turn player wins.
+                System.out.println("HERE");
+                int x = Board.currentTurn.getValue();
+                int y = x == 0 ? 1 : 0;
+                endGame(players[x], players[y]);
+                break;
             default:
                 gameInfo.appendText("\n" + pCommands.getText());
                 pCommands.setText("");
