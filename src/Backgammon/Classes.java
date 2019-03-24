@@ -77,8 +77,9 @@ class Classes {
         static void makeMove(Move move, int type) {
             // Type refers to whether a move comes from /move or /listmove
             // Moves from /listmove have already been checked if it is valid so it doesn't need to check again
-            // -1 == /move  1 == listMove
-            if (type == -1) {
+            // < 0 ==  /move  >= 0 == listMove
+            if (type < 0) {
+                System.out.println(type);
                 if (!validMove(move,0))
                     return;
             }
@@ -278,9 +279,9 @@ class Classes {
             // Testing combination moves
             if (maxMoves == 2 && diff != die.getDice1() && diff != die.getDice2() && (diff!= die.getDice1()+die.getDice2() || tests == -1)) {
                 return false;
-            }else if(maxMoves == 2 && diff == (die.getDice1() + die.getDice2()) && (die.getDice1() != 0 || die.getDice2() == 0)){
-                System.out.println(diff);
-                return checkCombinedMove(move,2);
+            }else if(maxMoves == 2 && maxMoves - currentMoves == 2  && tests != -1){
+                if(diff == (die.getDice1() + die.getDice2()) && (die.getDice1() != 0 || die.getDice2() == 0))
+                    return checkCombinedMove(move,2);
             }else if(maxMoves - currentMoves == 4 && tests != -1){ // Player rolled doubles and has access to 4 moves
                 // In a double move both dice values are the same. If diff % dice value does not = 0, then the
                 // player has not input a multiple of the dice value. If it s greater than 4 times the dice value,
@@ -358,7 +359,6 @@ class Classes {
         }
         // Checks if the individual moves that make up a combined move are valid
         static boolean checkCombinedMove(Move move,int no_of_moves){
-            System.out.println(no_of_moves);
             if(no_of_moves == 2){ // 2 moves in 1
                 Move moveA;
                 Move moveB;
@@ -384,7 +384,16 @@ class Classes {
                     moveA.destStrip = move.destStrip;
                     return checkFinalMove(move,moveA);
                 }
-            }else if(no_of_moves == 3){ //TODO
+            }else if(no_of_moves == 3){ // At this point, each move will move the same amount
+                Move moveA = new Move(move.orgStrip,move.orgStrip+die.getDice1(),currentTurn);
+                if(currentTurn == Color.BLACK){
+                    moveA.orgStrip = move.orgStrip;
+                    moveA.destStrip = move.orgStrip+die.getDice1();
+                }
+                if(validMove(moveA,0)){
+                    Move moveB = new Move(moveA.orgStrip,move.destStrip,currentTurn); // Combo move of the remaining moves
+                    return validMove(moveB,0);
+                }
                 return false;
             }else if(no_of_moves == 4){ //TODO
                 return false;

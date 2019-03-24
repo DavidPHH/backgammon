@@ -156,6 +156,11 @@ public class Controller {
                     Move move = new Move(org, dest, Board.currentTurn);
                     Board.makeMove(move,-1);
                     gameInfo.appendText("\n" + move);
+
+                    if(Board.currentMoves < Board.maxMoves)
+                        printMoves();
+                    else
+                        gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
                 } else {
                     gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
                 }
@@ -257,7 +262,13 @@ public class Controller {
                     if(c < moveList.size() && c >= 0){
                         Move move = moveList.get(c);
                         gameInfo.appendText("\n" + move);
-                        Board.makeMove(move,1);
+                        //System.out.println("int "+c);
+                        Board.makeMove(move,c);
+
+                        if(Board.currentMoves < Board.maxMoves)
+                            printMoves();
+                        else
+                            gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
                     }
                     else
                         gameInfo.appendText("\nPlease select a move contained within the list i.e. use a correct letter.");
