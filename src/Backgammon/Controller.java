@@ -262,7 +262,6 @@ public class Controller {
                     if(c < moveList.size() && c >= 0){
                         Move move = moveList.get(c);
                         gameInfo.appendText("\n" + move);
-                        //System.out.println("int "+c);
                         Board.makeMove(move,c);
 
                         if(Board.currentMoves < Board.maxMoves)
