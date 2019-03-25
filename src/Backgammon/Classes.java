@@ -527,7 +527,7 @@ class Classes {
             return ((currentTurn != dest.pieceColor) && dest.quantity == 1);
         }
 
-        static boolean valid(Move move, boolean showErrors) {        //temporary method that takes a move as input and returns whether it's valid or not
+        static boolean valid(Move move, boolean showErrors, boolean isHypothetical) {        //temporary method that takes a move as input and returns whether it's valid or not
             //the reason I made a new one instead of updating validMove() is so that makeMove()
             //(which incorporates validMove) would still reliably be usable even as I tamper with valid()
             int org = move.orgStrip;
@@ -541,7 +541,7 @@ class Classes {
                     System.out.println("Out of bounds");                        // which should naturally stay within those bounds
                 return false;
             }
-            if (stripArray[org].pieceColor != move.color) {                         //maybe also remove?
+            if (stripArray[org].pieceColor != move.color && !isHypothetical) {                         //maybe also remove?
                 if (showErrors)
                     System.out.println("No " + move.color + " pieces on origin strip " + displayedOrg);
                 return false;
@@ -705,17 +705,16 @@ class Classes {
                         // but if there are bar moves possible (i.e. if bar.quantity>0),
                         // then the first move has to be one of those.
 
-                        if (firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn && validMove(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice1(), currentTurn), -1)) {
-                            copyAllMoves.add(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice1(), currentTurn));
-                            System.out.println("Added: " + new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice1(), currentTurn)); //for troubleshooting
-                        }   //doesn't seem to be catching anything, why?
+                        if (firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn && valid(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice1() : (23 - firstMove.destStrip - Board.die.getDice1()), currentTurn), false, true)) {
+                            copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice1() : (23 - firstMove.destStrip - Board.die.getDice1()), currentTurn));
+
+                        }  //works now
 
                         // i.e. assuming the first move is made and there is now a piece on destStrip where there wasn't before,
                         // does that produce any new valid moves that weren't available before? Checks both dice1 and dice2.
 
-                        if (firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn && validMove(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice2(), currentTurn), -1)) {
-                            copyAllMoves.add(new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice2(), currentTurn));
-                            System.out.println("Added: " + new Move(firstMove.destStrip, firstMove.destStrip + Board.die.getDice2(), currentTurn));
+                        if (firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn && valid(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn), false, true)) {
+                            copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn));
                         }
 
                         //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
@@ -734,6 +733,8 @@ class Classes {
                         //keep in mind we also need to remove any barMoves which are no longer possible,
                         //above if statement might already be sufficient if we go the route of assigning the bar an index that's actually included in stripArray
                         //if not, need separate function
+
+                        allCombos.add(new MoveCombo(1, firstMove));
 
                         for (Move secondMove : copyAllMoves) {
                             if (Math.abs(firstMove.orgStrip - firstMove.destStrip) + Math.abs(secondMove.orgStrip - secondMove.destStrip) == Board.die.getDice1() + Board.die.getDice2()) {
@@ -921,10 +922,22 @@ class Classes {
 
             //also need to provide code for situations when only one valid move is found (and 3 as well I guess)
 
+
+            allCombos.add(new MoveCombo(1, new Move(1, 2, currentTurn)));
+
+            int max =0 ;
+            for(MoveCombo mc: allCombos){
+                if(mc.numMovesPerCombo > max){
+                    max = mc.numMovesPerCombo;
+                }
+            }
+            int finalMax = max;
+            allCombos.removeIf(m -> m.numMovesPerCombo< finalMax);
+
+
             //if (plays with 2 moves are present)
             //remove plays with less than 2 moves
-
-            //repeat for 3 and less, and 3 and less
+            //repeat for 3 and less, and 4 and less   DONE!
 
             removeDuplicateCombos(allCombos);
 
