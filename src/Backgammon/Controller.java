@@ -463,10 +463,10 @@ public class Controller {
             }
             System.out.println("--------- List End ---------");
         } else {
-            gameInfo.appendText("\nThere were no possible moves");
+            gameInfo.appendText("\nThere were no possible moves\n");
             Board.nextTurn();
             Player player = players[0].getColor() == Board.currentTurn ? players[0] : players[1];
-            gameInfo.appendText("\n" + player.getPlayerName() + "'s turn");
+            gameInfo.appendText("\n" + player.getPlayerName() + "'s turn\nType /roll to roll dice");
             hasRolled = false;
         }
     }
