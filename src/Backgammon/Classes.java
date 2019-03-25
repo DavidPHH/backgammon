@@ -196,6 +196,9 @@ class Classes {
                     currentMoves = currentMoves + 3;
                 else if (dist > (die.getDice1()) && dist < (2 * die.getDice1()))
                     currentMoves = currentMoves + 2;
+                else{
+                    currentMoves++;
+                }
             }
         }
 
@@ -851,7 +854,7 @@ class Classes {
                 }
             }
 
-            /*else if (maxMoves == 4) {
+            else if (maxMoves == 4) {
                 if (Bar.piecesIn(currentTurn) == 0) {
                     for (Move firstMove : allMoves) { // All the individual moves
                         if(validMove(firstMove,1)){
@@ -996,21 +999,24 @@ class Classes {
                                                 removeTempPiece(third);
                                         }
                                     }
+                                    Bar.insert(yoink);
                                 }else{
                                     allCombos.add(new MoveCombo(2,first,second));
                                     if(tempAdded)
                                         removeTempPiece(second);
                                 }
                             }
-                            Bar.insert(yoink);
+
                         }
 
-                    }else{
+                    }else if(Bar.piecesIn(currentTurn) > 1){
                         for(Move firstMove : allMoves)
-                            allCombos.add(new MoveCombo(1,firstMove));
+                            if(validMove(firstMove,0)){
+                                allCombos.add(new MoveCombo(1,firstMove));
+                            }
                     }
                 }
-            }*/
+            }
 
             //More TODO's
 
