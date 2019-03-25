@@ -561,10 +561,11 @@ class Classes {
 
         static ArrayList<Move> findAllValidMoves() {
             ArrayList<Move> boardMoves = new ArrayList<>();
-            for (int i = -1; i < 24; i++) {
-                for (int j = -2; j < 24; j++) {
+            for (int i = 0; i < 24; i++) {
+                for (int j = 0; j < 24; j++) {
                     Move curr = new Move(i, j, currentTurn);
-                    if (validMove(curr, -1)) {
+                    if (valid(curr, false, false)) {    //changed back to valid so that when one piece is on the bar,
+                                                    // this still find board moves to do after the bar move. validMove excluded those when the bar was occupied
                         boardMoves.add(curr);
                     }
                 }
@@ -578,17 +579,24 @@ class Classes {
             return boardMoves;
         }
 
-       /* static ArrayList<Move> findBarMoves(){
-            int dice1 = Board.die.getDice1()-1;
-            int dice2 = Board.die.getDice2()-1;
+        static ArrayList<Move> findBarMoves(){
+            int strip1 = currentTurn==Color.WHITE? (23 - (Board.die.getDice1() - 1)) : (Board.die.getDice1() - 1);
+            int strip2 = currentTurn==Color.WHITE? (23 - (Board.die.getDice2() - 1)) : (Board.die.getDice2() - 1);
             ArrayList<Move> barMoves = new ArrayList<>();
 
             if(Bar.piecesIn(currentTurn) > 0) {
-                if (stripArray[dice1].pieceColor == currentTurn || stripArray[dice1].quantity <= 1) {
-                    barMoves.add(new Move(-1, dice1, currentTurn));
+                System.out.println("test");
+                if (stripArray[strip1].pieceColor == currentTurn || stripArray[strip1].quantity <= 1) {
+                    barMoves.add(new Move(-1, currentTurn==Color.WHITE ? strip1 : 23-strip1 , currentTurn));
+                    System.out.println("Yes if");
+                }else {
+                    System.out.println(new Move(-1, strip1, currentTurn).isHitToString() + " was not added");
                 }
-                if (stripArray[dice2].pieceColor == currentTurn || stripArray[dice2].quantity <= 1) {
-                    barMoves.add(new Move(-1, dice2, currentTurn));
+                if (stripArray[strip2].pieceColor == currentTurn || stripArray[strip2].quantity <= 1) {
+                    barMoves.add(new Move(-1, currentTurn == Color.WHITE? strip2 : 23 - strip2, currentTurn));
+                    System.out.println("Yes if");
+                }else {
+                    System.out.println(new Move(-1, strip2, currentTurn).isHitToString() + " was not added");
                 }
             }
 
@@ -597,7 +605,7 @@ class Classes {
 
             return barMoves;
         }
-*/
+
         //Also dummy
 
         /*static ArrayList<Move>findBearOffMoves(){
@@ -652,7 +660,7 @@ class Classes {
                                             Should it also remove Combos that are moving separate pieces, but still result in the same board state?
                                             Like "6-7 9-10" and "9-10 6-7"?
 
-                                                                //Also TODO fix lines 705-716 (at time of writing) about adding new moves if first move opens up new options
+                                                                //Also TODO fix lines 705-716 (at time of writing) about adding new moves if first move opens up new options  Done!
 
                 */
 
@@ -662,6 +670,7 @@ class Classes {
 
 
             ArrayList<Move> allMoves = new ArrayList<>(findAllValidMoves());
+           allMoves.addAll(findBarMoves());
 
             //below may be redundant
 
@@ -696,7 +705,7 @@ class Classes {
                             allCombos.add(new MoveCombo(1,firstMove));
                         }
                     }
-                    else if (Bar.piecesIn(currentTurn) == 0) {      // how to code orgStrip==Bar, since currently orgStrip is an int only?
+                    else if (Bar.piecesIn(currentTurn) == 0 || firstMove.orgStrip == -1) {      // how to code orgStrip==Bar, since currently orgStrip is an int only?
                         // maybe reserve an int like 0 to represent the bar, and then 1-24
                         // can actually correspond to what you'd expect on the board?
 
@@ -710,16 +719,17 @@ class Classes {
                         // but if there are bar moves possible (i.e. if bar.quantity>0),
                         // then the first move has to be one of those.
 
-                        if (firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn && valid(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice1() : (23 - firstMove.destStrip - Board.die.getDice1()), currentTurn), false, true)) {
+                        if ((firstMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice1() : (23 - firstMove.destStrip - Board.die.getDice1()), currentTurn), false, true)) {
                             copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice1() : (23 - firstMove.destStrip - Board.die.getDice1()), currentTurn));
-
+                            System.out.println("hi");
                         }  //works now
 
                         // i.e. assuming the first move is made and there is now a piece on destStrip where there wasn't before,
                         // does that produce any new valid moves that weren't available before? Checks both dice1 and dice2.
 
-                        if (firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn && valid(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn), false, true)) {
+                        if ((firstMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn), false, true)) {
                             copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn));
+                            System.out.println("hi");
                         }
 
                         //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
@@ -741,20 +751,25 @@ class Classes {
 
                         allCombos.add(new MoveCombo(1, firstMove));
 
-                        for (Move secondMove : copyAllMoves) {
-                            if(firstMove.destStrip == -1  || firstMove.orgStrip == -1){
-                                System.out.println("test");
-                            }
-                            else if(getStrip(firstMove.orgStrip).pieceColor != currentTurn)
-                                System.out.println("test2");
-                            else if (Math.abs(firstMove.orgStrip - firstMove.destStrip) + Math.abs(secondMove.orgStrip - secondMove.destStrip) == Board.die.getDice1() + Board.die.getDice2()) {
+                        for (Move secondMove : copyAllMoves){
+                            if (secondMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 2){
+                                int firstDiff = Math.abs(firstMove.orgStrip - firstMove.destStrip);
+                                int secondDiff = Math.abs(secondMove.orgStrip - secondMove.destStrip);
+                                /*if(firstMove.destStrip == -1  || firstMove.orgStrip == -1){
+                                    System.out.println("test");
+                                }
+                                else if(getStrip(firstMove.orgStrip).pieceColor != currentTurn)
+                                    System.out.println("test2");
+                                else*/
+                                 if ((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {   //maths wrongly excludes white move pairs involving the bar
                                 //commented out because still testing, so will rarely actually match dice numbers. Seems to work fine though
                                 //System.out.println("Combined distance = " + (Math.abs(firstMove.orgStrip-firstMove.destStrip) + Math.abs(secondMove.orgStrip-secondMove.destStrip)));
                                 //System.out.println("Should be: " + (Board.die.getDice1() + Board.die.getDice2()));
-                                allCombos.add(new MoveCombo(2, firstMove, secondMove));
+                                     allCombos.add(new MoveCombo(2, firstMove, secondMove));
+                                } else System.out.println("total diff was " + (firstDiff + secondDiff));
                             }
                         }
-                    } else if (Bar.piecesIn(currentTurn) > 0) { // Getting the bar moves to show up on the list
+                    } /*else if (Bar.piecesIn(currentTurn) > 0) { // Getting the bar moves to show up on the list
                         if (Bar.piecesIn(currentTurn) == 1 && maxMoves - currentMoves == 2) { // There can be a follow up move
                             Piece yoink = new Piece(Bar.remove(currentTurn)); // Just to check a follow up move
                             int dist = prepForTestBarCombinedMoves(firstMove);
@@ -773,11 +788,11 @@ class Classes {
                         } else {
                             allCombos.add(new MoveCombo(1, firstMove));
                         }
-                    }
+                    }*/
                 }
 
                 // Need to add the possible follow on move. i.e. 13 -7 7 -5 if player rolls a 6 and 2, and 7 doesn't have a piece originally
-                for (int i = 0; i < allMoves.size(); i++) {
+                /*for (int i = 0; i < allMoves.size(); i++) {
                     if(allMoves.get(i).destStrip == -2){
                         System.out.println("test");
                     }else{
@@ -802,8 +817,10 @@ class Classes {
                             }
                         }
                     }
-                }
-            } else if (maxMoves == 4) {
+                }*/
+            }
+
+            /*else if (maxMoves == 4) {
                 if (Bar.piecesIn(currentTurn) == 0) {
                     for (Move firstMove : allMoves) { // All the individual moves
                         allCombos.add(new MoveCombo(1, firstMove));
@@ -951,7 +968,7 @@ class Classes {
                             allCombos.add(new MoveCombo(1,firstMove));
                     }
                 }
-            }
+            }*/
 
             //More TODO's
 
@@ -959,8 +976,6 @@ class Classes {
 
             //also need to provide code for situations when only one valid move is found (and 3 as well I guess)
 
-
-            allCombos.add(new MoveCombo(1, new Move(1, 2, currentTurn)));
 
             int max =0 ;
             for(MoveCombo mc: allCombos){
@@ -970,7 +985,6 @@ class Classes {
             }
             int finalMax = max;
             allCombos.removeIf(m -> m.numMovesPerCombo< finalMax);
-
 
             //if (plays with 2 moves are present)
             //remove plays with less than 2 moves
@@ -983,6 +997,7 @@ class Classes {
             for (int i = 0; i < allMoves.size(); i++)
                 System.out.println(allMoves.get(i).isHitToString());
             System.out.println("all moves stops here");
+
             return allCombos;
 
         }
@@ -1131,15 +1146,15 @@ class Move {
     String isHitToString() {
         String m = "";
 
-        boolean tempAdded = false;
-        if (this.orgStrip != -1) {
-            tempAdded = Classes.Board.addTempPiece(this);
-        }
-        if (!Classes.Board.validMove(this, 0))
-            m = "this - ";
+        //boolean tempAdded = false;
+        //if (this.orgStrip != -1) {
+        //    tempAdded = Classes.Board.addTempPiece(this);
+        //}
+        //if (!Classes.Board.validMove(this, 0))
+          //  m = "this - ";
 
-        if (tempAdded)
-            Classes.Board.removeTempPiece(this);
+        //if (tempAdded)
+        //    Classes.Board.removeTempPiece(this);
         return m + ((orgStrip == -1 || orgStrip == 24) ? "Bar" : ((color == Color.WHITE) ? (orgStrip + 1) : (23 - orgStrip + 1))) +   //might be able to remove || == 24 check
                 "-" +
                 (destStrip == -2 ? "Off" : ((color == Color.WHITE) ? (destStrip + 1) : (23 - destStrip + 1)) +

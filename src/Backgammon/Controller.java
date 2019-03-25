@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static Backgammon.Classes.Board.currentMoves;
 import static Backgammon.Classes.Board.findAllValidCombos;
+import static Backgammon.Classes.Board.maxMoves;
 
 
 public class Controller {
@@ -272,10 +274,13 @@ public class Controller {
                             Board.makeMove(move, c);
                         }
 
-                        if(Board.currentMoves < Board.maxMoves)
-                            printMoves();
-                        else
+                        //if(Board.currentMoves < Board.maxMoves)
+                            //printMoves();     //Don't actually want this, since the only time currentMoves is < maxMoves
+                                                //after having already called listmove is if there are no possible plays that use maxMoves,
+                                                //so this will always return an empty list
+                        //else
                             gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
+                        currentMoves = maxMoves;    //to make sure /next doesn't get confused and tell you to move again
 
                     }
                     else
