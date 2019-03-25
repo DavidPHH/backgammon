@@ -271,16 +271,15 @@ public class Controller {
                         for (int i = 0; i < mc.numMovesPerCombo; i++) {
                             Move move = mc.moves[i];
                             gameInfo.appendText("\n" + move);
+                            System.out.println(move.orgStrip+" d " +move.destStrip );
                             Board.makeMove(move, c);
                         }
 
-                        //if(Board.currentMoves < Board.maxMoves)
-                            //printMoves();     //Don't actually want this, since the only time currentMoves is < maxMoves
-                                                //after having already called listmove is if there are no possible plays that use maxMoves,
-                                                //so this will always return an empty list
-                        //else
+                        if(Board.currentMoves < Board.maxMoves)
+                            printMoves();
+                        else
                             gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
-                        currentMoves = maxMoves;    //to make sure /next doesn't get confused and tell you to move again
+                        //currentMoves = maxMoves;    //to make sure /next doesn't get confused and tell you to move again
 
                     }
                     else

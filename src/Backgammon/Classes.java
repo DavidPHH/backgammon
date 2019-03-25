@@ -130,6 +130,7 @@ class Classes {
         }
 
         static void changingCurrentMoves(int dist) {
+            System.out.println(dist);
             if (maxMoves == 2) { // No doubles
                 if (dist == die.getDice1()) { // Removes the used dice from being used again in this turn
                     die.resetDice(1);
@@ -147,6 +148,7 @@ class Classes {
         }
 
         static void moveToBearOff(Move move) {
+            System.out.println("in bear move "+move.orgStrip);
             Piece freedom = new Piece(stripArray[move.orgStrip].pop());
             BearOff.insert(freedom);
 
@@ -223,19 +225,24 @@ class Classes {
             // User wants to move to the bear-off, this checks if it is allowed. This is done before the bar check
             // as moving to the bear-off has a different check for move according to the die. Bear-off == -2
             if (move.destStrip == -2) {
+                if(move.orgStrip < 0)
+                    return false;
                 int diff;
                 if (currentTurn == Color.WHITE) {
                     diff = move.orgStrip + 1; // Adding 1 since destination will be from org to 0th position +1 to the bear-off
 
                     int count = 0;
                     for (int i = 0; i < 6; i++) { //Checks if the bear-off can be attained in the first place
-                        count += stripArray[i].quantity;
+                        if(stripArray[i].pieceColor == currentTurn){
+                            count += stripArray[i].quantity;
+                        }
                     }
                     if (count == Main.players[0].getPiecesLeft()) {
-                        if (diff <= die.getDice1()) // If the first die will bring you to bear-off
-                            return true;
+                        if (diff <= die.getDice1()) {// If the first die will bring you to bear-off
+                            return org.quantity > 0 && org.pieceColor == currentTurn;
+                        }
                         else if (diff <= die.getDice2()) // If the second die will bring you to bear-off
-                            return true;
+                            return org.quantity > 0 && org.pieceColor == currentTurn;
                         else if (diff <= (die.getDice1() + die.getDice2()) && tests != -1) { // Combination of the die
                             Move mDie1 = new Move(move.orgStrip, move.orgStrip - die.getDice1(), currentTurn);
                             Move mDie2 = new Move(move.orgStrip, move.orgStrip - die.getDice2(), currentTurn);
@@ -258,13 +265,15 @@ class Classes {
                     diff = (23 - move.orgStrip) + 1;
                     int count = 0;
                     for (int i = 23; i >= 18; i--) {
-                        count += stripArray[i].quantity;
+                        if(stripArray[i].pieceColor == currentTurn){
+                            count += stripArray[i].quantity;
+                        }
                     }
                     if (count == Main.players[1].getPiecesLeft()) {
                         if (diff <= die.getDice1()) // If the first die will bring you to bear-off
-                            return true;
+                            return org.quantity > 0 && org.pieceColor == currentTurn;
                         else if (diff <= die.getDice2()) // If the second die will bring you to bear-off
-                            return true;
+                            return org.quantity > 0 && org.pieceColor == currentTurn;
                         else if (diff <= (die.getDice1() + die.getDice2()) && tests != -1) { // Combination of the die
                             Move mDie1 = move;
                             mDie1.destStrip = move.orgStrip + die.getDice1();
@@ -516,6 +525,7 @@ class Classes {
         static void hitMove(Strip dest) {
             Piece ripPiece = new Piece(dest.pop());
             Bar.insert(ripPiece);
+
         }
 
         static void isMoveAHit(Strip dest) { // If the move is a hit, removes the opposing piece in preparation for the move
@@ -536,7 +546,7 @@ class Classes {
             int displayedOrg = (move.color == Color.WHITE) ? (org + 1) : (23 - org) + 1;      //kept it that way so that it's easier to make sense of,
             int diff = displayedOrg - displayedDest;                                   //expressing it as a reverse of previous steps applied to it.
 
-            if (org < 0 || dest < 0 || org > 23 || dest > 23) {                   // can probably be removed later since it
+            if (org < 0 || dest < 0 || org > 23 || dest > 23 || diff == 0) {                   // can probably be removed later since it
                 if (showErrors)                                                   // will likely only be used in findBoardMoves()
                     System.out.println("Out of bounds");                        // which should naturally stay within those bounds
                 return false;
@@ -562,9 +572,18 @@ class Classes {
         static ArrayList<Move> findAllValidMoves() {
             ArrayList<Move> boardMoves = new ArrayList<>();
             for (int i = 0; i < 24; i++) {
-                for (int j = 0; j < 24; j++) {
+                for (int j = -2; j < 24; j++) {
                     Move curr = new Move(i, j, currentTurn);
-                    if (valid(curr, false, false)) {    //changed back to valid so that when one piece is on the bar,
+                    if(j == -2){
+                        if(currentTurn == Color.BLACK){
+                            curr.orgStrip = i;
+                            curr.destStrip = j;
+                        }
+                        if(validMove(curr,-1)){
+                            boardMoves.add(curr);
+                        }
+                    }
+                    else if (valid(curr, false, false)) {    //changed back to valid so that when one piece is on the bar,
                                                     // this still find board moves to do after the bar move. validMove excluded those when the bar was occupied
                         boardMoves.add(curr);
                     }
@@ -584,20 +603,28 @@ class Classes {
             int strip2 = currentTurn==Color.WHITE? (23 - (Board.die.getDice2() - 1)) : (Board.die.getDice2() - 1);
             ArrayList<Move> barMoves = new ArrayList<>();
 
+            System.out.println("strips: "+strip1 + strip2);
+
             if(Bar.piecesIn(currentTurn) > 0) {
                 System.out.println("test");
-                if (stripArray[strip1].pieceColor == currentTurn || stripArray[strip1].quantity <= 1) {
-                    barMoves.add(new Move(-1, currentTurn==Color.WHITE ? strip1 : 23-strip1 , currentTurn));
-                    System.out.println("Yes if");
-                }else {
-                    System.out.println(new Move(-1, strip1, currentTurn).isHitToString() + " was not added");
+                if(strip1 < 24 && strip1 >= 0){ // Strip will be 24 or -1 after a dice reset
+
+                    if (stripArray[strip1].pieceColor == currentTurn || stripArray[strip1].quantity <= 1) {
+                        barMoves.add(new Move(-1, currentTurn==Color.WHITE ? strip1 : 23-strip1 , currentTurn));
+                        System.out.println("Yes if");
+                    }else {
+                        System.out.println(new Move(-1, strip1, currentTurn).isHitToString() + " was not added");
+                    }
                 }
-                if (stripArray[strip2].pieceColor == currentTurn || stripArray[strip2].quantity <= 1) {
-                    barMoves.add(new Move(-1, currentTurn == Color.WHITE? strip2 : 23 - strip2, currentTurn));
-                    System.out.println("Yes if");
-                }else {
-                    System.out.println(new Move(-1, strip2, currentTurn).isHitToString() + " was not added");
-                }
+                if(strip2 < 24 && strip2 >= 0){
+                    if (stripArray[strip2].pieceColor == currentTurn || stripArray[strip2].quantity <= 1) {
+                        barMoves.add(new Move(-1, currentTurn == Color.WHITE? strip2 : 23 - strip2, currentTurn));
+                        System.out.println("Yes if");
+                    }else {
+                        System.out.println(new Move(-1, strip2, currentTurn).isHitToString() + " was not added");
+                    }
+                }else
+                    System.out.println("nothing");
             }
 
             //barMoves.add(new Move(-1, 3, currentTurn));
@@ -698,14 +725,14 @@ class Classes {
             System.out.println("allMoves initially looks like: " + allMoves);
 
             if (maxMoves == 2) {
+                ArrayList<MoveCombo> singleBearOffMoves = new ArrayList<>(); // Something keeps removing bear-off moves
                 for (Move firstMove : allMoves) {
                     copyAllMoves = new ArrayList<>(allMoves);
-                    if(firstMove.destStrip == -2 && firstMove.orgStrip != -1 && getStrip(firstMove.orgStrip).pieceColor == currentTurn){
-                        if(validMove(firstMove,1)){
+                    if(firstMove.destStrip == -2){
+                            singleBearOffMoves.add(new MoveCombo(1,firstMove));
                             allCombos.add(new MoveCombo(1,firstMove));
-                        }
                     }
-                    else if (Bar.piecesIn(currentTurn) == 0 || firstMove.orgStrip == -1) {      // how to code orgStrip==Bar, since currently orgStrip is an int only?
+                    if (Bar.piecesIn(currentTurn) == 0 || firstMove.orgStrip == -1) {      // how to code orgStrip==Bar, since currently orgStrip is an int only?
                         // maybe reserve an int like 0 to represent the bar, and then 1-24
                         // can actually correspond to what you'd expect on the board?
 
@@ -735,7 +762,7 @@ class Classes {
                         //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
                         //no more pieces left on orgStrip after the move is made, i.e. if there is currently only one piece on orgStrip
 
-                        if (firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && stripArray[firstMove.orgStrip].quantity <= 1) {  //<=1 to make testing easier, really could be ==1
+                        if (firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && firstMove.destStrip != -2 && stripArray[firstMove.orgStrip].quantity <= 1) {  //<=1 to make testing easier, really could be ==1
                             //System.out.println("Removing moves starting on same");
                             copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
                             //System.out.println("Removed successfully");
@@ -818,101 +845,116 @@ class Classes {
                         }
                     }
                 }*/
+
+                for(int i = 0;i < singleBearOffMoves.size();i++){
+                    System.out.println("ma moves are here: " +singleBearOffMoves.get(i).moves[0].isHitToString());
+                }
             }
 
             /*else if (maxMoves == 4) {
                 if (Bar.piecesIn(currentTurn) == 0) {
                     for (Move firstMove : allMoves) { // All the individual moves
-                        allCombos.add(new MoveCombo(1, firstMove));
+                        if(validMove(firstMove,1)){
+                            if(firstMove.orgStrip != -1){
+                                System.out.println("new move"+firstMove.isHitToString());
+                                allCombos.add(new MoveCombo(1, firstMove));
+                            }
+                        }
                     }
                     if (maxMoves - currentMoves >= 2) {
                         for (Move firstMove : allMoves) { // All 2 move combos
-                            Move secondMove = createNextMove(firstMove);
-                            boolean tempAdded = addTempPiece(secondMove); // For checking the temp move
-                            if (validMove(secondMove, 0)) {
-                                if (tempAdded) {
-                                    removeTempPiece(secondMove);
-                                }
-                                allCombos.add(new MoveCombo(2, firstMove, secondMove));
-                            } else {
-                                if (tempAdded) {
-                                    removeTempPiece(secondMove);
+                            if(firstMove.destStrip != -2){
+                                Move secondMove = createNextMove(firstMove);
+                                boolean tempAdded = addTempPiece(secondMove); // For checking the temp move
+                                if (validMove(secondMove, 0)) {
+                                    if (tempAdded) {
+                                        removeTempPiece(secondMove);
+                                    }
+                                    allCombos.add(new MoveCombo(2, firstMove, secondMove));
+                                } else {
+                                    if (tempAdded) {
+                                        removeTempPiece(secondMove);
+                                    }
                                 }
                             }
                         }
                     }
                     if (maxMoves - currentMoves >= 3) { // Getting the 3 move combinations
                         for (Move firstMove : allMoves) { // I could use my checkCombinedMoves function, but then it wouldn't return the middle hit moves
-                            Move secondMove = createNextMove(firstMove);
-                            boolean tempAdded = addTempPiece(secondMove); // For checking the temp move
-                            if (validMove(secondMove, 0)) { // Checks if the second move is valid. If yes, move on to checking the third
-                                if (tempAdded) {
-                                    removeTempPiece(secondMove);
-                                }
-
-                                // Creating the third move
-                                Move thirdMove = createNextMove(secondMove);
-
-                                boolean tempAdded2 = addTempPiece(thirdMove);
-
-                                if (validMove(thirdMove, 0)) { // Checking if the third move is valid, if yes then create the 3 move combo
-                                    if (tempAdded2) {
-                                        removeTempPiece(thirdMove);
+                            if(firstMove.destStrip != -2){
+                                Move secondMove = createNextMove(firstMove);
+                                boolean tempAdded = addTempPiece(secondMove); // For checking the temp move
+                                if (validMove(secondMove, 0)) { // Checks if the second move is valid. If yes, move on to checking the third
+                                    if (tempAdded) {
+                                        removeTempPiece(secondMove);
                                     }
-                                    allCombos.add(new MoveCombo(3, firstMove, secondMove, thirdMove));
+
+                                    // Creating the third move
+                                    Move thirdMove = createNextMove(secondMove);
+
+                                    boolean tempAdded2 = addTempPiece(thirdMove);
+
+                                    if (validMove(thirdMove, 0)) { // Checking if the third move is valid, if yes then create the 3 move combo
+                                        if (tempAdded2) {
+                                            removeTempPiece(thirdMove);
+                                        }
+                                        allCombos.add(new MoveCombo(3, firstMove, secondMove, thirdMove));
+                                    } else {
+                                        if (tempAdded2) {
+                                            removeTempPiece(thirdMove);
+                                        }
+                                    }
                                 } else {
-                                    if (tempAdded2) {
-                                        removeTempPiece(thirdMove);
+                                    if (tempAdded) {
+                                        removeTempPiece(secondMove);
                                     }
-                                }
-                            } else {
-                                if (tempAdded) {
-                                    removeTempPiece(secondMove);
                                 }
                             }
                         }
                     }
                     if (maxMoves - currentMoves == 4) {
                         for (Move firstMove : allMoves) { // I could use my checkCombinedMoves function, but then it wouldn't return the middle hit moves
-                            Move secondMove = createNextMove(firstMove);
-                            boolean tempAdded = addTempPiece(secondMove); // For checking the temp move
-                            if (validMove(secondMove, 0)) { // Checks if the second move is valid. If yes, move on to checking the third
-                                if (tempAdded) {
-                                    removeTempPiece(secondMove);
-                                }
-
-                                // Creating the third move
-                                Move thirdMove = createNextMove(secondMove);
-
-                                boolean tempAdded2 = addTempPiece(thirdMove);
-
-                                if (validMove(thirdMove, 0)) { // Checking if the third move is valid, if yes then create the 3 move combo
-                                    if (tempAdded2) {
-                                        removeTempPiece(thirdMove); // Removes the temp piece
+                            if(firstMove.destStrip != -2){
+                                Move secondMove = createNextMove(firstMove);
+                                boolean tempAdded = addTempPiece(secondMove); // For checking the temp move
+                                if (validMove(secondMove, 0)) { // Checks if the second move is valid. If yes, move on to checking the third
+                                    if (tempAdded) {
+                                        removeTempPiece(secondMove);
                                     }
 
-                                    // Creating the fourth move
-                                    Move fourthMove = createNextMove(thirdMove);
-                                    boolean tempAdded3 = addTempPiece(fourthMove);
+                                    // Creating the third move
+                                    Move thirdMove = createNextMove(secondMove);
 
-                                    if (validMove(fourthMove, 0)) {
-                                        if (tempAdded3) {
-                                            removeTempPiece(fourthMove);
+                                    boolean tempAdded2 = addTempPiece(thirdMove);
+
+                                    if (validMove(thirdMove, 0)) { // Checking if the third move is valid, if yes then create the 3 move combo
+                                        if (tempAdded2) {
+                                            removeTempPiece(thirdMove); // Removes the temp piece
                                         }
-                                        allCombos.add(new MoveCombo(4, firstMove, secondMove, thirdMove, fourthMove));
+
+                                        // Creating the fourth move
+                                        Move fourthMove = createNextMove(thirdMove);
+                                        boolean tempAdded3 = addTempPiece(fourthMove);
+
+                                        if (validMove(fourthMove, 0)) {
+                                            if (tempAdded3) {
+                                                removeTempPiece(fourthMove);
+                                            }
+                                            allCombos.add(new MoveCombo(4, firstMove, secondMove, thirdMove, fourthMove));
+                                        } else {
+                                            if (tempAdded3) {
+                                                removeTempPiece(fourthMove);
+                                            }
+                                        }
                                     } else {
-                                        if (tempAdded3) {
-                                            removeTempPiece(fourthMove);
+                                        if (tempAdded2) {
+                                            removeTempPiece(thirdMove);
                                         }
                                     }
                                 } else {
-                                    if (tempAdded2) {
-                                        removeTempPiece(thirdMove);
+                                    if (tempAdded) {
+                                        removeTempPiece(secondMove);
                                     }
-                                }
-                            } else {
-                                if (tempAdded) {
-                                    removeTempPiece(secondMove);
                                 }
                             }
                         }
@@ -977,14 +1019,14 @@ class Classes {
             //also need to provide code for situations when only one valid move is found (and 3 as well I guess)
 
 
-            int max =0 ;
+            /*int max =0 ;
             for(MoveCombo mc: allCombos){
                 if(mc.numMovesPerCombo > max){
                     max = mc.numMovesPerCombo;
                 }
             }
             int finalMax = max;
-            allCombos.removeIf(m -> m.numMovesPerCombo< finalMax);
+            allCombos.removeIf(m -> m.numMovesPerCombo< finalMax);*/
 
             //if (plays with 2 moves are present)
             //remove plays with less than 2 moves
