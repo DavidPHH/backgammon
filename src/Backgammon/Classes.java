@@ -766,12 +766,13 @@ class Classes {
                         //no more pieces left on orgStrip after the move is made, i.e. if there is currently only one piece on orgStrip
 
                         if (firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && firstMove.destStrip != -2 && stripArray[firstMove.orgStrip].quantity <= 1) {  //<=1 to make testing easier, really could be ==1
-                            //System.out.println("Removing moves starting on same");
+                            System.out.println("Removing moves starting on same");
                             copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
-                            //System.out.println("Removed successfully");
-                        } else if (Bar.piecesIn(currentTurn) <= 1) {  // i.e. when orgStrip = -1 (Bar)
+                            System.out.println("Removed successfully");
+                        } else if (firstMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1) {
                             copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
-                        }
+                            System.out.println("something");
+                        } else System.out.println("did not remove moves starting on" + firstMove.orgStrip);
 
                         // >=0 and <24 conditions included so that it doesn't try to dereference something like stripArray[-1] for bar moves
 
@@ -873,17 +874,17 @@ class Classes {
                             copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn));
                             System.out.println("hi");
                         }
-                        if (firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && firstMove.destStrip != -2 && stripArray[firstMove.orgStrip].quantity <= 1) {  //<=1 to make testing easier, really could be ==1
+                        if (firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && firstMove.destStrip != -2 && stripArray[firstMove.orgStrip].quantity < 2) {
                             copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
-                        } else if (Bar.piecesIn(currentTurn) <= 1) {  // i.e. when orgStrip = -1 (Bar)
+                        } else if (firstMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1) {  // i.e. when orgStrip = -1 (Bar)
                             copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
                         }
 
                         allCombos.add(new MoveCombo(1, firstMove));
 
-                        ArrayList<Move> copyAllMoves2 = new ArrayList<>(copyAllMoves);
 
                         for (Move secondMove : copyAllMoves){
+                            ArrayList<Move> copyAllMoves2 = new ArrayList<>(copyAllMoves);
                             if (secondMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 2){
                                 allCombos.add(new MoveCombo(2, firstMove, secondMove));
 
@@ -896,15 +897,15 @@ class Classes {
                                     copyAllMoves2.add(new Move(currentTurn == Color.WHITE ? secondMove.destStrip : 23 - secondMove.destStrip, currentTurn == Color.WHITE ? secondMove.destStrip - Board.die.getDice2() : (23 - secondMove.destStrip - Board.die.getDice2()), currentTurn));
                                     System.out.println("hi");
                                 }
-                                if (secondMove.orgStrip >= 0 && secondMove.orgStrip < 24 && secondMove.destStrip != -2 && stripArray[secondMove.orgStrip].quantity <= 1) {  //<=1 to make testing easier, really could be ==1
+                                if (secondMove.orgStrip >= 0 && secondMove.orgStrip < 24 && secondMove.destStrip != -2 && stripArray[secondMove.orgStrip].quantity < 3) {
                                     copyAllMoves2.removeIf(m -> m.orgStrip == secondMove.orgStrip);
-                                } else if (Bar.piecesIn(currentTurn) <= 1) {  // i.e. when orgStrip = -1 (Bar)
+                                } else if (secondMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1) {  // i.e. when orgStrip = -1 (Bar)
                                     copyAllMoves2.removeIf(m -> m.orgStrip == secondMove.orgStrip);
                                 }
 
-                                ArrayList<Move> copyAllMoves3 = new ArrayList<>(copyAllMoves2);
 
                                 for(Move thirdMove : copyAllMoves2){
+                                    ArrayList<Move> copyAllMoves3 = new ArrayList<>(copyAllMoves2);
                                     if(thirdMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 3){
                                         if ((thirdMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && thirdMove.destStrip > -1 && stripArray[thirdMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? thirdMove.destStrip : 23 - thirdMove.destStrip, currentTurn == Color.WHITE ? thirdMove.destStrip - Board.die.getDice1() : (23 - thirdMove.destStrip - Board.die.getDice1()), currentTurn), false, true)) {
                                             copyAllMoves3.add(new Move(currentTurn == Color.WHITE ? thirdMove.destStrip : 23 - thirdMove.destStrip, currentTurn == Color.WHITE ? thirdMove.destStrip - Board.die.getDice1() : (23 - thirdMove.destStrip - Board.die.getDice1()), currentTurn));
@@ -915,9 +916,9 @@ class Classes {
                                             copyAllMoves3.add(new Move(currentTurn == Color.WHITE ? thirdMove.destStrip : 23 - thirdMove.destStrip, currentTurn == Color.WHITE ? thirdMove.destStrip - Board.die.getDice2() : (23 - thirdMove.destStrip - Board.die.getDice2()), currentTurn));
                                             System.out.println("hi");
                                         }
-                                        if (thirdMove.orgStrip >= 0 && thirdMove.orgStrip < 24 && thirdMove.destStrip != -2 && stripArray[thirdMove.orgStrip].quantity <= 1) {  //<=1 to make testing easier, really could be ==1
+                                        if (thirdMove.orgStrip >= 0 && thirdMove.orgStrip < 24 && thirdMove.destStrip != -2 && stripArray[thirdMove.orgStrip].quantity < 4) {  //<=1 to make testing easier, really could be ==1
                                             copyAllMoves3.removeIf(m -> m.orgStrip == thirdMove.orgStrip);
-                                        } else if (Bar.piecesIn(currentTurn) <= 1) {  // i.e. when orgStrip = -1 (Bar)
+                                        } else if (thirdMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1) {  // i.e. when orgStrip = -1 (Bar)
                                             copyAllMoves3.removeIf(m -> m.orgStrip == thirdMove.orgStrip);
                                         }
 
