@@ -657,15 +657,38 @@ class Classes {
 
 
         static void removeDuplicateCombos(ArrayList<MoveCombo> combos) {
-           /* ArrayList<MoveCombo> temp = new ArrayList<MoveCombo>(combos);
+            if(combos.size() > 0 && combos.get(0).numMovesPerCombo == 2) {   //assumes num moves in any combo is same as num moves in all combos
+                ArrayList<MoveCombo> toRemove = new ArrayList<>();
+                for(MoveCombo tmp1: combos){
+                    for(MoveCombo tmp2: combos){
+                        if(tmp1.moves[0].orgStrip == tmp2.moves[0].orgStrip && tmp1.moves[1].destStrip == tmp2.moves[1].destStrip            // if same starting and end points
+                                && stripArray[tmp1.moves[0].destStrip].quantity != 1 && stripArray[tmp2.moves[0].destStrip].quantity != 1    // and no hits in between
+                                && tmp1 != tmp2 && !toRemove.contains(tmp1)){  //and it's comparing against another combo, not itself, otherwise it would remove everything
+                                                                            // and that other combo hasn't already been removed, otherwise it would remove both
 
-            if(true)
-                for(MoveCombo mc: temp){
-                    combos.removeIf(m -> (m!=mc && m.moves[0].orgStrip==mc.moves[0].orgStrip && m.moves[0].destStrip==mc.moves[0].destStrip));
+                        /*   Can maybe skip these last two conditions by using something like:
+                             for(i=0;i<combo.size;i++){
+                                 for(j=i;j<combo.size;j++){
+                                 }
+                             }
+                                   emphasis on the j=i
+                         */
+
+                //do we also need check if first's dest == second's org, or is that already implied by the fact that the first's org to second's dest distances will be the same
+
+                            toRemove.add(tmp2);
+                        }
+                    }
                 }
-            */
+                combos.removeAll(toRemove);
+            }
 
-            //How to remove objects from arrayList while iterating through that arraylist without getting concurrentModificationException?
+            // TODO expand to work for 3-move combos and 4-move combos
+            // and catch other kind of duplicates as well
+            // 2 other kinds are where it's the same moves in a different order  e.g. "7-4 11-10" and "11-10 7-4"
+            // and where, for whatever reason, two plays have been added that are the exact same e.g.  "6-5 4-1" and "6-5 4-1"
+            // maybe this second case can be made unnecessary by avoiding adding those exact duplicates in the first place
+            // if not, it might also have to be able to be applied to 1-move plays, more observation needed first
         }
 
         static ArrayList<MoveCombo> findAllValidCombos() {
@@ -690,13 +713,9 @@ class Classes {
                                             Should it also remove Combos that are moving separate pieces, but still result in the same board state?
                                             Like "6-7 9-10" and "9-10 6-7"?
 
-                                                                //Also TODO fix lines 705-716 (at time of writing) about adding new moves if first move opens up new options  Done!
+
 
                 */
-
-
-            //Bar.insert(new Piece(currentTurn));
-            //Bar.insert(new Piece(currentTurn));
 
 
             ArrayList<Move> allMoves = new ArrayList<>(findAllValidMoves());
@@ -717,8 +736,8 @@ class Classes {
                      System.out.println("Bar & Board moves are allowed for this turn");
                  }*/
 
-            ArrayList<Move> copyAllMoves;                             // made so that when combining moves into pairs (or quadruplets when a double is rolled),
-            // you can temporarily change which moves are valid without affecting the master copy
+            ArrayList<Move> copyAllMoves;             // made so that when combining moves into pairs (or triples or quadruplets),
+                                                     // you can temporarily change which moves are valid without affecting the master copy
 
 
             ArrayList<MoveCombo> allCombos = new ArrayList<>();
@@ -751,7 +770,6 @@ class Classes {
 
                         if ((firstMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice1() : (23 - firstMove.destStrip - Board.die.getDice1()), currentTurn), false, true)) {
                             copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice1() : (23 - firstMove.destStrip - Board.die.getDice1()), currentTurn));
-                            System.out.println("hi");
                         }  //works now
 
                         // i.e. assuming the first move is made and there is now a piece on destStrip where there wasn't before,
@@ -759,20 +777,19 @@ class Classes {
 
                         if ((firstMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn), false, true)) {
                             copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn));
-                            System.out.println("hi");
                         }
 
                         //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
                         //no more pieces left on orgStrip after the move is made, i.e. if there is currently only one piece on orgStrip
 
-                        if (firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && firstMove.destStrip != -2 && stripArray[firstMove.orgStrip].quantity <= 1) {  //<=1 to make testing easier, really could be ==1
-                            System.out.println("Removing moves starting on same");
+                        if ((firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && firstMove.destStrip != -2 && stripArray[firstMove.orgStrip].quantity <= 1) || (firstMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1)) {  //<=1 to make testing easier, really could be ==1
+                            //System.out.println("Removing moves starting on same");
                             copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
-                            System.out.println("Removed successfully");
-                        } else if (firstMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1) {
-                            copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
-                            System.out.println("something");
-                        } else System.out.println("did not remove moves starting on" + firstMove.orgStrip);
+                            //System.out.println("Removed successfully");
+                        }// else System.out.println("did not remove moves starting on " + firstMove.orgStrip);
+
+                        //why inclusion of firstMove.destStrip != -2?
+
 
                         // >=0 and <24 conditions included so that it doesn't try to dereference something like stripArray[-1] for bar moves
 
@@ -793,11 +810,10 @@ class Classes {
                                     System.out.println("test2");
                                 else*/
                                  if ((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {   //maths wrongly excludes white move pairs involving the bar
-                                //commented out because still testing, so will rarely actually match dice numbers. Seems to work fine though
                                 //System.out.println("Combined distance = " + (Math.abs(firstMove.orgStrip-firstMove.destStrip) + Math.abs(secondMove.orgStrip-secondMove.destStrip)));
                                 //System.out.println("Should be: " + (Board.die.getDice1() + Board.die.getDice2()));
                                      allCombos.add(new MoveCombo(2, firstMove, secondMove));
-                                } else System.out.println("total diff was " + (firstDiff + secondDiff));
+                                } //else System.out.println("total diff was " + (firstDiff + secondDiff));
                             }
                         }
                     } /*else if (Bar.piecesIn(currentTurn) > 0) { // Getting the bar moves to show up on the list
@@ -867,16 +883,10 @@ class Classes {
 
                         if ((firstMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice1() : (23 - firstMove.destStrip - Board.die.getDice1()), currentTurn), false, true)) {
                             copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice1() : (23 - firstMove.destStrip - Board.die.getDice1()), currentTurn));
-                            System.out.println("hi");
-                        }  //works now
+                            //System.out.println("hi");
+                        }  //Don't need to check again for dice2 since they're the same number
 
-                        if ((firstMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && firstMove.destStrip > -1 && stripArray[firstMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn), false, true)) {
-                            copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn));
-                            System.out.println("hi");
-                        }
-                        if (firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && firstMove.destStrip != -2 && stripArray[firstMove.orgStrip].quantity < 2) {
-                            copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
-                        } else if (firstMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1) {  // i.e. when orgStrip = -1 (Bar)
+                        if ((firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && firstMove.destStrip != -2 && stripArray[firstMove.orgStrip].quantity < 2) || (firstMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1)) {  //<=1 to make testing easier, really could be ==1
                             copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
                         }
 
@@ -890,16 +900,10 @@ class Classes {
 
                                 if ((secondMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && secondMove.destStrip > -1 && stripArray[secondMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? secondMove.destStrip : 23 - secondMove.destStrip, currentTurn == Color.WHITE ? secondMove.destStrip - Board.die.getDice1() : (23 - secondMove.destStrip - Board.die.getDice1()), currentTurn), false, true)) {
                                     copyAllMoves2.add(new Move(currentTurn == Color.WHITE ? secondMove.destStrip : 23 - secondMove.destStrip, currentTurn == Color.WHITE ? secondMove.destStrip - Board.die.getDice1() : (23 - secondMove.destStrip - Board.die.getDice1()), currentTurn));
-                                    System.out.println("hi");
-                                }  //works now
+                                    //System.out.println("hi");
+                                }  //Don't need to check again for dice2 since they're the same number
 
-                                if ((secondMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && secondMove.destStrip > -1 && stripArray[secondMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? secondMove.destStrip : 23 - secondMove.destStrip, currentTurn == Color.WHITE ? secondMove.destStrip - Board.die.getDice2() : (23 - secondMove.destStrip - Board.die.getDice2()), currentTurn), false, true)) {
-                                    copyAllMoves2.add(new Move(currentTurn == Color.WHITE ? secondMove.destStrip : 23 - secondMove.destStrip, currentTurn == Color.WHITE ? secondMove.destStrip - Board.die.getDice2() : (23 - secondMove.destStrip - Board.die.getDice2()), currentTurn));
-                                    System.out.println("hi");
-                                }
-                                if (secondMove.orgStrip >= 0 && secondMove.orgStrip < 24 && secondMove.destStrip != -2 && stripArray[secondMove.orgStrip].quantity < 3) {
-                                    copyAllMoves2.removeIf(m -> m.orgStrip == secondMove.orgStrip);
-                                } else if (secondMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1) {  // i.e. when orgStrip = -1 (Bar)
+                                if ((secondMove.orgStrip >= 0 && secondMove.orgStrip < 24 && secondMove.destStrip != -2 && stripArray[secondMove.orgStrip].quantity < 3) || (secondMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1)) {  //<=1 to make testing easier, really could be ==1
                                     copyAllMoves2.removeIf(m -> m.orgStrip == secondMove.orgStrip);
                                 }
 
@@ -909,16 +913,10 @@ class Classes {
                                     if(thirdMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 3){
                                         if ((thirdMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && thirdMove.destStrip > -1 && stripArray[thirdMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? thirdMove.destStrip : 23 - thirdMove.destStrip, currentTurn == Color.WHITE ? thirdMove.destStrip - Board.die.getDice1() : (23 - thirdMove.destStrip - Board.die.getDice1()), currentTurn), false, true)) {
                                             copyAllMoves3.add(new Move(currentTurn == Color.WHITE ? thirdMove.destStrip : 23 - thirdMove.destStrip, currentTurn == Color.WHITE ? thirdMove.destStrip - Board.die.getDice1() : (23 - thirdMove.destStrip - Board.die.getDice1()), currentTurn));
-                                            System.out.println("hi");
-                                        }  //works now
+                                            //System.out.println("hi");
+                                        }  //Don't need to check again for dice2 since they're the same number
 
-                                        if ((thirdMove.orgStrip!=-1 || Bar.piecesIn(currentTurn) < 2) && thirdMove.destStrip > -1 && stripArray[thirdMove.destStrip].pieceColor != currentTurn  && valid(new Move(currentTurn == Color.WHITE ? thirdMove.destStrip : 23 - thirdMove.destStrip, currentTurn == Color.WHITE ? thirdMove.destStrip - Board.die.getDice2() : (23 - thirdMove.destStrip - Board.die.getDice2()), currentTurn), false, true)) {
-                                            copyAllMoves3.add(new Move(currentTurn == Color.WHITE ? thirdMove.destStrip : 23 - thirdMove.destStrip, currentTurn == Color.WHITE ? thirdMove.destStrip - Board.die.getDice2() : (23 - thirdMove.destStrip - Board.die.getDice2()), currentTurn));
-                                            System.out.println("hi");
-                                        }
-                                        if (thirdMove.orgStrip >= 0 && thirdMove.orgStrip < 24 && thirdMove.destStrip != -2 && stripArray[thirdMove.orgStrip].quantity < 4) {  //<=1 to make testing easier, really could be ==1
-                                            copyAllMoves3.removeIf(m -> m.orgStrip == thirdMove.orgStrip);
-                                        } else if (thirdMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1) {  // i.e. when orgStrip = -1 (Bar)
+                                        if ((thirdMove.orgStrip >= 0 && thirdMove.orgStrip < 24 && thirdMove.destStrip != -2 && stripArray[thirdMove.orgStrip].quantity < 4) || (thirdMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1)) {  //<=1 to make testing easier, really could be ==1
                                             copyAllMoves3.removeIf(m -> m.orgStrip == thirdMove.orgStrip);
                                         }
 
@@ -1102,21 +1100,17 @@ class Classes {
                 }
             }*/
 
-            //More TODO's
-
-            //also need to provide code for when maxMoves = 4
-
-            //also need to provide code for situations when only one valid move is found (and 3 as well I guess)
-
-
-            /*int max =0 ;
+            int max =0 ;
             for(MoveCombo mc: allCombos){
                 if(mc.numMovesPerCombo > max){
                     max = mc.numMovesPerCombo;
                 }
             }
             int finalMax = max;
-            allCombos.removeIf(m -> m.numMovesPerCombo< finalMax);*/
+            allCombos.removeIf(m -> m.numMovesPerCombo< finalMax);  //will uncomment when it first properly finds bar-moves as part of multi-move plays
+                                                                      //because at the moment bar-moves are only found in plays shorter than the largest plays
+                                                // Update: Needed to uncomment to use removeDuplicateCombos, which expects all combos to be of the same length
+                                                // if you need to comment out this, make sure to also comment out that temporarily
 
             //if (plays with 2 moves are present)
             //remove plays with less than 2 moves
