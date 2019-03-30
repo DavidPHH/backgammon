@@ -587,7 +587,7 @@ class Classes {
                         }
                     }
                     else if (valid(curr, false, false)) {    //changed back to valid so that when one piece is on the bar,
-                                                    // this still find board moves to do after the bar move. validMove excluded those when the bar was occupied
+                                                    // this still finds board moves to do after the bar move. validMove excluded those when the bar was occupied
                         boardMoves.add(curr);
                     }
                 }
@@ -606,13 +606,13 @@ class Classes {
             int strip2 = currentTurn==Color.WHITE? (23 - (Board.die.getDice2() - 1)) : (Board.die.getDice2() - 1);
             ArrayList<Move> barMoves = new ArrayList<>();
 
-            System.out.println("strips: "+strip1 + strip2);
+            //System.out.println("strips: " + strip1 + " " + strip2);
 
             if(Bar.piecesIn(currentTurn) > 0) {
                 System.out.println("test");
                 if(strip1 < 24 && strip1 >= 0){ // Strip will be 24 or -1 after a dice reset
 
-                    if (stripArray[strip1].pieceColor == currentTurn || stripArray[strip1].quantity <= 1) {
+                    if (stripArray[strip1].pieceColor == currentTurn || stripArray[strip1].quantity <= 1) { //if that strip is able to be landed on
                         barMoves.add(new Move(-1, currentTurn==Color.WHITE ? strip1 : 23-strip1 , currentTurn));
                         System.out.println("Yes if");
                     }else {
@@ -636,24 +636,47 @@ class Classes {
             return barMoves;
         }
 
-        //Also dummy
 
-        /*static ArrayList<Move>findBearOffMoves(){
+        static ArrayList<Move>findBearOffMoves(Move... hypotheticalPreviousMoves){
             ArrayList<Move> bearOffMoves = new ArrayList<>();
-            bearOffMoves.add(new Move(21, -2, currentTurn));
+
+            if(allHomeBoard(hypotheticalPreviousMoves)){
+
+
+            }
+
+            /*bearOffMoves.add(new Move(21, -2, currentTurn));
             bearOffMoves.add(new Move(22, -2, currentTurn));
-            bearOffMoves.add(new Move(23, -2, currentTurn));
+            bearOffMoves.add(new Move(23, -2, currentTurn));*/
 
             return bearOffMoves;
-        }*/
+        }
 
-        //still dummy
 
-       /* static boolean allHomeBoard(){
-            return false;
-        }*/
+        static boolean allHomeBoard(Move... hypotheticalPreviousMoves ){
+            //maybe use color parameter instead of currentTurn so can also use for determining score multiplier at end of game
+            boolean anyFound = false;
+            int startStrip = currentTurn==Color.WHITE?6:0;
+            int endStrip = currentTurn==Color.WHITE?23:17;
 
-        //more dummy
+            for(Move m : hypotheticalPreviousMoves){    // used to determine whether a bearOff move should be allowed as a later move in a certain play
+                stripArray[m.orgStrip].quantity--;      // given some hypothetical previous moves that haven't actually happened yet
+                stripArray[m.destStrip].quantity++;
+            }                                           //still need to handle when org and dest strips are -1 and -2
+
+            for (int i = startStrip; i <= endStrip; i++) {
+                if(stripArray[i].quantity  > 0){
+                    anyFound = true;
+                }
+            }
+
+            for(Move m : hypotheticalPreviousMoves){  // undoing previous changes to return to original state
+                stripArray[m.orgStrip].quantity++;
+                stripArray[m.destStrip].quantity--;
+            }
+
+            return !anyFound;
+        }
 
 
         static void removeDuplicateCombos(ArrayList<MoveCombo> combos) {
@@ -665,6 +688,8 @@ class Classes {
                                 && stripArray[tmp1.moves[0].destStrip].quantity != 1 && stripArray[tmp2.moves[0].destStrip].quantity != 1    // and no hits in between
                                 && tmp1 != tmp2 && !toRemove.contains(tmp1)){  //and it's comparing against another combo, not itself, otherwise it would remove everything
                                                                             // and that other combo hasn't already been removed, otherwise it would remove both
+
+                        //needs to check colour of any in between pieces, currently allows "duplicates" not only when there are hits, but when there are pieces of the same colour in between as well
 
                         /*   Can maybe skip these last two conditions by using something like:
                              for(i=0;i<combo.size;i++){
@@ -699,12 +724,12 @@ class Classes {
                 Assumes existence of following methods:
                 - findBarMoves()            i.e. moves starting on the bar and ending on the board                                        DONE
                 - findBoardMoves()          i.e. moves starting and ending on board, more or less what findAllValidCombos() used to do    DONE
-                - findBearOffMoves()        i.e. moves starting on tbe board and ending in the bear-off                                   ~~TODO~~  (unnecessary if validMove already catches them)
+                - findBearOffMoves()        i.e. moves starting on tbe board and ending in the bear-off                                   TODO
                 - removeMovesStartingOn()   i.e. exactly what it sound like, takes an arrayList of moves and an int,                      DONE in-line instead
                                             and modifies that arrayList to remove any moves with an orgStrip of that int
-                - allHomeBoard()            Returns boolean on whether all your pieces are in your home board, needed to determine        ~~TODO~~  (only used for findBearOffMoves, so also possibly unnecessary)
+                - allHomeBoard()            Returns boolean on whether all your pieces are in your home board, needed to determine        DONE
                                             whether you can start bearing-off pieces yet
-                - removeDuplicateCombos()   Removes combinations of moves that have the same orgStrip for the first move,                 TODO  NB still very much necessary
+                - removeDuplicateCombos()   Removes combinations of moves that have the same orgStrip for the first move,                 Partially Done, see function for more details
                                             same destStrip for the last move, the firstMove's destStrip is the secondMove's orgStrip
                                             and none of the strips landed on in between resulted in hits.
                                             (Need two different versions for 2-move combos vs 4-move combos?)
@@ -779,6 +804,8 @@ class Classes {
                             copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn));
                         }
 
+                        //copyAllMoves.addAll(findBearOffMoves(firstMove)); //not fully implemented yet
+
                         //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
                         //no more pieces left on orgStrip after the move is made, i.e. if there is currently only one piece on orgStrip
 
@@ -809,7 +836,7 @@ class Classes {
                                 else if(getStrip(firstMove.orgStrip).pieceColor != currentTurn)
                                     System.out.println("test2");
                                 else*/
-                                 if ((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {   //maths wrongly excludes white move pairs involving the bar
+                                 if ((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {   //maths wrongly excludes white move pairs involving the bar TODO fix
                                 //System.out.println("Combined distance = " + (Math.abs(firstMove.orgStrip-firstMove.destStrip) + Math.abs(secondMove.orgStrip-secondMove.destStrip)));
                                 //System.out.println("Should be: " + (Board.die.getDice1() + Board.die.getDice2()));
                                      allCombos.add(new MoveCombo(2, firstMove, secondMove));
