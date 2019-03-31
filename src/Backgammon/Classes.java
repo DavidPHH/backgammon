@@ -641,7 +641,9 @@ class Classes {
             ArrayList<Move> bearOffMoves = new ArrayList<>();
 
             if(allHomeBoard(hypotheticalPreviousMoves)){
-
+                //add moves matching dice rolls here
+                //what if none match dice roll, but still legal, how to catch?
+                //How did Humza do it in validMove()?
 
             }
 
@@ -659,10 +661,14 @@ class Classes {
             int startStrip = currentTurn==Color.WHITE?6:0;
             int endStrip = currentTurn==Color.WHITE?23:17;
 
-            for(Move m : hypotheticalPreviousMoves){    // used to determine whether a bearOff move should be allowed as a later move in a certain play
-                stripArray[m.orgStrip].quantity--;      // given some hypothetical previous moves that haven't actually happened yet
-                stripArray[m.destStrip].quantity++;
-            }                                           //still need to handle when org and dest strips are -1 and -2
+            for (Move m : hypotheticalPreviousMoves){    // used to determine whether a bearOff move should be allowed as a later move in a certain play
+                if (m.orgStrip != -1) {   // given some hypothetical previous moves that haven't actually happened yet
+                    stripArray[m.orgStrip].quantity--;
+                }
+                if (m.destStrip != -2 ){
+                    stripArray[m.destStrip].quantity++;
+                }
+            }
 
             for (int i = startStrip; i <= endStrip; i++) {
                 if(stripArray[i].quantity  > 0){
@@ -670,9 +676,13 @@ class Classes {
                 }
             }
 
-            for(Move m : hypotheticalPreviousMoves){  // undoing previous changes to return to original state
-                stripArray[m.orgStrip].quantity++;
-                stripArray[m.destStrip].quantity--;
+            for (Move m : hypotheticalPreviousMoves){  // undoing previous changes to return to original state
+                if (m.orgStrip != -1 ) {
+                    stripArray[m.orgStrip].quantity++;
+                }
+                if (m.destStrip != -2){
+                    stripArray[m.destStrip].quantity--;
+                }
             }
 
             return !anyFound;
@@ -804,7 +814,7 @@ class Classes {
                             copyAllMoves.add(new Move(currentTurn == Color.WHITE ? firstMove.destStrip : 23 - firstMove.destStrip, currentTurn == Color.WHITE ? firstMove.destStrip - Board.die.getDice2() : (23 - firstMove.destStrip - Board.die.getDice2()), currentTurn));
                         }
 
-                        //copyAllMoves.addAll(findBearOffMoves(firstMove)); //not fully implemented yet
+                        copyAllMoves.addAll(findBearOffMoves(firstMove)); //not fully implemented yet
 
                         //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
                         //no more pieces left on orgStrip after the move is made, i.e. if there is currently only one piece on orgStrip
