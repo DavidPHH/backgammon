@@ -265,7 +265,8 @@ public class Controller {
 
                     int length = moveL.length();
                     // Gets the index for taking the move from the arrayList
-                    int c = ((moveL.charAt(length - 1)) - 97) + (26 * (length -1));
+                    //int c = ((moveL.charAt(length - 1)) - 'a') + (26 * (length -1));
+                    int c = (length==1) ? (moveL.charAt(0) - 'a') : ((moveL.charAt(1) - 'a') + (26 * (moveL.charAt(0) - 'a' + 1)));
                     if(c < moveList.size() && c >= 0){
                         MoveCombo mc = moveList.get(c);
                         for (int i = 0; i < mc.numMovesPerCombo; i++) {
