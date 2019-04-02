@@ -257,33 +257,32 @@ public class Controller {
                 if (Board.currentMoves < Board.maxMoves) {
                     String[] splot = inputString.split(" ");
                     String moveL = null;
-                    try{
+                    try {
                         moveL = splot[1];
-                    }catch(Exception ex){
+                    } catch (Exception ex) {
                         gameInfo.appendText("Expected syntax: /listmove letter");
                     }
 
                     int length = moveL.length();
                     // Gets the index for taking the move from the arrayList
                     //int c = ((moveL.charAt(length - 1)) - 'a') + (26 * (length -1));
-                    int c = (length==1) ? (moveL.charAt(0) - 'a') : ((moveL.charAt(1) - 'a') + (26 * (moveL.charAt(0) - 'a' + 1)));
-                    if(c < moveList.size() && c >= 0){
+                    int c = (length == 1) ? (moveL.charAt(0) - 'a') : ((moveL.charAt(1) - 'a') + (26 * (moveL.charAt(0) - 'a' + 1)));
+                    if (c < moveList.size() && c >= 0) {
                         MoveCombo mc = moveList.get(c);
                         for (int i = 0; i < mc.numMovesPerCombo; i++) {
                             Move move = mc.moves[i];
                             gameInfo.appendText("\n" + move);
-                            System.out.println(move.orgStrip+" d " +move.destStrip );
+                            System.out.println(move.orgStrip + " d " + move.destStrip);
                             Board.makeMove(move, c);
                         }
 
-                        if(Board.currentMoves < Board.maxMoves)
+                        if (Board.currentMoves < Board.maxMoves)
                             printMoves();
                         else
                             gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
                         //currentMoves = maxMoves;    //to make sure /next doesn't get confused and tell you to move again
 
-                    }
-                    else
+                    } else
                         gameInfo.appendText("\nPlease select a move contained within the list i.e. use a correct letter.");
                 } else {
                     gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
@@ -291,11 +290,16 @@ public class Controller {
                 pCommands.setText("");
                 break;
             case "/print": // Printing the moves
-                if(hasRolled && gameStart)
+                if (hasRolled && gameStart)
                     printMoves();
-                else{
+                else {
                     gameInfo.appendText("\nYou must roll before printing the list of moves");
                 }
+                break;
+            case "/win": // Test to end game quick, current turn player wins.
+                int x = Board.currentTurn.getValue();
+                int y = x == 0 ? 1 : 0;
+                endGame(players[x], players[y]);
                 break;
             default:
                 gameInfo.appendText("\n" + pCommands.getText());
@@ -347,7 +351,7 @@ public class Controller {
             System.out.println("Can't double anymore");
             doubleBox.getChildren().remove(0);     //I'm assuming we're limiting ourselves to what fits on a normal die
         }                                               //and not letting the players keep doubling as much as they want,
-                                                       //so that final remove() is only temporary, for demonstration purposes
+        //so that final remove() is only temporary, for demonstration purposes
 
     }
 
