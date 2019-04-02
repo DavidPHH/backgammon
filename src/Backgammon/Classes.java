@@ -148,7 +148,6 @@ class Classes {
         }
 
         static void moveToBearOff(Move move) {
-            System.out.println("in bear move "+move.orgStrip);
             Piece freedom = new Piece(stripArray[move.orgStrip].pop());
             BearOff.insert(freedom);
 
@@ -1153,16 +1152,20 @@ class DiceFace {
 class DoublingCube {
 
     ImageView imgView;
-
+    int value;
     DoublingCube(int num) {
         String url = "Backgammon/res/DoublingCube" + num + ".png";  // deliberately have a little blank space on left side of
         Image image = new Image(url);                              // image to help line it up with spot on background image
         imgView = new ImageView();
         imgView.setImage(image);
+        this.value = num;
     }
 
     DoublingCube() {
         this(2);
+    }
+    int getValue(){
+        return this.value;
     }
 }
 
