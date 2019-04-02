@@ -185,8 +185,7 @@ public class Controller {
                     else
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
 
-                    moveList = findAllValidCombos();
-                    printMoves(); // Printing the valid moves
+                    moveList = printMoves();
                     gameStart = true;
                     hasRolled = true;
                 }
@@ -207,8 +206,7 @@ public class Controller {
                                 " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
                     }
 
-                    moveList = findAllValidCombos();
-                    printMoves(); // Printing the moves after roll
+                    moveList = printMoves();
                 } else if (!gameStart)
                     gameInfo.appendText("\nPlease use /start to start the game first");
                 else {
@@ -277,7 +275,7 @@ public class Controller {
                         }
 
                         if(Board.currentMoves < Board.maxMoves)
-                            printMoves();
+                            moveList = printMoves();
                         else
                             gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
                         //currentMoves = maxMoves;    //to make sure /next doesn't get confused and tell you to move again
@@ -437,12 +435,12 @@ public class Controller {
     }
 
     //Printing the valid moves
-    private void printMoves() throws IOException {
+    private ArrayList<MoveCombo> printMoves() throws IOException {
         int x = Board.currentTurn.getValue();
         if (Main.players[x].getPiecesLeft() == 0) { // Ends the game if the player bore off their last piece
             int y = x == 0 ? 1 : 0;
             endGame(Main.players[x], Main.players[y]);
-            return;
+            return null;
         }
         ArrayList<MoveCombo> validMoveCombos = findAllValidCombos();
         // System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
@@ -462,12 +460,14 @@ public class Controller {
                 i++;
             }
             System.out.println("--------- List End ---------");
+            return validMoveCombos;
         } else {
             gameInfo.appendText("\nThere were no possible moves\n");
             Board.nextTurn();
             Player player = players[0].getColor() == Board.currentTurn ? players[0] : players[1];
             gameInfo.appendText("\n" + player.getPlayerName() + "'s turn\nType /roll to roll dice");
             hasRolled = false;
+            return null;
         }
     }
 
