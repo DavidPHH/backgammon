@@ -158,9 +158,6 @@ class Classes {
                 Main.players[1].setPiecesLeft(Main.players[1].getPiecesLeft() - 1);
             }
 
-//            if (Main.players[currentTurn.getValue()].getPiecesLeft() == 0) // Ends the game if the player bore off their last piece
-//                endGame(); // Done in controller
-
             int dist = 0;
             if (currentTurn == Color.WHITE) // Gets the amount moved
                 dist = move.orgStrip + 1;
@@ -575,29 +572,41 @@ class Classes {
         static ArrayList<Move> findAllValidMoves() {
             ArrayList<Move> boardMoves = new ArrayList<>();
             for (int i = 0; i < 24; i++) {
-                for (int j = -2; j < 24; j++) {
-                    Move curr = new Move(i, j, currentTurn);
-                    if(j == -2){
-                        if(currentTurn == Color.BLACK){
-                            curr.orgStrip = i;
-                            curr.destStrip = j;
-                        }
-                        if(validMove(curr,-1)){
-                            boardMoves.add(curr);
-                        }
-                    }
-                    else if (valid(curr, false, false)) {    //changed back to valid so that when one piece is on the bar,
-                                                    // this still finds board moves to do after the bar move. validMove excluded those when the bar was occupied
-                        boardMoves.add(curr);
-                    }
+                // Create a new move each time so it's a new move being input into the list. Issues otherwise
+                Move move1 = new Move(0,0,currentTurn);
+                Move move2 = new Move(0,0,currentTurn);
+                move1.orgStrip = i;
+                move2.orgStrip = i;
+
+                if(currentTurn == Color.WHITE){ // Sets the destination to bear-off value if move leaves the board
+                    if(i - die.getDice1() < 0)
+                        move1.destStrip = -2;
+                    else
+                        move1.destStrip = i - die.getDice1();
+
+                    if(i - die.getDice2() < 0)
+                        move2.destStrip = -2;
+                    else
+                        move2.destStrip = i  - die.getDice2();
+                }else if(currentTurn == Color.BLACK){
+                    if(i + die.getDice1() > 23)
+                        move1.destStrip = -2;
+                    else
+                        move1.destStrip = i + die.getDice1();
+
+                    if(i + die.getDice2() > 23)
+                        move2.destStrip = -2;
+                    else
+                        move2.destStrip = i + die.getDice2();
                 }
-            }         //above is what it will be, below is just to make testing more controlled
 
-            /*boardMoves.add(new Move(6, 7, currentTurn));
-            boardMoves.add(new Move(6, 8, currentTurn));
-            boardMoves.add(new Move(8, 9, currentTurn));
-            */
-
+                if(validMove(move1,-1)){
+                    boardMoves.add(move1);
+                }
+                if(validMove(move2,-1)){
+                    boardMoves.add(move2);
+                }
+            }
             return boardMoves;
         }
 
