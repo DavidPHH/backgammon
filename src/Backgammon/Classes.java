@@ -571,23 +571,28 @@ class Classes {
 
         static ArrayList<Move> findAllValidMoves() {
             ArrayList<Move> boardMoves = new ArrayList<>();
-            for (int i = 0; i < 24; i++) {
+            for (int i = -1; i < 24; i++) {
                 // Create a new move each time so it's a new move being input into the list. Issues otherwise
                 Move move1 = new Move(0,0,currentTurn);
                 Move move2 = new Move(0,0,currentTurn);
                 move1.orgStrip = i;
                 move2.orgStrip = i;
 
-                if(currentTurn == Color.WHITE){ // Sets the destination to bear-off value if move leaves the board
-                    if(i - die.getDice1() < 0)
-                        move1.destStrip = -2;
-                    else
-                        move1.destStrip = i - die.getDice1();
+                if(currentTurn == Color.WHITE){
+                    if(i == -1){ // Value is bar, white moves from -1 to 24 - dice value
+                        move1.destStrip =  24 - die.getDice1();
+                        move2.destStrip = 24 - die.getDice2();
+                    }else{ // Sets the destination to bear-off value if move leaves the board
+                        if(i - die.getDice1() < 0)
+                            move1.destStrip = -2;
+                        else
+                            move1.destStrip = i - die.getDice1();
 
-                    if(i - die.getDice2() < 0)
-                        move2.destStrip = -2;
-                    else
-                        move2.destStrip = i  - die.getDice2();
+                        if(i - die.getDice2() < 0)
+                            move2.destStrip = -2;
+                        else
+                            move2.destStrip = i  - die.getDice2();
+                    }
                 }else if(currentTurn == Color.BLACK){
                     if(i + die.getDice1() > 23)
                         move1.destStrip = -2;
@@ -600,13 +605,22 @@ class Classes {
                         move2.destStrip = i + die.getDice2();
                 }
 
-                if(validMove(move1,-1)){
-                    boardMoves.add(move1);
-                }
-                if(validMove(move2,-1)){
-                    boardMoves.add(move2);
+                if(move1 != move2){ // Catches duplicate moves due to doubles here
+                    if(validMove(move1,-1)){
+                        boardMoves.add(move1);
+                    }
+                    if(validMove(move2,-1)){
+                        boardMoves.add(move2);
+                    }
+                }else{
+                    if(validMove(move1,-1))
+                        boardMoves.add(move1);
                 }
             }
+
+            /*for(int i = 0;i < boardMoves.size();i++){
+                System.out.println("move " + boardMoves.get(i).isHitToString());
+            }*/
             return boardMoves;
         }
 
@@ -615,7 +629,6 @@ class Classes {
             int strip2 = currentTurn==Color.WHITE? (23 - (Board.die.getDice2() - 1)) : (Board.die.getDice2() - 1);
             ArrayList<Move> barMoves = new ArrayList<>();
 
-            //System.out.println("strips: " + strip1 + " " + strip2);
 
             if(Bar.piecesIn(currentTurn) > 0) {
                 System.out.println("test");
@@ -738,7 +751,7 @@ class Classes {
         static ArrayList<MoveCombo> findAllValidCombos() {
 
             ArrayList<Move> allMoves = new ArrayList<>(findAllValidMoves());
-            allMoves.addAll(findBarMoves());
+            //allMoves.addAll(findBarMoves());
 
             ArrayList<Move> copyAllMoves;             // made so that when combining moves into pairs (or triples or quadruplets),
                                                      // you can temporarily change which moves are valid without affecting the master copy
