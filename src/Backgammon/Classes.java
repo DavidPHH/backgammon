@@ -10,6 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 class Classes {
@@ -671,8 +672,9 @@ class Classes {
         }
 
         static void removeDuplicateCombos(ArrayList<MoveCombo> combos) {
+            ArrayList<MoveCombo> toRemove = new ArrayList<>();
+
             if(combos.size() > 0 && combos.get(0).numMovesPerCombo == 2) {   //assumes num moves in any combo is same as num moves in all combos
-                ArrayList<MoveCombo> toRemove = new ArrayList<>();
                 for(MoveCombo tmp1: combos){
                     for(MoveCombo tmp2: combos){
                         if(tmp1.moves[0].orgStrip == tmp2.moves[0].orgStrip && tmp1.moves[1].destStrip == tmp2.moves[1].destStrip            // if same starting and end points
@@ -696,8 +698,28 @@ class Classes {
                         }
                     }
                 }
-                combos.removeAll(toRemove);
             }
+
+            for (MoveCombo mc1 : combos){
+                for (MoveCombo mc2 : combos){
+                    if(mc1!=mc2 && mc2.equals(mc1) && !toRemove.contains(mc1)){
+                        toRemove.add(mc2);
+                        /*for (int i = 0; i < mc1.numMovesPerCombo; i++) {
+                            System.out.print(mc2.moves[i] + " ");
+                        }
+                        System.out.print("was removed for equalling");
+                        for (int i = 0; i < mc1.numMovesPerCombo; i++) {
+                            System.out.print(mc1.moves[i] + " ");
+                        }
+                        System.out.println();*/
+
+                    }
+                }
+            }
+
+            System.out.println("toRemove: " + toRemove);
+
+            combos.removeAll(toRemove);
 
             // TODO expand to work for 3-move combos and 4-move combos
             // and catch other kind of duplicates as well
@@ -828,19 +850,19 @@ class Classes {
                 }
 
             }
-            /*int max =0 ;
+            int max =0 ;
             for(MoveCombo mc: allCombos){
                 if(mc.numMovesPerCombo > max){
                     max = mc.numMovesPerCombo;
                 }
             }
             int finalMax = max;
-            allCombos.removeIf(m -> m.numMovesPerCombo< finalMax);*/  //will uncomment when it first properly finds bar-moves as part of multi-move plays
+            allCombos.removeIf(m -> m.numMovesPerCombo< finalMax);  //will uncomment when it first properly finds bar-moves as part of multi-move plays
                                                                       //because at the moment bar-moves are only found in plays shorter than the largest plays
                                                 // Update: Needed to uncomment to use removeDuplicateCombos, which expects all combos to be of the same length
                                                 // if you need to comment out this, make sure to also comment out that temporarily
 
-            //removeDuplicateCombos(allCombos);
+            removeDuplicateCombos(allCombos);
 
             return allCombos;
 
@@ -1018,6 +1040,32 @@ class MoveCombo {
         }
         numMovesPerCombo = num;
     }
+
+    boolean equals(MoveCombo mc){
+        HashMap<Move, Integer> theseMoves = new HashMap<>();
+        HashMap<Move, Integer> otherMoves = new HashMap<>();
+
+        //for(MoveCombo tmp1: combos) {
+            for (int i = 0; i < numMovesPerCombo; i++) {
+                if(theseMoves.containsKey(moves[i])){
+                    theseMoves.put(moves[i], theseMoves.get(moves[i]) + 1);
+                }else{
+                    theseMoves.put(moves[i], 1);
+                }
+            }
+            for (int i = 0; i < mc.numMovesPerCombo; i++) {
+                if(otherMoves.containsKey(mc.moves[i])){
+                    otherMoves.put(mc.moves[i], otherMoves.get(mc.moves[i]) + 1);
+                }else{
+                    otherMoves.put(mc.moves[i], 1);
+                }
+            }
+        //System.out.println(theseMoves);
+        //System.out.println(otherMoves);
+
+        return theseMoves.equals(otherMoves);
+        }
+
 
 }
 
