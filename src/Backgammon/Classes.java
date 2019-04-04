@@ -111,7 +111,7 @@ class Classes {
             }
         }
 
-        static void moveFromBar(Move move) {
+        static void moveFromBar(Move move) { // Remove the piece from the bar and move it to the board.
             int dist = getMoveDistFromBar(move);
             isMoveAHit(getStrip(move.destStrip));
             Piece freedom = new Piece(Bar.remove(currentTurn));
@@ -238,10 +238,10 @@ class Classes {
                         }
                     }
                     if (count == Main.players[0].getPiecesLeft()) {
-                        if (diff <= die.getDice1()) {// If the first die will bring you to bear-off
+                        if (diff == die.getDice1()) {// If the first die will bring you to bear-off
                             return org.quantity > 0 && org.pieceColor == currentTurn;
                         }
-                        else if (diff <= die.getDice2()) // If the second die will bring you to bear-off
+                        else if (diff == die.getDice2()) // If the second die will bring you to bear-off
                             return org.quantity > 0 && org.pieceColor == currentTurn;
                         else if (diff <= (die.getDice1() + die.getDice2()) && tests != -1) { // Combination of the die
                             Move mDie1 = new Move(move.orgStrip, move.orgStrip - die.getDice1(), currentTurn);
@@ -259,6 +259,16 @@ class Classes {
                                 return false;
                             }
                         }
+                        // A move to bear-off with a dice cannot be done if there is a valid move
+                        else if(die.getDice1() < die.getDice2()){
+                            if(diff < die.getDice2()){
+                                return checkBehindBeforeBearOff(move.orgStrip);
+                            }
+                        }else if(die.getDice2() < die.getDice1()){
+                            if(diff < die.getDice1()){
+                               return checkBehindBeforeBearOff(move.orgStrip);
+                            }
+                        }
                     }
                     return false;
                 } else if (currentTurn == Color.BLACK) {
@@ -270,9 +280,9 @@ class Classes {
                         }
                     }
                     if (count == Main.players[1].getPiecesLeft()) {
-                        if (diff <= die.getDice1()) // If the first die will bring you to bear-off
+                        if (diff == die.getDice1()) // If the first die will bring you to bear-off
                             return org.quantity > 0 && org.pieceColor == currentTurn;
-                        else if (diff <= die.getDice2()) // If the second die will bring you to bear-off
+                        else if (diff == die.getDice2()) // If the second die will bring you to bear-off
                             return org.quantity > 0 && org.pieceColor == currentTurn;
                         else if (diff <= (die.getDice1() + die.getDice2()) && tests != -1) { // Combination of the die
                             Move mDie1 = move;
@@ -290,6 +300,13 @@ class Classes {
                                 return validMove(mDie1, 0); // Returns whether or not the second move is valid
                             } else
                                 return false;
+                        }else if(die.getDice2() > die.getDice1()){
+                            if(diff < die.getDice2())
+                                return checkBehindBeforeBearOff(move.orgStrip);
+                        }else if(die.getDice1() > die.getDice2()){
+                            if(diff < die.getDice1()){
+                                return checkBehindBeforeBearOff(move.orgStrip);
+                            }
                         }
                     }
                     return false;
@@ -400,6 +417,24 @@ class Classes {
                 return true;
             // If the player is moving a piece that isn't his
             return move.color == dest.pieceColor;
+        }
+
+        static boolean checkBehindBeforeBearOff(int org){
+            if(currentTurn == Color.WHITE){
+                for(int i = org + 1;i < 6;i--){ // Checks to see if there is a piece behind it
+                    // Return a false move if there is a piece behind it
+                    if(stripArray[i].quantity > 0 && stripArray[i].pieceColor == currentTurn)
+                        return false;
+                }
+                return true;
+            }else if(currentTurn == Color.BLACK){
+                for(int i = org - 1;i >= 18;i--){
+                    if(stripArray[i].quantity > 0 && stripArray[i].pieceColor == currentTurn)
+                        return false;
+                }
+                return true;
+            }
+            return false;
         }
 
         //Checking if the second move from the Bar is a valid move
