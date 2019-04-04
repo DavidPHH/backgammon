@@ -231,12 +231,7 @@ class Classes {
                 if (currentTurn == Color.WHITE) {
                     diff = move.orgStrip + 1; // Adding 1 since destination will be from org to 0th position +1 to the bear-off
 
-                    int count = 0;
-                    for (int i = 0; i < 6; i++) { //Checks if the bear-off can be attained in the first place
-                        if(stripArray[i].pieceColor == currentTurn){
-                            count += stripArray[i].quantity;
-                        }
-                    }
+                    int count = piecesInHomeBoard(); // Check if all pieces are in the home-board.
                     if (count == Main.players[0].getPiecesLeft()) {
                         if (diff == die.getDice1()) {// If the first die will bring you to bear-off
                             return org.quantity > 0 && org.pieceColor == currentTurn;
@@ -273,12 +268,7 @@ class Classes {
                     return false;
                 } else if (currentTurn == Color.BLACK) {
                     diff = (23 - move.orgStrip) + 1;
-                    int count = 0;
-                    for (int i = 23; i >= 18; i--) {
-                        if(stripArray[i].pieceColor == currentTurn){
-                            count += stripArray[i].quantity;
-                        }
-                    }
+                    int count = piecesInHomeBoard(); // Check if all pieces are in the home-board
                     if (count == Main.players[1].getPiecesLeft()) {
                         if (diff == die.getDice1()) // If the first die will bring you to bear-off
                             return org.quantity > 0 && org.pieceColor == currentTurn;
@@ -356,7 +346,7 @@ class Classes {
                 }
             }
 
-            if (Bar.piecesIn(currentTurn) > 0)
+            if (Bar.piecesIn(currentTurn) > 0) // Just a catch to remove warnings.
                 return false;
 
             // Ensures user does not go backwards
@@ -417,6 +407,28 @@ class Classes {
                 return true;
             // If the player is moving a piece that isn't his
             return move.color == dest.pieceColor;
+        }
+
+        static int piecesInHomeBoard(){
+            int count = 0;
+            if(currentTurn == Color.WHITE){
+                for (int i = 0; i < 6; i++) { //Checks if the bear-off can be attained in the first place
+                    if(stripArray[i].pieceColor == currentTurn){
+                        count += stripArray[i].quantity;
+                    }
+                }
+                System.out.println("count " + count);
+                return count;
+            }else if(currentTurn == Color.BLACK){
+                for (int i = 23; i >= 18; i--) {
+                    if(stripArray[i].pieceColor == currentTurn){
+                        count += stripArray[i].quantity;
+                    }
+                }
+                System.out.println("count " +count);
+                return count;
+            }
+            return 0;
         }
 
         static boolean checkBehindBeforeBearOff(int org){
@@ -568,7 +580,7 @@ class Classes {
                 hitMove(dest);
         }
 
-        static boolean checkHitMove(Strip dest) {
+        static boolean checkHitMove(Strip dest) { // This was meant for use with /move
             return ((currentTurn != dest.pieceColor) && dest.quantity == 1);
         }
 
@@ -686,9 +698,6 @@ class Classes {
                 }else
                     System.out.println("nothing");
             }
-
-            //barMoves.add(new Move(-1, 3, currentTurn));
-            //barMoves.add(new Move(-1, 4, currentTurn));
 
             return barMoves;
         }
