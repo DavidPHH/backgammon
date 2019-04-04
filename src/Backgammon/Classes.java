@@ -255,13 +255,12 @@ class Classes {
                             }
                         }
                         // A move to bear-off with a dice cannot be done if there is a valid move
-                        else if(die.getDice1() < die.getDice2()){
-                            if(diff < die.getDice2()){
+                        else if(die.getDice2() > die.getDice1()){
+                            if(diff < die.getDice2() && org.quantity > 0)
                                 return checkBehindBeforeBearOff(move.orgStrip);
-                            }
-                        }else if(die.getDice2() < die.getDice1()){
-                            if(diff < die.getDice1()){
-                               return checkBehindBeforeBearOff(move.orgStrip);
+                        }else if(die.getDice1() > die.getDice2()){
+                            if(diff < die.getDice1() && org.quantity > 0){
+                                return checkBehindBeforeBearOff(move.orgStrip);
                             }
                         }
                     }
@@ -290,11 +289,13 @@ class Classes {
                                 return validMove(mDie1, 0); // Returns whether or not the second move is valid
                             } else
                                 return false;
-                        }else if(die.getDice2() > die.getDice1()){
-                            if(diff < die.getDice2())
+                        }
+                        // Cannot bear-off if there is a piece behind it
+                        else if(die.getDice2() > die.getDice1()){
+                            if(diff < die.getDice2() && org.quantity > 0)
                                 return checkBehindBeforeBearOff(move.orgStrip);
                         }else if(die.getDice1() > die.getDice2()){
-                            if(diff < die.getDice1()){
+                            if(diff < die.getDice1() && org.quantity > 0){
                                 return checkBehindBeforeBearOff(move.orgStrip);
                             }
                         }
@@ -417,7 +418,6 @@ class Classes {
                         count += stripArray[i].quantity;
                     }
                 }
-                System.out.println("count " + count);
                 return count;
             }else if(currentTurn == Color.BLACK){
                 for (int i = 23; i >= 18; i--) {
@@ -425,7 +425,6 @@ class Classes {
                         count += stripArray[i].quantity;
                     }
                 }
-                System.out.println("count " +count);
                 return count;
             }
             return 0;
@@ -433,7 +432,7 @@ class Classes {
 
         static boolean checkBehindBeforeBearOff(int org){
             if(currentTurn == Color.WHITE){
-                for(int i = org + 1;i < 6;i--){ // Checks to see if there is a piece behind it
+                for(int i = org + 1;i < 6;i++){ // Checks to see if there is a piece behind it
                     // Return a false move if there is a piece behind it
                     if(stripArray[i].quantity > 0 && stripArray[i].pieceColor == currentTurn)
                         return false;
@@ -652,7 +651,7 @@ class Classes {
                         move2.destStrip = i + die.getDice2();
                 }
 
-                if(move1 != move2){ // Catches duplicate moves due to doubles here
+                if(move1.destStrip != move2.destStrip){ // Catches duplicate moves due to doubles here
                     if(validMove(move1,-1)){
                         boardMoves.add(move1);
                     }
@@ -1063,7 +1062,7 @@ class Move {
         else
             return "Invalid move";*/
 
-        if (Classes.Board.validMove(this, 0)) {
+        if (Classes.Board.validMove(this, -1)) {
             return ((orgStrip == -1 || orgStrip == 24) ? "Bar" : ((color == Color.WHITE) ? (orgStrip + 1) : (23 - orgStrip + 1))) +   //might be able to remove || == 24 check
                     "-" +
                     (destStrip == -2 ? "Off" : ((color == Color.WHITE) ? (destStrip + 1) : (23 - destStrip + 1)) +

@@ -310,7 +310,7 @@ public class Controller {
                             Move move = mc.moves[i];
                             gameInfo.appendText("\n" + move);
                             System.out.println(move.orgStrip+" d " +move.destStrip );
-                            Board.makeMove(move, c);
+                            Board.makeMove(move, 1);
                         }
 
                         if(Board.currentMoves < Board.maxMoves)
