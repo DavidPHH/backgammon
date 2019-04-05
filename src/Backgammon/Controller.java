@@ -23,9 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static Backgammon.Classes.Board.currentMoves;
 import static Backgammon.Classes.Board.findAllValidCombos;
-import static Backgammon.Classes.Board.maxMoves;
 
 
 public class Controller {
@@ -445,7 +443,7 @@ public class Controller {
         int x = Board.currentTurn.getValue();
         if (Main.players[x].getPiecesLeft() == 0) { // Ends the game if the player bore off their last piece
             int y = x == 0 ? 1 : 0;
-            endGame(Main.players[x], Main.players[y]);
+            endMatch(Main.players[x], Main.players[y]);
             return;
         }
         ArrayList<MoveCombo> validMoveCombos = findAllValidCombos();
@@ -475,7 +473,41 @@ public class Controller {
         }
     }
 
-    private void endGame(Player winner, Player loser) throws IOException {
+    private void endGame(Player winner, Player loser) {
+        DoublingCube cube = new DoublingCube();
+        int gameValue = 0;
+
+        int b = loser.getColor() == Color.WHITE ? 0 : -23;
+        if (Board.BearOff.piecesIn(loser.getColor()) > 0)
+            gameValue = 1;
+            // White loser
+        else {
+            int count = 0;
+            for (int i = 0; i < 18; i++) {
+                if (Board.getStrip(Math.abs(i+b)).pieceColor == loser.getColor()) {
+                    count += Board.getStrip(Math.abs(i+b)).quantity;
+                }
+            }
+            if (count == 15)
+                gameValue = 2;
+            else {
+                if (Board.Bar.piecesIn(loser.getColor()) > 0) {
+                    gameValue = 3;
+                } else {
+                    for (int i = 18; i < 24; i++) {
+                        Color stripColor = Board.getStrip(Math.abs(i+b)).pieceColor;
+                        if (stripColor == loser.getColor()) {
+                            gameValue = 3;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        winner.setScore(gameValue * cube.getValue());
+    }
+
+    private void endMatch(Player winner, Player loser) throws IOException {
 
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("winscreen.fxml"));
