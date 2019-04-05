@@ -667,9 +667,7 @@ class Classes {
 
             /*for(int i = 0;i < boardMoves.size();i++){
                 System.out.println("move " + boardMoves.get(i).isHitToString());
-            }
-
-            System.out.println("currentMoves: " + currentMoves);*/
+            }*/
 
             return boardMoves;
         }
@@ -737,8 +735,8 @@ class Classes {
             ArrayList<Move> allMoves = new ArrayList<>(findAllValidMoves());
             //allMoves.addAll(findBarMoves());
 
-            ArrayList<Move> copyAllMoves;             // made so that when combining moves into pairs (or triples or quadruplets),
-                                                     // you can temporarily change which moves are valid without affecting the master copy
+            ArrayList<Move> copyAllMoves;  // made so that when combining moves into pairs (or triples or quadruplets),
+            // you can temporarily change which moves are valid without affecting the master copy
 
 
             ArrayList<MoveCombo> allCombos = new ArrayList<>();
@@ -746,14 +744,12 @@ class Classes {
             //code to combine multiple moves in pairs to print -
 
             if (maxMoves == 2) {
-                ArrayList<MoveCombo> singleBearOffMoves = new ArrayList<>(); // Something keeps removing bear-off moves
                 for (Move firstMove : allMoves) {
                     copyAllMoves = new ArrayList<>(allMoves);
                     if(firstMove.destStrip == -2){
-                            singleBearOffMoves.add(new MoveCombo(1,firstMove));
                             allCombos.add(new MoveCombo(1,firstMove));
                     }
-                    if (Bar.piecesIn(currentTurn) == 0 || firstMove.orgStrip == -1) {
+                    else if (Bar.piecesIn(currentTurn) == 0 || firstMove.orgStrip == -1) {
                         // if statement means that if there are no possible bar moves which
                         // would have taken priority, then the first move of the pair can be anything,
                         // but if there are bar moves possible (i.e. if bar.quantity>0),
@@ -778,18 +774,46 @@ class Classes {
 
                         allCombos.add(new MoveCombo(1, firstMove));
 
-                        for (Move secondMove : copyAllMoves){
-                            if (secondMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 2){
-                                int firstDiff = (firstMove.orgStrip == -1) ? getMoveDistFromBar(firstMove) : Math.abs(firstMove.orgStrip - firstMove.destStrip);
-                                int secondDiff = (secondMove.orgStrip == -1) ? getMoveDistFromBar(secondMove) : Math.abs(secondMove.orgStrip - secondMove.destStrip);
+                        // Finds all combinations of moves after last bar move
+                        if(Bar.piecesIn(currentTurn) == 1 && firstMove.orgStrip == -1 && maxMoves - currentMoves == 2){
+                            Piece tempFreedom = new Piece(Bar.remove(currentTurn));
+                            int barDist = getMoveDistFromBar(firstMove);
+                            int diceReset = 0;
+                            // Changing the corresponding dice value so that findAllValidMoves doesn't add moves with the same dice to the list
+                            if(barDist == die.getDice1()){
+                                die.setDice1(0);
+                                diceReset = 1;
+                            }
+                            else if(barDist == die.getDice2()){
+                                die.setDice2(0);
+                                diceReset = 2;
+                            }
+                            // Removed the Bar piece, allows findAllValidMoves() to find other normal valid moves
+                            ArrayList<Move> temp = findAllValidMoves();
+                            for(Move secondMove : temp){
+                                allCombos.add(new MoveCombo(2,firstMove,secondMove));
+                            }
 
-                                 if ((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {   //maths wrongly excludes white move pairs involving the bar TODO fix
-                                     allCombos.add(new MoveCombo(2, firstMove, secondMove));
-                                 }else{
-                                     //System.out.println(firstDiff + " and " + secondDiff + " were " + (firstDiff+secondDiff) + " not " + (Board.die.getDice1() + Board.die.getDice2()));
-                                     //System.out.println("firstMove " + firstMove + " has orgStrip " + firstMove.orgStrip + " and destStrip " + firstMove.destStrip);
-                                     //System.out.println("secondMove " + secondMove + " has orgStrip " + secondMove.orgStrip + " and destStrip " + secondMove.destStrip);
-                                 }
+                            if(diceReset == 1) // Re-add the value back to the affected dice.
+                                die.setDice1(barDist);
+                            else if(diceReset == 2){
+                                die.setDice2(barDist);
+                            }
+                            Bar.insert(tempFreedom); // Re-insert the removed piece from the Bar
+                        }else{
+                            for (Move secondMove : copyAllMoves){
+                                if (secondMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 2){
+                                    int firstDiff = (firstMove.orgStrip == -1) ? getMoveDistFromBar(firstMove) : Math.abs(firstMove.orgStrip - firstMove.destStrip);
+                                    int secondDiff = (secondMove.orgStrip == -1) ? getMoveDistFromBar(secondMove) : Math.abs(secondMove.orgStrip - secondMove.destStrip);
+                                    // TODO maths for diff needs to include Bear-off
+                                    if ((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {
+                                        allCombos.add(new MoveCombo(2, firstMove, secondMove));
+                                    }else{
+                                        System.out.println(firstDiff + " and " + secondDiff + " were " + (firstDiff+secondDiff) + " not " + (Board.die.getDice1() + Board.die.getDice2()));
+                                        //System.out.println("firstMove " + firstMove + " has orgStrip " + firstMove.orgStrip + " and destStrip " + firstMove.destStrip);
+                                        //System.out.println("secondMove " + secondMove + " has orgStrip " + secondMove.orgStrip + " and destStrip " + secondMove.destStrip);
+                                    }
+                                }
                             }
                         }
                     }
@@ -893,14 +917,6 @@ class Classes {
             }
 
             return temp;
-        }
-
-        static int prepForTestBarCombinedMoves(Move firstMove){
-            int dist = 23 - firstMove.destStrip + 1;
-            if (currentTurn == Color.BLACK) {
-                dist = firstMove.destStrip + 1;
-            }
-            return dist;
         }
 
         static Color nextTurn() {
@@ -1290,6 +1306,13 @@ class Dice {
 
     int getDice2() {
         return dice2;
+    }
+
+    void setDice1(int integer){
+        this.dice1 = integer;
+    }
+    void setDice2(int integer){
+        this.dice2 = integer;
     }
 
     void resetDice(int diceNo) {
