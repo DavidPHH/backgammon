@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
+import static java.lang.Math.min;
+
 class Classes {
 
     static class Board {
@@ -580,8 +582,8 @@ class Classes {
                 hitMove(dest);
         }
 
-        static boolean checkHitMove(Strip dest) { // This was meant for use with /move
-            return ((currentTurn != dest.pieceColor) && dest.quantity == 1);
+        static boolean checkHitMove(int dest) { // returns true or false depending on whether landing on given destStrip is a hit
+            return ((currentTurn != stripArray[dest].pieceColor) && stripArray[dest].quantity == 1);
         }
 
         static boolean valid(Move move, boolean showErrors, boolean isHypothetical) {        //temporary method that takes a move as input and returns whether it's valid or not
@@ -679,7 +681,7 @@ class Classes {
                 for(MoveCombo tmp1: combos){
                     for(MoveCombo tmp2: combos){
                         if(tmp1.moves[0].orgStrip == tmp2.moves[0].orgStrip && tmp1.moves[1].destStrip == tmp2.moves[1].destStrip            // if same starting and end points
-                                && stripArray[tmp1.moves[0].destStrip].quantity != 1 && stripArray[tmp2.moves[0].destStrip].quantity != 1    // and no hits in between
+                                && !checkHitMove(tmp1.moves[0].destStrip) && !checkHitMove(tmp2.moves[1].destStrip)// and no hits in between
                                 && tmp1 != tmp2 && !toRemove.contains(tmp1)){  //and it's comparing against another combo, not itself, otherwise it would remove everything
                                                                             // and that other combo hasn't already been removed, otherwise it would remove both
 
@@ -893,7 +895,13 @@ class Classes {
                                                 // Update: Needed to uncomment to use removeDuplicateCombos, which expects all combos to be of the same length
                                                 // if you need to comment out this, make sure to also comment out that temporarily
 
-            removeDuplicateCombos(allCombos);*/
+            removeDuplicateCombos(allCombos);
+
+            if(max == 1 && Board.die.getDice1() != Board.die.getDice2()){   // if only one-move long plays are found, the ones that use the bigger dice number must be used if possible,
+                int smallerNum = min(Board.die.getDice1(), Board.die.getDice2());   // so we remove the ones using the smaller number (when they're not the same number)
+                allCombos.removeIf(mc -> ((mc.moves[0].orgStrip == -1) ? getMoveDistFromBar(mc.moves[0]) : Math.abs(mc.moves[0].orgStrip - mc.moves[0].destStrip)) == smallerNum);
+            }
+*/
 
             return allCombos;
 
