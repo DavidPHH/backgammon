@@ -486,7 +486,23 @@ public class Controller {
         System.out.println("\n-------- List Start --------");
         int i = 0;
         gameInfo.appendText("\n\nPossible Plays:\n--------------------");
-        if (validMoveCombos.size() > 0) {
+
+        if(validMoveCombos.size() == 1){ // If there is only 1 move, force the move and go to the next turn.
+            gameInfo.appendText("\nThere was only 1 valid move, playing move.\n");
+            int comboSize = validMoveCombos.get(0).numMovesPerCombo;
+            for(int k = 0;k < comboSize;k++){ // Print and perform the individual moves in the combo
+                Move move = validMoveCombos.get(0).moves[i];
+                gameInfo.appendText(validMoveCombos.get(0).moves[i].isHitToString()  + " ");
+                makeMove(move,1);
+            }
+            gameInfo.appendText("\nChanging control to the next player\n");
+            Player player = players[0].getColor() == Board.currentTurn ? players[0] : players[1];
+            gameInfo.appendText("\n" + player.getPlayerName() + "'s turn\nType /roll to roll dice");
+            Board.nextTurn();
+            hasRolled = false;
+            return null;
+        }
+        else if (validMoveCombos.size() > 1) {
             for (MoveCombo mc : validMoveCombos) {
                 String letterCode = (i < 26) ? Character.toString('A' + i) : Character.toString('A' + (i / 26) - 1) + Character.toString('A' + i % 26);
                 System.out.print(letterCode + ":  ");

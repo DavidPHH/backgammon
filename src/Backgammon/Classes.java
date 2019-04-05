@@ -275,9 +275,9 @@ class Classes {
                         else if (diff == die.getDice2()) // If the second die will bring you to bear-off
                             return org.quantity > 0 && org.pieceColor == currentTurn;
                         else if (diff <= (die.getDice1() + die.getDice2()) && tests != -1) { // Combination of the die
-                            Move mDie1 = move;
+                            Move mDie1 = new Move(move.orgStrip,move.destStrip,currentTurn);
                             mDie1.destStrip = move.orgStrip + die.getDice1();
-                            Move mDie2 = move;
+                            Move mDie2 = new Move(move.orgStrip,move.destStrip,currentTurn);
                             mDie2.destStrip = move.orgStrip + die.getDice2();
                             //The individual moves could potentially be blocked by an opposing piece
                             if (validMove(mDie1, 0)) { // If the first dice leads to a valid move
@@ -850,7 +850,7 @@ class Classes {
                 }
 
             }
-            int max =0 ;
+            /*int max =0 ;
             for(MoveCombo mc: allCombos){
                 if(mc.numMovesPerCombo > max){
                     max = mc.numMovesPerCombo;
@@ -862,7 +862,7 @@ class Classes {
                                                 // Update: Needed to uncomment to use removeDuplicateCombos, which expects all combos to be of the same length
                                                 // if you need to comment out this, make sure to also comment out that temporarily
 
-            removeDuplicateCombos(allCombos);
+            removeDuplicateCombos(allCombos);*/
 
             return allCombos;
 
@@ -1091,7 +1091,7 @@ class Piece {
 
 class Strip {
     VBox vBox;
-    int stripID;
+    private int stripID;
     int quantity = 0; // Amount of pieces in this strip
     Color pieceColor = Color.NONE;
 
@@ -1202,7 +1202,7 @@ class DoublingCube {
 class Bar {
     private VBox[] boxes;
     private ArrayList<Piece>[] pieces = new ArrayList[2];
-    public boolean isBearoff = false;
+    boolean isBearoff = false;
 
     public Bar(VBox[] boxes) {
         this.boxes = boxes;
