@@ -78,6 +78,5 @@
 }
 
 #checkBoxBtn {
-    -fx-effect: dropshadow(one-pass-box, white, 5, 0.0, 2, 2) /* -fx-background-radius: 20;
-     -fx-background-color: rgba(178, 169, 149,0.7); */
+    -fx-effect: dropshadow(three-pass-box, black, 20, 0, 5, 10);
 }
