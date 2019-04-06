@@ -75,7 +75,7 @@ public class Controller {
         players = Main.players;
         VBox[] bar = {whiteBarVBox, blackBarVBox};
         VBox[] bearOff = {whiteBearOffVBox, blackBearOffVBox};
-        GridPane[] quadrants = {Q2, Q1, Q3, Q4};    //unusual order is deliberate to help with setInitialPos logic
+        GridPane[] quadrants = {Q2, Q1, Q3, Q4};    // unusual order is deliberate to help with setInitialPos logic
         Board.setInitialPos(quadrants, bar, bearOff, paneId);
         // Default gameInfo string to be displayed
         gameInfo.setText("\nGame commands:" +
@@ -96,9 +96,9 @@ public class Controller {
         gameStart = false;
         hasRolled = false;
 
-        playerOne.getChildren().add(new Text(players[0].getPlayerName() + "\nPips:" + players[0].getPipsLeft()));
+        playerOne.getChildren().add(new Text(players[0].getPlayerName() + "\nScore: " + players[0].getScore()));
         playerOne.getChildren().add(new ImageView(new Image("Backgammon/res/piece-white.png", 25, 25, false, false)));
-        playerTwo.getChildren().add(new Text(players[1].getPlayerName() + "\nPips:" + players[1].getPipsLeft()));
+        playerTwo.getChildren().add(new Text(players[1].getPlayerName() + "\nScore: " + players[1].getScore()));
         playerTwo.getChildren().add(new ImageView(new Image("Backgammon/res/piece-black.png", 25, 25, false, false)));
 
         infoButton.addEventHandler(MouseEvent.ANY, e -> { // Game info is displayed while mouse hovers over info button.
@@ -503,13 +503,15 @@ public class Controller {
                 }
             }
         }
-        winner.setScore(gameValue * cube.getValue());
+        winner.setScore(winner.getScore() + gameValue * cube.getValue());
         gameInfo.setText("");
         gameInfo.appendText("\nGame over, " + winner.getPlayerName() + " wins this round. \n" +
                 "Press any key to continue");
         pCommands.setDisable(true);
         infoButton.requestFocus(); // This removes focus from pCommands/anything else so that keyPress can work
-        gameStart = false;
+        playerOne.getChildren().set(0, new Text(players[0].getPlayerName() + "\nScore: " + players[0].getScore()));
+        playerTwo.getChildren().set(0, new Text(players[1].getPlayerName() + "\nScore: " + players[1].getScore()));
+
     }
 
     private void endMatch(Player winner, Player loser) throws IOException {
