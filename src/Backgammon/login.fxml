@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
@@ -21,9 +22,9 @@
                 <Font size="20.0"/>
             </font>
         </TextField>
-        <Button id="playBtn" layoutX="438.0" layoutY="385.0" mnemonicParsing="false" onAction="#click" prefHeight="44.0"
-                prefWidth="109.0" AnchorPane.bottomAnchor="286.0" AnchorPane.leftAnchor="438.0"
-                AnchorPane.rightAnchor="453.0" AnchorPane.topAnchor="385.0"/>
+        <Button id="playBtn" layoutX="438.0" layoutY="418.0" mnemonicParsing="false" onAction="#click" prefHeight="44.0"
+                prefWidth="109.0" AnchorPane.bottomAnchor="253.0" AnchorPane.leftAnchor="438.0"
+                AnchorPane.rightAnchor="453.0" AnchorPane.topAnchor="418.0"/>
         <TextField fx:id="txtPort" layoutX="564.0" layoutY="301.0" prefHeight="44.0" prefWidth="74.0" promptText="Port"
                    visible="false">
             <font>
@@ -32,11 +33,25 @@
         </TextField>
         <CheckBox id="checkBoxBtn" fx:id="checkbox" layoutX="564.0" layoutY="252.0" mnemonicParsing="false"
                   onAction="#checkBox" prefHeight="30.0" prefWidth="143.0" selected="true" text="Play Locally"
-                  textFill="WHITE" AnchorPane.bottomAnchor="433.0" AnchorPane.leftAnchor="564.0"
+                  textFill="#ebebeb" AnchorPane.bottomAnchor="433.0" AnchorPane.leftAnchor="564.0"
                   AnchorPane.rightAnchor="293.0" AnchorPane.topAnchor="252.0">
             <font>
                 <Font size="20.0"/>
             </font>
         </CheckBox>
+        <Label layoutX="306.0" layoutY="365.0" style="-fx-effect: dropshadow(three-pass-box, black, 20, 0, 5, 10);"
+               text="Points" textFill="#ebebeb" AnchorPane.bottomAnchor="316.0" AnchorPane.leftAnchor="306.0"
+               AnchorPane.rightAnchor="605.0" AnchorPane.topAnchor="365.0">
+            <font>
+                <Font name="Arial Rounded MT Bold" size="29.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="txtPoints" layoutX="426.0" layoutY="370.0" prefHeight="30.0" prefWidth="50.0" text="5"
+                   AnchorPane.bottomAnchor="315.0" AnchorPane.leftAnchor="426.0" AnchorPane.rightAnchor="524.0"
+                   AnchorPane.topAnchor="370.0">
+            <font>
+                <Font name="Arial Rounded MT Bold" size="15.0"/>
+            </font>
+        </TextField>
     </children>
 </AnchorPane>
