@@ -9,6 +9,7 @@ public class Player{
     private int piecesLeft;
     private int score;
 
+    static int upto = 1;
     public Player(String player, Color color){
         this.playerName = player;
         this.color = color;
