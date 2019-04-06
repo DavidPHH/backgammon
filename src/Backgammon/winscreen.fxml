@@ -8,7 +8,7 @@
 <AnchorPane id="login" minHeight="715.0" minWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.172-ea"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="Backgammon.Winscreen">
     <children>
-        <Button id="playBtn" layoutX="438.0" layoutY="405.0" onAction="#click" mnemonicParsing="false" prefHeight="44.0"
+        <Button id="playBtn" layoutX="438.0" layoutY="405.0" mnemonicParsing="false" onAction="#click" prefHeight="44.0"
                 prefWidth="109.0" AnchorPane.bottomAnchor="266.0" AnchorPane.leftAnchor="438.0"
                 AnchorPane.rightAnchor="453.0" AnchorPane.topAnchor="405.0"/>
         <Label fx:id="winnerName" layoutX="298.0" layoutY="221.0"
@@ -26,9 +26,10 @@
                 <Font name="Arial Rounded MT Bold" size="29.0"/>
             </font>
         </Label>
-        <Label layoutX="417.0" layoutY="290.0" style="-fx-effect: dropshadow(three-pass-box, black, 20, 0, 5, 10);"
-               text="Best out of ∞" textFill="#ebebeb" AnchorPane.bottomAnchor="391.0" AnchorPane.leftAnchor="417.0"
-               AnchorPane.topAnchor="290.0">
+        <Label fx:id="title" layoutX="383.0" layoutY="290.0"
+               style="-fx-effect: dropshadow(three-pass-box, black, 20, 0, 5, 10);" text="Playing up to 5"
+               textFill="#ebebeb" AnchorPane.bottomAnchor="391.0" AnchorPane.leftAnchor="383.0"
+               AnchorPane.rightAnchor="410.0" AnchorPane.topAnchor="290.0">
             <font>
                 <Font name="Arial Rounded MT Bold" size="29.0"/>
             </font>
