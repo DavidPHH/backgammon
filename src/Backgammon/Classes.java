@@ -858,17 +858,19 @@ class Classes {
                             }
                         }
                         else{
-                            for (Move secondMove : copyAllMoves){
-                                if (secondMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 2){
-                                    int firstDiff = (firstMove.orgStrip == -1) ? getMoveDistFromBar(firstMove) : Math.abs(firstMove.orgStrip - firstMove.destStrip);
-                                    int secondDiff = (secondMove.orgStrip == -1) ? getMoveDistFromBar(secondMove) : Math.abs(secondMove.orgStrip - secondMove.destStrip);
-                                    // TODO maths for diff needs to include Bear-off
-                                    if((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {
-                                        allCombos.add(new MoveCombo(2, firstMove, secondMove));
-                                    } else {
-                                        System.out.println(firstDiff + " and " + secondDiff + " were " + (firstDiff + secondDiff) + " not " + (Board.die.getDice1() + Board.die.getDice2()));
-                                        //System.out.println("firstMove " + firstMove + " has orgStrip " + firstMove.orgStrip + " and destStrip " + firstMove.destStrip);
-                                        //System.out.println("secondMove " + secondMove + " has orgStrip " + secondMove.orgStrip + " and destStrip " + secondMove.destStrip);
+                            if(maxMoves - currentMoves == 2){ // Only adds the second move if a second move is allowed.
+                                for (Move secondMove : copyAllMoves){
+                                    if (secondMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 2){
+                                        int firstDiff = (firstMove.orgStrip == -1) ? getMoveDistFromBar(firstMove) : Math.abs(firstMove.orgStrip - firstMove.destStrip);
+                                        int secondDiff = (secondMove.orgStrip == -1) ? getMoveDistFromBar(secondMove) : Math.abs(secondMove.orgStrip - secondMove.destStrip);
+                                        // TODO maths for diff needs to include Bear-off
+                                        if((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {
+                                            allCombos.add(new MoveCombo(2, firstMove, secondMove));
+                                        } else {
+                                            System.out.println(firstDiff + " and " + secondDiff + " were " + (firstDiff + secondDiff) + " not " + (Board.die.getDice1() + Board.die.getDice2()));
+                                            //System.out.println("firstMove " + firstMove + " has orgStrip " + firstMove.orgStrip + " and destStrip " + firstMove.destStrip);
+                                            //System.out.println("secondMove " + secondMove + " has orgStrip " + secondMove.orgStrip + " and destStrip " + secondMove.destStrip);
+                                        }
                                     }
                                 }
                             }
@@ -949,14 +951,13 @@ class Classes {
                                                                       //because at the moment bar-moves are only found in plays shorter than the largest plays
                                                 // Update: Needed to uncomment to use removeDuplicateCombos, which expects all combos to be of the same length
                                                 // if you need to comment out this, make sure to also comment out that temporarily
-
+*/
             removeDuplicateCombos(allCombos);
 
-            if(max == 1 && Board.die.getDice1() != Board.die.getDice2()){   // if only one-move long plays are found, the ones that use the bigger dice number must be used if possible,
+            /*if(max == 1 && Board.die.getDice1() != Board.die.getDice2()){   // if only one-move long plays are found, the ones that use the bigger dice number must be used if possible,
                 int smallerNum = min(Board.die.getDice1(), Board.die.getDice2());   // so we remove the ones using the smaller number (when they're not the same number)
                 allCombos.removeIf(mc -> ((mc.moves[0].orgStrip == -1) ? getMoveDistFromBar(mc.moves[0]) : Math.abs(mc.moves[0].orgStrip - mc.moves[0].destStrip)) == smallerNum);
-            }
-*/
+            }*/
 
             return allCombos;
 
@@ -985,26 +986,6 @@ class Classes {
             }
 
             return afterMovetoHomeBoard;
-        }
-
-        // Creating the next move when testing combined moves
-        static Move createNextMove(Move prevMove) {
-            Move nextMove = new Move(prevMove.destStrip, prevMove.orgStrip - (die.getDice1() + die.getDice2()), currentTurn);
-            if(currentTurn == Color.BLACK) {
-                nextMove.orgStrip = prevMove.destStrip;
-                nextMove.destStrip = prevMove.orgStrip + (die.getDice1() + die.getDice2());
-            }
-            return nextMove;
-        }
-
-        static Move createNextMoveForBar(Move prevMove, int want) {
-            Move temp = new Move(prevMove.destStrip, prevMove.destStrip - want, currentTurn);
-            if(currentTurn == Color.BLACK) {
-                temp.orgStrip = prevMove.destStrip;
-                temp.destStrip = prevMove.destStrip + want;
-            }
-
-            return temp;
         }
 
         static Color nextTurn() {
