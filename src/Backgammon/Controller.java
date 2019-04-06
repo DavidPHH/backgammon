@@ -530,7 +530,7 @@ public class Controller {
     }
 
     private void endGame(Player winner, Player loser) throws IOException {
-        DoublingCube cube = new DoublingCube();
+        int cubeValue = currentDoublingCube;
         int gameValue = 0;
 
         int b = loser.getColor() == Color.WHITE ? 0 : -23;
@@ -559,7 +559,7 @@ public class Controller {
                 }
             }
         }
-        winner.setScore(winner.getScore() + gameValue * cube.getValue());
+        winner.setScore(winner.getScore() + gameValue * cubeValue);
         gameInfo.setText("");
         if(winner.getScore() >= Player.upto){
             endMatch(winner, loser);
