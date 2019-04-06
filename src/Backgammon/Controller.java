@@ -71,6 +71,8 @@ public class Controller {
     private  Boolean doubleResponseRequired;
     private int currentDoublingCube;
     private int doublingCubePossession;
+    private boolean crawfordRuleActive;
+    private boolean deadCube;
 
     public void initialize() {
         players = Main.players;
@@ -98,6 +100,8 @@ public class Controller {
         hasRolled = false;
         doubleResponseRequired = false;
         doublingCubePossession = -1; //-1 being either, 0 white, and 1 black
+        crawfordRuleActive = false;
+        deadCube = false;
 
         playerOne.getChildren().add(new Text(players[0].getPlayerName() + "\nScore: " + players[0].getScore()));
         playerOne.getChildren().add(new ImageView(new Image("Backgammon/res/piece-white.png", 25, 25, false, false)));
@@ -237,25 +241,30 @@ public class Controller {
                 }
                 break;
             case "/double":
-                if (!hasRolled && (doublingCubePossession == currentTurn.getValue() || doublingCubePossession == -1)) {
+                if (!hasRolled && !crawfordRuleActive && !deadCube && (doublingCubePossession == currentTurn.getValue() || doublingCubePossession == -1)) {
                     gameInfo.appendText("\n" + players[currentTurn.getValue()].getPlayerName() + " has offered a double.\n"
                     + players[(currentTurn.getValue()+1)%2].getPlayerName() + " do you accept? (Yes/No)");
                     doubleResponseRequired = true;  // (num + 1) % 2 means that if currentTurn is 0, it returns 1, and vice versa, i.e. value of other player
                 } else if(hasRolled) {
                     gameInfo.appendText("\nYou can only double before rolling");
-                } else {
-                    gameInfo.appendText("\nYou can't double because you don't have possession of the doubling cube");
-                    gameInfo.appendText("\nType /roll to roll");
+                } else if(crawfordRuleActive) {
+                    gameInfo.appendText("\nYou can't double because of the Crawford Rule, i.e. because in the last game someone reached a score that was one less than the match length");
+                } else if(deadCube) {
+                    gameInfo.appendText("\nYou can't double because the cube is dead");
+                } else{
+                        gameInfo.appendText("\nYou can't double because you don't have possession of the doubling cube");
+                        gameInfo.appendText("\nType /roll to roll");
                 }
                 pCommands.setText("");
-                break;          //TODO: clean up by introducing local variables for commonly used players
-                                //And move to doubleStakes(), so it also works for clickToDouble()
+                break;
+                                //TODO: move to doubleStakes(), so it also works for clickToDouble(), and implement Crawford Rule
             case "yes":
                 if (doubleResponseRequired) {
                     gameInfo.appendText("\n" + pCommands.getText());
                     doubleStakes();
                     gameInfo.appendText("\n" + players[(currentTurn.getValue()+1)%2].getPlayerName() + " has accepted the double, and so the cube is now theirs.");
                     doubleResponseRequired = false;
+                    deadCube = (players[currentTurn.getValue()].getScore() + currentDoublingCube >= Player.upto);
                     doublingCubePossession = (currentTurn.getValue()+1)%2;   // player who accepted the double is the new owner of the cube
                     gameInfo.appendText("\nBack to " + players[currentTurn.getValue()].getPlayerName() + ", type /roll to roll");
                 } else {

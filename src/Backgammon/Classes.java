@@ -736,16 +736,17 @@ class Classes {
 
             for (MoveCombo mc1 : combos) {
                 for (MoveCombo mc2 : combos) {
-                    if(mc1 != mc2 && mc2.equals(mc1) && !toRemove.contains(mc1)) {
-                        toRemove.add(mc2);
-                        for (int i = 0; i < mc1.numMovesPerCombo; i++) {
+                    if(mc1 != mc2 && mc2.equals(mc1) && !toRemove.contains(mc1)) {//mc1 != mc2 as in the pointers aren't equal, as in not the exact same combo
+                        toRemove.add(mc2);  //not working?
+
+                        /*for (int i = 0; i < mc1.numMovesPerCombo; i++) {
                             System.out.print(mc2.moves[i] + " ");
                         }
                         System.out.print("was removed for equalling");
                         for (int i = 0; i < mc1.numMovesPerCombo; i++) {
                             System.out.print(mc1.moves[i] + " ");
                         }
-                        System.out.println();
+                        System.out.println();*/
 
                     }
                 }
