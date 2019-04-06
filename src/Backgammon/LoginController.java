@@ -14,6 +14,7 @@ public class LoginController {
     public TextField txtPlayer1;
     public TextField txtPlayer2;
     public TextField txtPort;
+    public TextField txtPoints;
     public CheckBox checkbox;
 
     public void click(ActionEvent actionEvent) throws IOException {
@@ -31,7 +32,13 @@ public class LoginController {
 
         Main.players[0] = new Player(p1, Color.WHITE);
         Main.players[1] = new Player(p2, Color.BLACK);
-
+        int x;
+        try {
+            x = Integer.parseInt(txtPoints.getText());
+        } catch (Exception e) {
+            x = 5;
+        }
+        Player.upto = x;
         // Swap scenes
         Parent root = FXMLLoader.load(getClass().getResource("board.fxml"));
         Scene scene = new Scene(root, 1000, 715);
