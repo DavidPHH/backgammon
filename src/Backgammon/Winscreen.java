@@ -17,7 +17,7 @@ public class Winscreen {
     void setup(Player winner, Player loser) {
         winnerName.setText(winner.getPlayerName().toUpperCase() + " WINS!");
         player1.setText(winner.getScore() > loser.getScore() ? winner.toString() : loser.toString());
-        player2.setText(winner.getScore() < loser.getScore() ? loser.toString() : winner.toString());
+        player2.setText(loser.getScore() < winner.getScore() ? loser.toString() : winner.toString());
         winner.reset();
         loser.reset();
 
