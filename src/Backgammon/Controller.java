@@ -240,7 +240,7 @@ public class Controller {
                 if (!hasRolled && (doublingCubePossession == currentTurn.getValue() || doublingCubePossession == -1)) {
                     gameInfo.appendText("\n" + players[currentTurn.getValue()].getPlayerName() + " has offered a double.\n"
                     + players[(currentTurn.getValue()+1)%2].getPlayerName() + " do you accept? (Yes/No)");
-                    doubleResponseRequired = true;  // (num + 1) % 2 means that if currentTurn is 0, it returns 1, and vice versa
+                    doubleResponseRequired = true;  // (num + 1) % 2 means that if currentTurn is 0, it returns 1, and vice versa, i.e. value of other player
                 } else if(hasRolled) {
                     gameInfo.appendText("\nYou can only double before rolling");
                 } else {
@@ -257,21 +257,21 @@ public class Controller {
                     gameInfo.appendText("\n" + players[(currentTurn.getValue()+1)%2].getPlayerName() + " has accepted the double, and so the cube is now theirs.");
                     doubleResponseRequired = false;
                     doublingCubePossession = (currentTurn.getValue()+1)%2;   // player who accepted the double is the new owner of the cube
+                    gameInfo.appendText("\nBack to " + players[currentTurn.getValue()].getPlayerName() + ", type /roll to roll");
                 } else {
                     gameInfo.appendText("\n" + pCommands.getText());
                 }
                 pCommands.setText("");
-                gameInfo.appendText("\nBack to " + players[currentTurn.getValue()].getPlayerName() + ", type /roll to roll");
                 break;
             case "no":
                 if (doubleResponseRequired) {
                     gameInfo.appendText("\n" + players[(currentTurn.getValue() + 1) % 2].getPlayerName() + " has denied the double, and therefore forfeited the match.");
                     endGame(players[currentTurn.getValue()], players[(currentTurn.getValue() + 1) % 2]);
+                    gameInfo.appendText("\nType /roll to roll");
                 } else {
                     gameInfo.appendText("\n" + pCommands.getText());
                 }
                 pCommands.setText("");
-                gameInfo.appendText("\nType /roll to roll");
                 break;
             case "/test":       //produces IndexOutOfBoundsException when running too many at once
                 //pCommands.setText("");

@@ -718,8 +718,6 @@ class Classes {
                                 && tmp1 != tmp2 && !toRemove.contains(tmp1)) {  //and it's comparing against another combo, not itself, otherwise it would remove everything
                             // and that other combo hasn't already been removed, otherwise it would remove both
 
-                            //needs to check colour of any in between pieces, currently allows "duplicates" not only when there are hits, but when there are pieces of the same colour in between as well
-
                         /*   Can maybe skip these last two conditions by using something like:
                              for(i=0;i<combo.size;i++){
                                  for(j=i;j<combo.size;j++){
@@ -740,14 +738,14 @@ class Classes {
                 for (MoveCombo mc2 : combos) {
                     if(mc1 != mc2 && mc2.equals(mc1) && !toRemove.contains(mc1)) {
                         toRemove.add(mc2);
-                        /*for (int i = 0; i < mc1.numMovesPerCombo; i++) {
+                        for (int i = 0; i < mc1.numMovesPerCombo; i++) {
                             System.out.print(mc2.moves[i] + " ");
                         }
                         System.out.print("was removed for equalling");
                         for (int i = 0; i < mc1.numMovesPerCombo; i++) {
                             System.out.print(mc1.moves[i] + " ");
                         }
-                        System.out.println();*/
+                        System.out.println();
 
                     }
                 }
@@ -861,9 +859,9 @@ class Classes {
                             if(maxMoves - currentMoves == 2){ // Only adds the second move if a second move is allowed.
                                 for (Move secondMove : copyAllMoves){
                                     if (secondMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 2){
-                                        int firstDiff = (firstMove.orgStrip == -1) ? getMoveDistFromBar(firstMove) : Math.abs(firstMove.orgStrip - firstMove.destStrip);
-                                        int secondDiff = (secondMove.orgStrip == -1) ? getMoveDistFromBar(secondMove) : Math.abs(secondMove.orgStrip - secondMove.destStrip);
-                                        // TODO maths for diff needs to include Bear-off
+                                        int firstDiff = (firstMove.orgStrip == -1) ? getMoveDistFromBar(firstMove) : (firstMove.destStrip == -2 ? getDiceMoveAtBearOff(firstMove) : getMoveDist(firstMove));
+                                        int secondDiff = (secondMove.orgStrip == -1) ? getMoveDistFromBar(secondMove) : (secondMove.destStrip == -2 ? getDiceMoveAtBearOff(secondMove) : getMoveDist(secondMove));
+
                                         if((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {
                                             allCombos.add(new MoveCombo(2, firstMove, secondMove));
                                         } else {
@@ -955,10 +953,10 @@ class Classes {
                                                 // if you need to comment out this, make sure to also comment out that temporarily
             removeDuplicateCombos(allCombos);
 
-            /*if(max == 1 && Board.die.getDice1() != Board.die.getDice2()){   // if only one-move long plays are found, the ones that use the bigger dice number must be used if possible,
+            if(max == 1 && Board.die.getDice1() != Board.die.getDice2()){   // if only one-move long plays are found, the ones that use the bigger dice number must be used if possible,
                 int smallerNum = min(Board.die.getDice1(), Board.die.getDice2());   // so we remove the ones using the smaller number (when they're not the same number)
-                allCombos.removeIf(mc -> ((mc.moves[0].orgStrip == -1) ? getMoveDistFromBar(mc.moves[0]) : Math.abs(mc.moves[0].orgStrip - mc.moves[0].destStrip)) == smallerNum);
-            }*/
+                allCombos.removeIf(mc -> ((mc.moves[0].orgStrip == -1) ? getMoveDistFromBar(mc.moves[0]) : getMoveDist(mc.moves[0])) == smallerNum);
+            }
 
             return allCombos;
 
