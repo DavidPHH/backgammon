@@ -9,6 +9,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -94,24 +95,30 @@ class Classes {
                     return;
             }
             // Normal move
-            if(move.orgStrip != -1 && move.destStrip >= 0) {
-                int dist = 0;
-                // Getting which dice number was used.
-                if(currentTurn == Color.WHITE)
-                    dist = move.orgStrip - move.destStrip;
-                else if(currentTurn == Color.BLACK)
-                    dist = move.destStrip - move.orgStrip;
+            if (move.orgStrip != -1 && move.destStrip >= 0) {
+                int dist = getMoveDist(move);
 
                 isMoveAHit(getStrip(move.destStrip)); // Checks if the move is a hit
                 stripArray[move.orgStrip].pop();
                 stripArray[move.destStrip].insert(new Piece(move.color));
 
                 changingCurrentMoves(dist);
-            } else if(move.orgStrip == -1) { // Moving from the bar
+            } else if (move.orgStrip == -1) { // Moving from the bar
                 moveFromBar(move);
-            } else if(move.destStrip == -2) { // Moving to the bear-off
+            } else if (move.destStrip == -2) { // Moving to the bear-off
                 moveToBearOff(move);
             }
+        }
+
+        static int getMoveDist(Move move){
+            int dist = 0;
+            // Getting which dice number was used.
+            if (currentTurn == Color.WHITE)
+                dist = move.orgStrip - move.destStrip;
+            else if (currentTurn == Color.BLACK)
+                dist = move.destStrip - move.orgStrip;
+
+            return dist;
         }
 
         static void moveFromBar(Move move) { // Remove the piece from the bar and move it to the board.
@@ -124,7 +131,7 @@ class Classes {
 
         static int getMoveDistFromBar(Move move) {
             int dist = 0; // Getting the number the user input for the move
-            if(currentTurn == Color.WHITE) { // Moves from bar (-1) -> stripArray[23] ....
+            if (currentTurn == Color.WHITE) { // Moves from bar (-1) -> stripArray[23] ....
                 dist = 23 - move.destStrip + 1; // +1 takes into account moving off bar
             } else if(currentTurn == Color.BLACK) {
                 dist = move.destStrip + 1;
@@ -169,6 +176,14 @@ class Classes {
 
             if(dist == 0) // There has been an error
                 return;
+            // TODO Can replace later code with this. Commented it out as it was untested.
+           /* if(getDiceMoveAtBearOff(move) == 1 && maxMoves == 2){
+                die.resetDice(1);
+                currentMoves++;
+            }else if(getDiceMoveAtBearOff(move) == 2 && maxMoves == 2){
+                die.resetDice(2);
+                currentMoves++;
+            }*/
 
             if(die.getDice1() > die.getDice2()) { // Changes currentMoves based on which dice roll was used
                 if(dist <= die.getDice2()) {
@@ -200,6 +215,30 @@ class Classes {
                     currentMoves++;
                 }
             }
+        }
+
+        static int getDiceMoveAtBearOff(Move move) {
+            int dist = 0;
+            if (currentTurn == Color.WHITE) // Gets the amount moved
+                dist = move.orgStrip + 1;
+            else if (currentTurn == Color.BLACK)
+                dist = (23 - move.orgStrip) + 1;
+
+            if (die.getDice1() > die.getDice2()) { // Returns which dice was used.
+                if (dist <= die.getDice2()) {
+                    return 2;
+                } else if (dist <= die.getDice1()) {
+                    return 1;
+                }
+            } else if (die.getDice2() > die.getDice1()) {
+                if (dist <= die.getDice1()) {
+                    return 1;
+                } else if (dist <= die.getDice2()) {
+                    return 2;
+                }
+            }
+
+            return 0;
         }
 
         static void testMove(Move move) { // same as makeMove but allows both colors on the same strip for test purposes
@@ -653,16 +692,11 @@ class Classes {
                         move2.destStrip = i + die.getDice2();
                 }
 
-                if(move1.destStrip != move2.destStrip) { // Catches duplicate moves due to doubles here
-                    if(validMove(move1, -1)) {
-                        boardMoves.add(move1);
-                    }
-                    if(validMove(move2, -1)) {
-                        boardMoves.add(move2);
-                    }
-                } else {
-                    if(validMove(move1, -1))
-                        boardMoves.add(move1);
+                if(validMove(move1,-1)){
+                    boardMoves.add(move1);
+                }
+                if(validMove(move2,-1)){
+                    boardMoves.add(move2);
                 }
             }
 
@@ -799,9 +833,33 @@ class Classes {
                                 die.setDice2(barDist);
                             }
                             Bar.insert(tempFreedom); // Re-insert the removed piece from the Bar
-                        } else {
-                            for (Move secondMove : copyAllMoves) {
-                                if(secondMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 2) {
+                        }
+                        // Player White has 1 piece outside of the homeboard, and moves that piece into the homeboard,
+                        // opens up bear-off combinations
+                        else if((Main.players[currentTurn.getValue()].getPiecesLeft() - 1) == piecesInHomeBoard() && currentTurn == Color.WHITE && firstMove.orgStrip > 5 && firstMove.destStrip <= 5){
+                            ArrayList<Move> afterMovetoHomeBoard = combinationAfterLastPieceHome(firstMove);
+                            // Making the combos
+                            if (maxMoves - currentMoves == 2) {
+                                for(Move secondMove : afterMovetoHomeBoard){
+                                    if(secondMove.orgStrip != firstMove.orgStrip){
+                                        allCombos.add(new MoveCombo(2,firstMove,secondMove));
+                                    }
+                                }
+                            }
+                        }else if((Main.players[currentTurn.getValue()].getPiecesLeft() - 1) == piecesInHomeBoard() && currentTurn == Color.BLACK && firstMove.orgStrip < 18 && firstMove.destStrip >= 18){
+                            ArrayList<Move> afterMovetoHomeBoard = combinationAfterLastPieceHome(firstMove);
+                            // Making the combos
+                            if(maxMoves - currentMoves == 2){
+                                for(Move secondMove : afterMovetoHomeBoard){
+                                    if(secondMove.orgStrip != firstMove.orgStrip){
+                                        allCombos.add(new MoveCombo(2,firstMove,secondMove));
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            for (Move secondMove : copyAllMoves){
+                                if (secondMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 2){
                                     int firstDiff = (firstMove.orgStrip == -1) ? getMoveDistFromBar(firstMove) : Math.abs(firstMove.orgStrip - firstMove.destStrip);
                                     int secondDiff = (secondMove.orgStrip == -1) ? getMoveDistFromBar(secondMove) : Math.abs(secondMove.orgStrip - secondMove.destStrip);
                                     // TODO maths for diff needs to include Bear-off
@@ -902,6 +960,31 @@ class Classes {
 
             return allCombos;
 
+        }
+
+        static ArrayList<Move> combinationAfterLastPieceHome(Move firstMove){
+            Main.players[currentTurn.getValue()].setPiecesLeft(Main.players[currentTurn.getValue()].getPiecesLeft() - 1);
+            int diceValue = getMoveDist(firstMove);
+            int diceUsed = 0;
+
+            if(diceValue == die.getDice1()){
+                diceUsed = 1;
+                die.resetDice(1);
+            }else if(diceValue == die.getDice2()){
+                diceUsed = 2;
+                die.resetDice(2);
+            }
+            ArrayList<Move> afterMovetoHomeBoard = findAllValidMoves();
+
+            // Resetting the original pieces left.
+            Main.players[currentTurn.getValue()].setPiecesLeft(Main.players[currentTurn.getValue()].getPiecesLeft() + 1);
+            if(diceUsed == 1){
+                die.setDice1(diceValue);
+            }else if(diceUsed == 2){
+                die.setDice2(diceValue);
+            }
+
+            return afterMovetoHomeBoard;
         }
 
         // Creating the next move when testing combined moves
