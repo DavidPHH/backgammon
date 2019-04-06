@@ -473,7 +473,7 @@ public class Controller {
         }
     }
 
-    private void endGame(Player winner, Player loser) {
+    private void endGame(Player winner, Player loser) throws IOException {
         DoublingCube cube = new DoublingCube();
         int gameValue = 0;
 
@@ -505,6 +505,10 @@ public class Controller {
         }
         winner.setScore(winner.getScore() + gameValue * cube.getValue());
         gameInfo.setText("");
+        if(winner.getScore() >= Player.upto){
+            endMatch(winner, loser);
+            return;
+        }
         gameInfo.appendText("\nGame over, " + winner.getPlayerName() + " wins this round. \n" +
                 "Press any key to continue");
         pCommands.setDisable(true);
