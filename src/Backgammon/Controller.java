@@ -13,6 +13,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import Backgammon.Classes.Board;
@@ -69,7 +70,6 @@ public class Controller {
     private Boolean gameStart;
     private Boolean hasRolled;
     private int currentDoublingCube;
-
 
     public void initialize() {
         players = Main.players;
@@ -480,12 +480,11 @@ public class Controller {
         int b = loser.getColor() == Color.WHITE ? 0 : -23;
         if (Board.BearOff.piecesIn(loser.getColor()) > 0)
             gameValue = 1;
-            // White loser
         else {
             int count = 0;
             for (int i = 0; i < 18; i++) {
-                if (Board.getStrip(Math.abs(i+b)).pieceColor == loser.getColor()) {
-                    count += Board.getStrip(Math.abs(i+b)).quantity;
+                if (Board.getStrip(Math.abs(i + b)).pieceColor == loser.getColor()) {
+                    count += Board.getStrip(Math.abs(i + b)).quantity;
                 }
             }
             if (count == 15)
@@ -495,7 +494,7 @@ public class Controller {
                     gameValue = 3;
                 } else {
                     for (int i = 18; i < 24; i++) {
-                        Color stripColor = Board.getStrip(Math.abs(i+b)).pieceColor;
+                        Color stripColor = Board.getStrip(Math.abs(i + b)).pieceColor;
                         if (stripColor == loser.getColor()) {
                             gameValue = 3;
                             break;
@@ -505,6 +504,12 @@ public class Controller {
             }
         }
         winner.setScore(gameValue * cube.getValue());
+        gameInfo.setText("");
+        gameInfo.appendText("\nGame over, " + winner.getPlayerName() + " wins this round. \n" +
+                "Press any key to continue");
+        pCommands.setDisable(true);
+        infoButton.requestFocus(); // This removes focus from pCommands/anything else so that keyPress can work
+        gameStart = false;
     }
 
     private void endMatch(Player winner, Player loser) throws IOException {
@@ -519,4 +524,11 @@ public class Controller {
         Main.window.setScene(scene);
     }
 
+    public void keyPress(KeyEvent keyEvent) throws IOException {
+        if (pCommands.isDisabled()) {
+            Scene scene = new Scene(FXMLLoader.load(getClass().getResource("board.fxml")), 1000, 715);
+            scene.getStylesheets().addAll(this.getClass().getResource("application.css").toExternalForm());
+            Main.window.setScene(scene);
+        }
+    }
 }
