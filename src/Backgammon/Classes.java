@@ -9,7 +9,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -259,10 +258,6 @@ class Classes {
             if(move.destStrip != -2) {
                 dest = getStrip(move.destStrip);
             }
-            /* TODO
-                Logic to allow moves to use the double moves for Bar and Bear-off i.e. move 16 forward if roll double 4
-                This is only for when the user uses /move not /listmove
-            */
 
             // User wants to move to the bear-off, this checks if it is allowed. This is done before the bar check
             // as moving to the bear-off has a different check for move according to the die. Bear-off == -2
@@ -603,10 +598,6 @@ class Classes {
                 return true;
             }
             return false;
-        }
-
-        static void removeTempPiece(Move move) {
-            stripArray[move.orgStrip].pop();
         }
 
         static void hitMove(Strip dest) {

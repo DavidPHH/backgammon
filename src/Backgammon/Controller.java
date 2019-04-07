@@ -98,6 +98,7 @@ public class Controller {
         vis = true;
         gameStart = false;
         hasRolled = false;
+        currentDoublingCube = 1; // So end game score will never be 0
         doubleResponseRequired = false;
         doublingCubePossession = -1; //-1 being either, 0 white, and 1 black
         crawfordRuleActive = false;
