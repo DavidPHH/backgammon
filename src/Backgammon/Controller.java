@@ -229,27 +229,23 @@ public class Controller {
                 }
                 break;
             case "/double":
-                if(!hasRolled && !crawfordRuleActive && !deadCube && (doublingCubePossession == currentTurn.getValue() || doublingCubePossession == -1)) {
-                    gameInfo.appendText("\n" + players[currentTurn.getValue()].getPlayerName() + " has offered a double.\n"
-                            + players[(currentTurn.getValue() + 1) % 2].getPlayerName() + " do you accept? (Yes/No)");
-                    doubleResponseRequired = true;  // (num + 1) % 2 means that if currentTurn is 0, it returns 1, and vice versa, i.e. value of other player
-                } else if(hasRolled) {
-                    gameInfo.appendText("\nYou can only double before rolling");
-                } else if(crawfordRuleActive) {
-                    gameInfo.appendText("\nYou can't double because of the Crawford Rule, i.e. because in the last game someone reached a score that was one less than the match length");
-                } else if(deadCube) {
-                    gameInfo.appendText("\nYou can't double because the cube is dead");
-                } else {
-                    gameInfo.appendText("\nYou can't double because you don't have possession of the doubling cube");
-                    gameInfo.appendText("\nType /roll to roll");
-                }
-                pCommands.setText("");
+                offerDouble();
                 break;
-            //TODO: move to doubleStakes(), so it also works for clickToDouble(), and implement Crawford Rule
             case "yes":
                 if(doubleResponseRequired) {
                     gameInfo.appendText("\n" + pCommands.getText());
-                    doubleStakes();
+                    if(doubleBox.getChildren().isEmpty()) {
+                        doubleBox.getChildren().add(new DoublingCube().imgView);
+                        currentDoublingCube = 2;
+                    } else if(currentDoublingCube < 64) {
+                        doubleBox.getChildren().remove(0);
+                        currentDoublingCube *= 2;
+                        doubleBox.getChildren().add(new DoublingCube(currentDoublingCube).imgView);
+                    } else {
+                        gameInfo.appendText("\nCan't double past 64");
+                        //doubleBox.getChildren().remove(0);       //I'm assuming we're limiting ourselves to what fits on a normal die
+                    }                                              //and not letting the players keep doubling as much as they want,
+                    //so that final remove() is only temporary, for demonstration purposes
                     gameInfo.appendText("\n" + players[(currentTurn.getValue() + 1) % 2].getPlayerName() + " has accepted the double, and so the cube is now theirs.");
                     doubleResponseRequired = false;
                     deadCube = (players[currentTurn.getValue()].getScore() + currentDoublingCube >= Player.upto);
@@ -388,24 +384,28 @@ public class Controller {
         }
     }
 
-    private void doubleStakes() {
-        if(doubleBox.getChildren().isEmpty()) {
-            doubleBox.getChildren().add(new DoublingCube().imgView);
-            currentDoublingCube = 2;
-        } else if(currentDoublingCube < 64) {
-            doubleBox.getChildren().remove(0);
-            currentDoublingCube *= 2;
-            doubleBox.getChildren().add(new DoublingCube(currentDoublingCube).imgView);
+    private void offerDouble() {
+        if(!hasRolled && !crawfordRuleActive && !deadCube && (doublingCubePossession == currentTurn.getValue() || doublingCubePossession == -1)) {
+            gameInfo.appendText("\n" + players[currentTurn.getValue()].getPlayerName() + " has offered a double.\n"
+                    + players[(currentTurn.getValue() + 1) % 2].getPlayerName() + " do you accept? (Yes/No)");
+            doubleResponseRequired = true;  // (num + 1) % 2 means that if currentTurn is 0, it returns 1, and vice versa, i.e. value of other player
+        } else if(hasRolled) {
+            gameInfo.appendText("\nYou can only double before rolling");
+        } else if(crawfordRuleActive) {
+            gameInfo.appendText("\nYou can't double because of the Crawford Rule, i.e. because in the last game someone reached a score that was one less than the match length");
+        } else if(deadCube) {
+            gameInfo.appendText("\nYou can't double because the cube is dead");
         } else {
-            System.out.println("Can't double anymore");
-            //doubleBox.getChildren().remove(0);       //I'm assuming we're limiting ourselves to what fits on a normal die
-        }                                              //and not letting the players keep doubling as much as they want,
-        //so that final remove() is only temporary, for demonstration purposes
+            gameInfo.appendText("\nYou can't double because you don't have possession of the doubling cube");
+            gameInfo.appendText("\nType /roll to roll");
+        }
+        pCommands.setText("");
+
 
     }
 
     public void clickToDouble() {
-        doubleStakes();
+        offerDouble();
     }
 
     private void test(Color color) {
