@@ -518,6 +518,7 @@ public class Controller {
                 Move move = validMoveCombos.get(0).moves[k];
                 gameInfo.appendText(validMoveCombos.get(0).moves[k].isHitToString() + " ");
                 makeMove(move, 1);
+                //System.out.println("Please only be 1");
             }
             gameInfo.appendText("\nChanging control to the next player\n");
             Player player = players[0].getColor() == Board.currentTurn ? players[0] : players[1];

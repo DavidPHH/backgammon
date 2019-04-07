@@ -225,15 +225,15 @@ class Classes {
 
             if (die.getDice1() > die.getDice2()) { // Returns which dice was used.
                 if (dist <= die.getDice2()) {
-                    return 2;
+                    return die.getDice2();
                 } else if (dist <= die.getDice1()) {
-                    return 1;
+                    return die.getDice1();
                 }
             } else if (die.getDice2() > die.getDice1()) {
                 if (dist <= die.getDice1()) {
-                    return 1;
+                    return die.getDice1();
                 } else if (dist <= die.getDice2()) {
-                    return 2;
+                    return die.getDice2();
                 }
             }
 
@@ -796,7 +796,7 @@ class Classes {
                         //Conversely, also need to check if any moves are no longer possible now. This would only happen if there are
                         //no more pieces left on orgStrip after the move is made, i.e. if there is currently only one piece on orgStrip
 
-                        if((firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && firstMove.destStrip != -2 && stripArray[firstMove.orgStrip].quantity <= 1) || (firstMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1)) {  //<=1 to make testing easier, really could be ==1
+                        if((firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && stripArray[firstMove.orgStrip].quantity <= 1) || (firstMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1)) {  //<=1 to make testing easier, really could be ==1
                             copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
                         }
                         // >=0 and <24 conditions included so that it doesn't try to dereference something like stripArray[-1] for bar moves
@@ -861,11 +861,11 @@ class Classes {
 
                                         if((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {
                                             allCombos.add(new MoveCombo(2, firstMove, secondMove));
-                                        }/* else {
-                                            //System.out.println(firstDiff + " and " + secondDiff + " were " + (firstDiff + secondDiff) + " not " + (Board.die.getDice1() + Board.die.getDice2()));
+                                        } else {
+                                            System.out.println(firstDiff + " and " + secondDiff + " were " + (firstDiff + secondDiff) + " not " + (Board.die.getDice1() + Board.die.getDice2()));
                                             //System.out.println("firstMove " + firstMove + " has orgStrip " + firstMove.orgStrip + " and destStrip " + firstMove.destStrip);
                                             //System.out.println("secondMove " + secondMove + " has orgStrip " + secondMove.orgStrip + " and destStrip " + secondMove.destStrip);
-                                        }*/
+                                        }
                                     }
                                 }
                             }
@@ -887,7 +887,7 @@ class Classes {
                             //System.out.println("hi");
                         }  //Don't need to check again for dice2 since they're the same number
 
-                        if((firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && firstMove.destStrip != -2 && stripArray[firstMove.orgStrip].quantity < 2) || (firstMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1)) {  //<=1 to make testing easier, really could be ==1
+                        if((firstMove.orgStrip >= 0 && firstMove.orgStrip < 24 && stripArray[firstMove.orgStrip].quantity < 2) || (firstMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 1)) {  //<=1 to make testing easier, really could be ==1
                             copyAllMoves.removeIf(m -> m.orgStrip == firstMove.orgStrip);
                         }
 
@@ -902,7 +902,7 @@ class Classes {
                                         copyAllMoves2.add(new Move(currentTurn == Color.WHITE ? secondMove.destStrip : 23 - secondMove.destStrip, currentTurn == Color.WHITE ? secondMove.destStrip - Board.die.getDice1() : (23 - secondMove.destStrip - Board.die.getDice1()), currentTurn));
                                     }  //Don't need to check again for dice2 since they're the same number
 
-                                    if((secondMove.orgStrip >= 0 && secondMove.orgStrip < 24 && secondMove.destStrip != -2 && stripArray[secondMove.orgStrip].quantity < 3) || (secondMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 2)) {  //<=1 to make testing easier, really could be ==1
+                                    if((secondMove.orgStrip >= 0 && secondMove.orgStrip < 24 && stripArray[secondMove.orgStrip].quantity < 3) || (secondMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 2)) {  //<=1 to make testing easier, really could be ==1
                                         copyAllMoves2.removeIf(m -> m.orgStrip == secondMove.orgStrip);
                                     }
 
@@ -917,7 +917,7 @@ class Classes {
                                                     copyAllMoves3.add(new Move(currentTurn == Color.WHITE ? thirdMove.destStrip : 23 - thirdMove.destStrip, currentTurn == Color.WHITE ? thirdMove.destStrip - Board.die.getDice1() : (23 - thirdMove.destStrip - Board.die.getDice1()), currentTurn));
                                                 }  //Don't need to check again for dice2 since they're the same number
 
-                                                if((thirdMove.orgStrip >= 0 && thirdMove.orgStrip < 24 && thirdMove.destStrip != -2 && stripArray[thirdMove.orgStrip].quantity < 4) || (thirdMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 3)) {
+                                                if((thirdMove.orgStrip >= 0 && thirdMove.orgStrip < 24 && stripArray[thirdMove.orgStrip].quantity < 4) || (thirdMove.orgStrip == -1 && Bar.piecesIn(currentTurn) <= 3)) {
                                                     copyAllMoves3.removeIf(m -> m.orgStrip == thirdMove.orgStrip);
                                                 }
 
