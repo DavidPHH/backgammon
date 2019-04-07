@@ -69,9 +69,9 @@ public class Controller {
     private Boolean gameStart;
     private Boolean hasRolled;
     private Boolean doubleResponseRequired;
-    private int currentDoublingCube = 1;
+    private int currentDoublingCube = 1;    //why here as well as in intitialize?
     private int doublingCubePossession;
-    private boolean crawfordRuleActive;
+    private boolean crawfordRuleActive = false; //given value here so that it doesn't get reset to false when a new game begins with initialize
     private boolean deadCube;
 
     public void initialize() {
@@ -101,7 +101,6 @@ public class Controller {
         currentDoublingCube = 1; // So end game score will never be 0
         doubleResponseRequired = false;
         doublingCubePossession = -1; //-1 being either, 0 white, and 1 black
-        crawfordRuleActive = false;
         deadCube = false;
 
         playerOne.getChildren().add(new Text(players[0].getPlayerName() + "\nScore: " + players[0].getScore()));
@@ -227,18 +226,7 @@ public class Controller {
                 else if(Board.currentMoves < Board.maxMoves)
                     gameInfo.appendText("\nYou must use your allotted amount of moves");
                 else {
-                    Board.nextTurn();
-                    // Printing the new player's turn
-                    if(players[0].getColor() == Board.currentTurn)
-                        gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
-                    else
-                        gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
-                    gameInfo.appendText("\nType /roll to roll");
-                    if(doublingCubePossession == currentTurn.getValue() || doublingCubePossession == -1) {
-                        gameInfo.appendText(" or /double to double");
-                    }
-                    hasRolled = false;
-                    diceBox.getChildren().remove(0, diceBox.getChildren().size());
+                    next();
                 }
                 break;
             case "/double":
@@ -321,7 +309,6 @@ public class Controller {
 
                     int length = moveL.length();
                     // Gets the index for taking the move from the arrayList
-                    //int c = ((moveL.charAt(length - 1)) - 'a') + (26 * (length -1));
                     int c = (length == 1) ? (moveL.charAt(0) - 'a') : ((moveL.charAt(1) - 'a') + (26 * (moveL.charAt(0) - 'a' + 1)));
                     if(c < moveList.size() && c >= 0) {
                         MoveCombo mc = moveList.get(c);
@@ -518,13 +505,9 @@ public class Controller {
                 Move move = validMoveCombos.get(0).moves[k];
                 gameInfo.appendText(validMoveCombos.get(0).moves[k].isHitToString() + " ");
                 makeMove(move, 1);
-                //System.out.println("Please only be 1");
             }
             gameInfo.appendText("\nChanging control to the next player\n");
-            Player player = players[0].getColor() == Board.currentTurn ? players[0] : players[1];
-            gameInfo.appendText("\n" + player.getPlayerName() + "'s turn\nType /roll to roll dice");
-            Board.nextTurn();
-            hasRolled = false;
+            next();
             return null;
         } else if(validMoveCombos.size() > 1) {
             for (MoveCombo mc : validMoveCombos) {
@@ -542,12 +525,24 @@ public class Controller {
             return validMoveCombos;
         } else {
             gameInfo.appendText("\nThere were no possible moves\n");
-            Board.nextTurn();
-            Player player = players[0].getColor() == Board.currentTurn ? players[0] : players[1];
-            gameInfo.appendText("\n" + player.getPlayerName() + "'s turn\nType /roll to roll dice");
-            hasRolled = false;
+            next();
             return null;
         }
+    }
+
+    private void next(){
+        Board.nextTurn();
+        // Printing the new player's turn
+        if(players[0].getColor() == Board.currentTurn)
+            gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
+        else
+            gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
+        gameInfo.appendText("\nType /roll to roll");
+        if(doublingCubePossession == currentTurn.getValue() || doublingCubePossession == -1) {
+            gameInfo.appendText(" or /double to double");
+        }
+        hasRolled = false;
+        diceBox.getChildren().remove(0, diceBox.getChildren().size());
     }
 
     private void endGame(Player winner, Player loser) throws IOException {
