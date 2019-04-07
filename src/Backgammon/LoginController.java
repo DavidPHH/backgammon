@@ -50,7 +50,7 @@ public class LoginController {
     public void checkBox(ActionEvent actionEvent) {
         boolean vis = !checkbox.isSelected();
         txtPort.setVisible(vis);
-        txtPlayer2.setPromptText(vis ? "Server IP" : "Player 2");
+        txtPlayer2.setPromptText(vis ? "Server IP" : "Black");
         txtPlayer2.setText("");
     }
 }
