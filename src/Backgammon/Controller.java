@@ -310,7 +310,7 @@ public class Controller {
                 pCommands.setText("");
                 break;
             case "/listmove": // Using the generated list of moves to move as required by the assignment
-                if(Board.currentMoves < Board.maxMoves) {
+                if (hasRolled && Board.currentMoves < Board.maxMoves) {
                     String[] splot = inputString.split(" ");
                     String moveL = null;
                     try {
@@ -340,8 +340,10 @@ public class Controller {
 
                     } else
                         gameInfo.appendText("\nPlease select a move contained within the list i.e. use a correct letter.");
-                } else {
+                } else if(hasRolled){
                     gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
+                } else {
+                    gameInfo.appendText("\nYou must roll before moving");
                 }
                 int x = Board.currentTurn.getValue();
                 if(Main.players[x].getPiecesLeft() == 0) { // Ends the game if the player bore off their last piece
@@ -589,6 +591,8 @@ public class Controller {
         infoButton.requestFocus(); // This removes focus from pCommands/anything else so that keyPress can work
         playerOne.getChildren().set(0, new Text(players[0].getPlayerName() + "\nScore: " + players[0].getScore()));
         playerTwo.getChildren().set(0, new Text(players[1].getPlayerName() + "\nScore: " + players[1].getScore()));
+        crawfordRuleActive = (Player.upto - winner.getScore() == 1); //after being activated once, even if that same player is still 1 away from
+        //the agreed match score, that player will never be both the winner and 1 away from the score again, so it will correctly never be activated again
 
     }
 

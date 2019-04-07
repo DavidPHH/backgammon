@@ -612,7 +612,7 @@ class Classes {
         }
 
         static boolean checkHitMove(int dest) { // returns true or false depending on whether landing on given destStrip is a hit
-            return ((currentTurn != stripArray[dest].pieceColor) && stripArray[dest].quantity == 1);
+            return (dest != -2) && ((currentTurn != stripArray[dest].pieceColor) && stripArray[dest].quantity == 1);
         }
 
         static boolean valid(Move move, boolean showErrors, boolean isHypothetical) {        //temporary method that takes a move as input and returns whether it's valid or not
@@ -629,7 +629,7 @@ class Classes {
                     System.out.println("Out of bounds");                        // which should naturally stay within those bounds
                 return false;
             }
-            if(stripArray[org].pieceColor != move.color && !isHypothetical) {                         //maybe also remove?
+            if(stripArray[org].pieceColor != move.color && !isHypothetical) {
                 if(showErrors)
                     System.out.println("No " + move.color + " pieces on origin strip " + displayedOrg);
                 return false;
