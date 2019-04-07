@@ -1020,21 +1020,13 @@ class Classes {
                 white[i] = new Piece(Color.WHITE);
             }
 
-            stripArray[0].insert(white, 0, 2);
-            stripArray[2].insert(white, 3, 5);
-            stripArray[3].insert(white, 6, 8);
-            Bar.insert(white, 9, 11);
-            BearOff.insert(white, 12, 14);
+            stripArray[0].insert(black, 0, 1);
+            BearOff.insert(black, 2, 14);
+            stripArray[23].insert(white,0,1);
+            BearOff.insert(white, 2, 14);
 
-            for (int i = 23, j = 0; i >= 19; i--, j = j + 2) {
-                stripArray[i].insert(black[j]);
-                stripArray[i].insert(black[j + 1]);
-            }
-            Bar.insert(black, 10, 12);
-            BearOff.insert(black, 13, 14);
-
-            Main.players[0].setPiecesLeft(12);
-            Main.players[1].setPiecesLeft(13);
+            Main.players[0].setPiecesLeft(2);
+            Main.players[1].setPiecesLeft(2);
 
             Board.currentTurn = Color.WHITE;
             Board.currentMoves = 0;
