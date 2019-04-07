@@ -19,9 +19,6 @@ public class Winscreen {
         title.setText("Playing up to " + Player.upto);
         player1.setText(winner.getScore() > loser.getScore() ? winner.toString() : loser.toString());
         player2.setText(loser.getScore() < winner.getScore() ? loser.toString() : winner.toString());
-        winner.reset();
-        loser.reset();
-
     }
 
     public void click(ActionEvent actionEvent) throws IOException {

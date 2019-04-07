@@ -518,6 +518,7 @@ public class Controller {
                 Move move = validMoveCombos.get(0).moves[k];
                 gameInfo.appendText(validMoveCombos.get(0).moves[k].isHitToString() + " ");
                 makeMove(move, 1);
+                //System.out.println("Please only be 1");
             }
             gameInfo.appendText("\nChanging control to the next player\n");
             Player player = players[0].getColor() == Board.currentTurn ? players[0] : players[1];
@@ -591,6 +592,8 @@ public class Controller {
         paneId.requestFocus(); // This removes focus from pCommands/anything else so that keyPress can work
         playerOne.getChildren().set(0, new Text(players[0].getPlayerName() + "\nScore: " + players[0].getScore()));
         playerTwo.getChildren().set(0, new Text(players[1].getPlayerName() + "\nScore: " + players[1].getScore()));
+        winner.reset(); // Resets the player's piece values
+        loser.reset();
         crawfordRuleActive = (Player.upto - winner.getScore() == 1); //after being activated once, even if that same player is still 1 away from
         //the agreed match score, that player will never be both the winner and 1 away from the score again, so it will correctly never be activated again
 
