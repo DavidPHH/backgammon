@@ -265,6 +265,17 @@ public class Controller {
                     gameInfo.appendText("\n" + players[(currentTurn.getValue()+1)%2].getPlayerName() + " has accepted the double, and so the cube is now theirs.");
                     doubleResponseRequired = false;
                     deadCube = (players[currentTurn.getValue()].getScore() + currentDoublingCube >= Player.upto);
+                    if(currentTurn == Color.WHITE){         // adds doubling cube icon to new owner
+                        playerTwo.getChildren().add(new ImageView(new Image("Backgammon/res/DoublingCube" + currentDoublingCube + ".png", 25, 25, false, false)));
+                    }else{
+                        playerOne.getChildren().add(new ImageView(new Image("Backgammon/res/DoublingCube" + currentDoublingCube + ".png", 25, 25, false, false)));
+                    }
+                    if(doublingCubePossession == 0){    // done separately from previous conditions because at the start neither player has a possession icon
+                                                        // so in that case you don't want to be removing anything from either
+                        playerOne.getChildren().remove(playerOne.getChildren().size()-1);   // removes existing doubling cube icon from previous owner
+                    }else if(doublingCubePossession == 1){
+                        playerTwo.getChildren().remove(playerOne.getChildren().size()-1);
+                    }
                     doublingCubePossession = (currentTurn.getValue()+1)%2;   // player who accepted the double is the new owner of the cube
                     gameInfo.appendText("\nBack to " + players[currentTurn.getValue()].getPlayerName() + ", type /roll to roll");
                 } else {
@@ -276,7 +287,6 @@ public class Controller {
                 if (doubleResponseRequired) {
                     gameInfo.appendText("\n" + players[(currentTurn.getValue() + 1) % 2].getPlayerName() + " has denied the double, and therefore forfeited the match.");
                     endGame(players[currentTurn.getValue()], players[(currentTurn.getValue() + 1) % 2]);
-                    gameInfo.appendText("\nType /roll to roll");
                 } else {
                     gameInfo.appendText("\n" + pCommands.getText());
                 }
