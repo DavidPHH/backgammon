@@ -68,8 +68,8 @@ public class Controller {
     private Boolean vis;
     private Boolean gameStart;
     private Boolean hasRolled;
-    private  Boolean doubleResponseRequired;
-    private int currentDoublingCube;
+    private Boolean doubleResponseRequired;
+    private int currentDoublingCube = 1;
     private int doublingCubePossession;
     private boolean crawfordRuleActive;
     private boolean deadCube;
@@ -112,7 +112,7 @@ public class Controller {
             EventType ev = e.getEventType();
             EventType ex = MouseEvent.MOUSE_EXITED;
             EventType ent = MouseEvent.MOUSE_ENTERED;
-            if (!vis && (ev.equals(ex) || ev.equals(ent))) {
+            if(!vis && (ev.equals(ex) || ev.equals(ent))) {
                 gameInfo.setVisible(!ev.equals(ex));
             }
         });
@@ -122,7 +122,7 @@ public class Controller {
     @FXML
     public void onEnter(ActionEvent e) throws IOException {
         String inputString = pCommands.getText().toLowerCase();
-        if (inputString.equals(""))
+        if(inputString.equals(""))
             return;
         switch (inputString.split(" ")[0]) {
             case "/quit":
@@ -150,15 +150,15 @@ public class Controller {
                 break;
             case "/move":
                 pCommands.setText("");
-                if (!hasRolled) {
+                if(!hasRolled) {
                     gameInfo.appendText("\nPlease roll before you move");
-                } else if (Board.currentMoves < Board.maxMoves) {
+                } else if(Board.currentMoves < Board.maxMoves) {
                     String[] splot = inputString.split(" ");
                     int org, dest;
                     try {
                         org = Integer.parseInt(splot[1]) - 1;
                         dest = Integer.parseInt(splot[2]) - 1;
-                        if (org < -1 || dest < -3 || org > 23 || dest > 23)
+                        if(org < -1 || dest < -3 || org > 23 || dest > 23)
                             throw new ArrayIndexOutOfBoundsException();
                     } catch (Exception ex) {
                         gameInfo.appendText("\nInvalid syntax. Expected /move int int");
@@ -168,7 +168,7 @@ public class Controller {
                     Board.makeMove(move, -1);
                     gameInfo.appendText("\n" + move);
 
-                    if (Board.currentMoves < Board.maxMoves)
+                    if(Board.currentMoves < Board.maxMoves)
                         printMoves();
                     else
                         gameInfo.appendText("\nYour move is now over. Please type /next to pass control");
@@ -178,13 +178,13 @@ public class Controller {
                 break;
             case "/start":
                 pCommands.setText("");
-                if (!gameStart) {
+                if(!gameStart) {
                     Board.rollStart(players);
                     animateRoll(Board.die.getDice1(), Board.die.getDice2());    //show dice in different place from
 
                     gameInfo.appendText("\n" + players[0].getPlayerName() + " rolled: " + Board.die.getDice1() + ", "
                             + players[1].getPlayerName() + " rolled: " + Board.die.getDice2() + "\n");
-                    if (players[0].getColor() == Board.currentTurn)
+                    if(players[0].getColor() == Board.currentTurn)
                         gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
 
                     else
@@ -197,13 +197,13 @@ public class Controller {
                 break;
             case "/roll":
                 pCommands.setText("");
-                if (!hasRolled && gameStart) {
+                if(!hasRolled && gameStart) {
                     Board.rollDice();
                     hasRolled = true;
                     animateRoll(Board.die.getDice1(), Board.die.getDice2());
 
                     //Printing of the results of the player's roll
-                    if (players[0].getColor() == Board.currentTurn) {
+                    if(players[0].getColor() == Board.currentTurn) {
                         gameInfo.appendText("\n" + players[0].getPlayerName() +
                                 " rolled: " + Board.die.getDice1() + ", " + Board.die.getDice2() + "\n");
                     } else {
@@ -212,7 +212,7 @@ public class Controller {
                     }
 
                     moveList = printMoves();
-                } else if (!gameStart)
+                } else if(!gameStart)
                     gameInfo.appendText("\nPlease use /start to start the game first");
                 else {
                     gameInfo.appendText("\nYou cannot roll again\n");
@@ -220,20 +220,20 @@ public class Controller {
                 break;
             case "/next":
                 pCommands.setText("");
-                if (!gameStart)
+                if(!gameStart)
                     gameInfo.appendText("\nUse /start to start the game");
                     //Ensures the player doesn't skip their turn
-                else if (Board.currentMoves < Board.maxMoves)
+                else if(Board.currentMoves < Board.maxMoves)
                     gameInfo.appendText("\nYou must use your allotted amount of moves");
                 else {
                     Board.nextTurn();
                     // Printing the new player's turn
-                    if (players[0].getColor() == Board.currentTurn)
+                    if(players[0].getColor() == Board.currentTurn)
                         gameInfo.appendText("\n" + players[0].getPlayerName() + "'s turn");
                     else
                         gameInfo.appendText("\n" + players[1].getPlayerName() + "'s turn");
                     gameInfo.appendText("\nType /roll to roll");
-                    if(doublingCubePossession==currentTurn.getValue() || doublingCubePossession == -1){
+                    if(doublingCubePossession == currentTurn.getValue() || doublingCubePossession == -1) {
                         gameInfo.appendText(" or /double to double");
                     }
                     hasRolled = false;
@@ -241,9 +241,9 @@ public class Controller {
                 }
                 break;
             case "/double":
-                if (!hasRolled && !crawfordRuleActive && !deadCube && (doublingCubePossession == currentTurn.getValue() || doublingCubePossession == -1)) {
+                if(!hasRolled && !crawfordRuleActive && !deadCube && (doublingCubePossession == currentTurn.getValue() || doublingCubePossession == -1)) {
                     gameInfo.appendText("\n" + players[currentTurn.getValue()].getPlayerName() + " has offered a double.\n"
-                    + players[(currentTurn.getValue()+1)%2].getPlayerName() + " do you accept? (Yes/No)");
+                            + players[(currentTurn.getValue() + 1) % 2].getPlayerName() + " do you accept? (Yes/No)");
                     doubleResponseRequired = true;  // (num + 1) % 2 means that if currentTurn is 0, it returns 1, and vice versa, i.e. value of other player
                 } else if(hasRolled) {
                     gameInfo.appendText("\nYou can only double before rolling");
@@ -251,32 +251,32 @@ public class Controller {
                     gameInfo.appendText("\nYou can't double because of the Crawford Rule, i.e. because in the last game someone reached a score that was one less than the match length");
                 } else if(deadCube) {
                     gameInfo.appendText("\nYou can't double because the cube is dead");
-                } else{
-                        gameInfo.appendText("\nYou can't double because you don't have possession of the doubling cube");
-                        gameInfo.appendText("\nType /roll to roll");
+                } else {
+                    gameInfo.appendText("\nYou can't double because you don't have possession of the doubling cube");
+                    gameInfo.appendText("\nType /roll to roll");
                 }
                 pCommands.setText("");
                 break;
-                                //TODO: move to doubleStakes(), so it also works for clickToDouble(), and implement Crawford Rule
+            //TODO: move to doubleStakes(), so it also works for clickToDouble(), and implement Crawford Rule
             case "yes":
-                if (doubleResponseRequired) {
+                if(doubleResponseRequired) {
                     gameInfo.appendText("\n" + pCommands.getText());
                     doubleStakes();
-                    gameInfo.appendText("\n" + players[(currentTurn.getValue()+1)%2].getPlayerName() + " has accepted the double, and so the cube is now theirs.");
+                    gameInfo.appendText("\n" + players[(currentTurn.getValue() + 1) % 2].getPlayerName() + " has accepted the double, and so the cube is now theirs.");
                     doubleResponseRequired = false;
                     deadCube = (players[currentTurn.getValue()].getScore() + currentDoublingCube >= Player.upto);
-                    if(currentTurn == Color.WHITE){         // adds doubling cube icon to new owner
+                    if(currentTurn == Color.WHITE) {         // adds doubling cube icon to new owner
                         playerTwo.getChildren().add(new ImageView(new Image("Backgammon/res/DoublingCube" + currentDoublingCube + ".png", 25, 25, false, false)));
-                    }else{
+                    } else {
                         playerOne.getChildren().add(new ImageView(new Image("Backgammon/res/DoublingCube" + currentDoublingCube + ".png", 25, 25, false, false)));
                     }
-                    if(doublingCubePossession == 0){    // done separately from previous conditions because at the start neither player has a possession icon
-                                                        // so in that case you don't want to be removing anything from either
-                        playerOne.getChildren().remove(playerOne.getChildren().size()-1);   // removes existing doubling cube icon from previous owner
-                    }else if(doublingCubePossession == 1){
-                        playerTwo.getChildren().remove(playerOne.getChildren().size()-1);
+                    if(doublingCubePossession == 0) {    // done separately from previous conditions because at the start neither player has a possession icon
+                        // so in that case you don't want to be removing anything from either
+                        playerOne.getChildren().remove(playerOne.getChildren().size() - 1);   // removes existing doubling cube icon from previous owner
+                    } else if(doublingCubePossession == 1) {
+                        playerTwo.getChildren().remove(playerOne.getChildren().size() - 1);
                     }
-                    doublingCubePossession = (currentTurn.getValue()+1)%2;   // player who accepted the double is the new owner of the cube
+                    doublingCubePossession = (currentTurn.getValue() + 1) % 2;   // player who accepted the double is the new owner of the cube
                     gameInfo.appendText("\nBack to " + players[currentTurn.getValue()].getPlayerName() + ", type /roll to roll");
                 } else {
                     gameInfo.appendText("\n" + pCommands.getText());
@@ -284,7 +284,7 @@ public class Controller {
                 pCommands.setText("");
                 break;
             case "no":
-                if (doubleResponseRequired) {
+                if(doubleResponseRequired) {
                     gameInfo.appendText("\n" + players[(currentTurn.getValue() + 1) % 2].getPlayerName() + " has denied the double, and therefore forfeited the match.");
                     endGame(players[currentTurn.getValue()], players[(currentTurn.getValue() + 1) % 2]);
                 } else {
@@ -309,7 +309,7 @@ public class Controller {
                 pCommands.setText("");
                 break;
             case "/listmove": // Using the generated list of moves to move as required by the assignment
-                if (Board.currentMoves < Board.maxMoves) {
+                if(Board.currentMoves < Board.maxMoves) {
                     String[] splot = inputString.split(" ");
                     String moveL = null;
                     try {
@@ -322,12 +322,12 @@ public class Controller {
                     // Gets the index for taking the move from the arrayList
                     //int c = ((moveL.charAt(length - 1)) - 'a') + (26 * (length -1));
                     int c = (length == 1) ? (moveL.charAt(0) - 'a') : ((moveL.charAt(1) - 'a') + (26 * (moveL.charAt(0) - 'a' + 1)));
-                    if (c < moveList.size() && c >= 0) {
+                    if(c < moveList.size() && c >= 0) {
                         MoveCombo mc = moveList.get(c);
                         for (int i = 0; i < mc.numMovesPerCombo; i++) {
                             Move move = mc.moves[i];
                             gameInfo.appendText("\n" + move);
-                            System.out.println(move.orgStrip+" d " +move.destStrip );
+                            System.out.println(move.orgStrip + " d " + move.destStrip);
                             Board.makeMove(move, 1);
                         }
 
@@ -342,19 +342,24 @@ public class Controller {
                 } else {
                     gameInfo.appendText("\nYou cannot move again, please type /next to allow the next player to move");
                 }
+                int x = Board.currentTurn.getValue();
+                if(Main.players[x].getPiecesLeft() == 0) { // Ends the game if the player bore off their last piece
+                    int y = x == 0 ? 1 : 0;
+                    endGame(Main.players[x], Main.players[y]);
+                }
                 pCommands.setText("");
                 break;
             case "/print": // Printing the moves
-                if (hasRolled && gameStart)
+                if(hasRolled && gameStart)
                     printMoves();
                 else {
                     gameInfo.appendText("\nYou must roll before printing the list of moves");
                 }
                 break;
             case "/win": // Test to end game quick, current turn player wins.
-                int x = Board.currentTurn.getValue();
-                int y = x == 0 ? 1 : 0;
-                endGame(players[x], players[y]);
+                int curr = Board.currentTurn.getValue();
+                int other = curr == 0 ? 1 : 0;
+                endGame(players[curr], players[other]);
                 break;
             default:
                 gameInfo.appendText("\n" + pCommands.getText());
@@ -376,10 +381,10 @@ public class Controller {
     public void click(MouseEvent event) {
         VBox box = (VBox) event.getSource();
         Strip strip = Board.getStrip(box);
-        if (strip == null)
+        if(strip == null)
             return;
-        if (strip.quantity == 0) {
-            if (box.getChildren().size() > 0)
+        if(strip.quantity == 0) {
+            if(box.getChildren().size() > 0)
                 return;
             Text txt = new Text("No pieces\nleft in\nthis strip");
             box.setStyle("-fx-background-color: red;-fx-opacity: .5");
@@ -395,10 +400,10 @@ public class Controller {
     }
 
     private void doubleStakes() {
-        if (doubleBox.getChildren().isEmpty()) {
+        if(doubleBox.getChildren().isEmpty()) {
             doubleBox.getChildren().add(new DoublingCube().imgView);
             currentDoublingCube = 2;
-        } else if (currentDoublingCube < 64) {
+        } else if(currentDoublingCube < 64) {
             doubleBox.getChildren().remove(0);
             currentDoublingCube *= 2;
             doubleBox.getChildren().add(new DoublingCube(currentDoublingCube).imgView);
@@ -406,7 +411,7 @@ public class Controller {
             System.out.println("Can't double anymore");
             //doubleBox.getChildren().remove(0);       //I'm assuming we're limiting ourselves to what fits on a normal die
         }                                              //and not letting the players keep doubling as much as they want,
-                                                       //so that final remove() is only temporary, for demonstration purposes
+        //so that final remove() is only temporary, for demonstration purposes
 
     }
 
@@ -417,7 +422,7 @@ public class Controller {
     private void test(Color color) {
         Piece testPiece = new Piece(color);
         int x = 0, y = 23, z = 1;
-        if (color == Color.WHITE) {
+        if(color == Color.WHITE) {
             x = 23;
             y = 0;
             z = -1;
@@ -471,21 +476,21 @@ public class Controller {
 
             for (int i = 0; i < 7; i++) {
                 try {
-                    if (i == 0 && !diceBox.getChildren().isEmpty())                           // if they're already there removes existing dice
+                    if(i == 0 && !diceBox.getChildren().isEmpty())                           // if they're already there removes existing dice
                         Platform.runLater(() -> diceBox.getChildren().remove(0, diceBox.getChildren().size()));
                     int finalI = i;   //Without this you get the error "Variable used in lambda expression should be final or effectively final"
                     //Before this was avoided by using a forEach loop, but can't really do that now with two dice arrays involved
                     Platform.runLater(() -> diceBox.getChildren().add(dice1s[finalI].imgView));
                     Platform.runLater(() -> diceBox.getChildren().add(dice2s[finalI].imgView));
                     Thread.sleep(150 + (40 * i));   // pauses for a longer amount of time after each change
-                    if (i != dice1s.length - 1)
+                    if(i != dice1s.length - 1)
                         Platform.runLater(() -> diceBox.getChildren().remove(0, 2)); // doesn't remove the final result
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
             }
 
-            if (dice1s[6].number == dice2s[6].number) {             //when it's doubles it shows two extra copies of the number
+            if(dice1s[6].number == dice2s[6].number) {             //when it's doubles it shows two extra copies of the number
                 DiceFace extra1 = new DiceFace(dice1s[6].number);
                 DiceFace extra2 = new DiceFace(dice2s[6].number);   //necessary because can't add duplicate imgViews
                 Platform.runLater(() -> diceBox.getChildren().addAll(extra1.imgView, extra2.imgView));
@@ -496,26 +501,20 @@ public class Controller {
     }
 
     //Printing the valid moves
-    private ArrayList<MoveCombo> printMoves() throws IOException {
-        int x = Board.currentTurn.getValue();
-        if (Main.players[x].getPiecesLeft() == 0) { // Ends the game if the player bore off their last piece
-            int y = x == 0 ? 1 : 0;
-            endGame(Main.players[x], Main.players[y]);
-            return null;
-        }
+    private ArrayList<MoveCombo> printMoves() {
         ArrayList<MoveCombo> validMoveCombos = findAllValidCombos();
         // System.out.println("\n\nJust to double-check; \n - currentTurn: " + Board.currentTurn.toString() + ".\n - Found valid moves for: " + validMoves.get(0).color);
         System.out.println("\n-------- List Start --------");
         int i = 0;
         gameInfo.appendText("\n\nPossible Plays:\n--------------------");
 
-        if(validMoveCombos.size() == 1){ // If there is only 1 move, force the move and go to the next turn.
+        if(validMoveCombos.size() == 1) { // If there is only 1 move, force the move and go to the next turn.
             gameInfo.appendText("\nThere was only 1 valid move, playing move.\n");
             int comboSize = validMoveCombos.get(0).numMovesPerCombo;
-            for(int k = 0;k < comboSize;k++){ // Print and perform the individual moves in the combo
+            for (int k = 0; k < comboSize; k++) { // Print and perform the individual moves in the combo
                 Move move = validMoveCombos.get(0).moves[i];
-                gameInfo.appendText(validMoveCombos.get(0).moves[i].isHitToString()  + " ");
-                makeMove(move,1);
+                gameInfo.appendText(validMoveCombos.get(0).moves[i].isHitToString() + " ");
+                makeMove(move, 1);
             }
             gameInfo.appendText("\nChanging control to the next player\n");
             Player player = players[0].getColor() == Board.currentTurn ? players[0] : players[1];
@@ -523,8 +522,7 @@ public class Controller {
             Board.nextTurn();
             hasRolled = false;
             return null;
-        }
-        else if (validMoveCombos.size() > 1) {
+        } else if(validMoveCombos.size() > 1) {
             for (MoveCombo mc : validMoveCombos) {
                 String letterCode = (i < 26) ? Character.toString('A' + i) : Character.toString('A' + (i / 26) - 1) + Character.toString('A' + i % 26);
                 System.out.print(letterCode + ":  ");
@@ -553,24 +551,24 @@ public class Controller {
         int gameValue = 0;
 
         int b = loser.getColor() == Color.WHITE ? 0 : -23;
-        if (Board.BearOff.piecesIn(loser.getColor()) > 0)
+        if(Board.BearOff.piecesIn(loser.getColor()) > 0)
             gameValue = 1;
         else {
             int count = 0;
             for (int i = 0; i < 18; i++) {
-                if (Board.getStrip(Math.abs(i + b)).pieceColor == loser.getColor()) {
+                if(Board.getStrip(Math.abs(i + b)).pieceColor == loser.getColor()) {
                     count += Board.getStrip(Math.abs(i + b)).quantity;
                 }
             }
-            if (count == 15)
+            if(count == 15)
                 gameValue = 2;
             else {
-                if (Board.Bar.piecesIn(loser.getColor()) > 0) {
+                if(Board.Bar.piecesIn(loser.getColor()) > 0) {
                     gameValue = 3;
                 } else {
                     for (int i = 18; i < 24; i++) {
                         Color stripColor = Board.getStrip(Math.abs(i + b)).pieceColor;
-                        if (stripColor == loser.getColor()) {
+                        if(stripColor == loser.getColor()) {
                             gameValue = 3;
                             break;
                         }
@@ -580,7 +578,7 @@ public class Controller {
         }
         winner.setScore(winner.getScore() + gameValue * cubeValue);
         gameInfo.setText("");
-        if(winner.getScore() >= Player.upto){
+        if(winner.getScore() >= Player.upto) {
             endMatch(winner, loser);
             return;
         }
@@ -606,7 +604,7 @@ public class Controller {
     }
 
     public void keyPress(KeyEvent keyEvent) throws IOException {
-        if (pCommands.isDisabled()) {
+        if(pCommands.isDisabled()) {
             Scene scene = new Scene(FXMLLoader.load(getClass().getResource("board.fxml")), 1000, 715);
             scene.getStylesheets().addAll(this.getClass().getResource("application.css").toExternalForm());
             Main.window.setScene(scene);
