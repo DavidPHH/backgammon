@@ -591,6 +591,8 @@ public class Controller {
         infoButton.requestFocus(); // This removes focus from pCommands/anything else so that keyPress can work
         playerOne.getChildren().set(0, new Text(players[0].getPlayerName() + "\nScore: " + players[0].getScore()));
         playerTwo.getChildren().set(0, new Text(players[1].getPlayerName() + "\nScore: " + players[1].getScore()));
+        winner.reset(); // Resets the player's piece values
+        loser.reset();
         crawfordRuleActive = (Player.upto - winner.getScore() == 1); //after being activated once, even if that same player is still 1 away from
         //the agreed match score, that player will never be both the winner and 1 away from the score again, so it will correctly never be activated again
 
