@@ -512,11 +512,11 @@ public class Controller {
         gameInfo.appendText("\n\nPossible Plays:\n--------------------");
 
         if(validMoveCombos.size() == 1) { // If there is only 1 move, force the move and go to the next turn.
-            gameInfo.appendText("\nThere was only 1 valid move, playing move.\n");
+            gameInfo.appendText("\nThere was only 1 valid play, so it has been made for you.\n");
             int comboSize = validMoveCombos.get(0).numMovesPerCombo;
             for (int k = 0; k < comboSize; k++) { // Print and perform the individual moves in the combo
-                Move move = validMoveCombos.get(0).moves[i];
-                gameInfo.appendText(validMoveCombos.get(0).moves[i].isHitToString() + " ");
+                Move move = validMoveCombos.get(0).moves[k];
+                gameInfo.appendText(validMoveCombos.get(0).moves[k].isHitToString() + " ");
                 makeMove(move, 1);
             }
             gameInfo.appendText("\nChanging control to the next player\n");

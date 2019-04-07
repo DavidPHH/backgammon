@@ -1011,9 +1011,9 @@ class Classes {
                 white[i] = new Piece(Color.WHITE);
             }
 
-            stripArray[0].insert(black, 0, 1);
+            stripArray[18].insert(black, 0, 1);
             BearOff.insert(black, 2, 14);
-            stripArray[23].insert(white,0,1);
+            stripArray[7].insert(white,0,1);
             BearOff.insert(white, 2, 14);
 
             Main.players[0].setPiecesLeft(2);
