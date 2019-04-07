@@ -316,7 +316,7 @@ public class Controller {
                     try {
                         moveL = splot[1];
                     } catch (Exception ex) {
-                        gameInfo.appendText("Expected syntax: /listmove letter");
+                        gameInfo.appendText("\nExpected syntax: /listmove letter");
                     }
 
                     int length = moveL.length();

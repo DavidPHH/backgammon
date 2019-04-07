@@ -683,15 +683,20 @@ class Classes {
                         move2.destStrip = i + die.getDice2();
                 }
 
-                if(validMove(move1,-1)){
-                    boardMoves.add(move1);
-                }
-                if(validMove(move2,-1)){
-                    boardMoves.add(move2);
+                if(maxMoves == 2){
+                    if(validMove(move1,-1)){
+                        boardMoves.add(move1);
+                    }
+                    if(validMove(move2,-1)){
+                        boardMoves.add(move2);
+                    }
+                }else if(maxMoves == 4){ // If the player rolled doubles, then both dice will find the exact same move.
+                    if(validMove(move1,-1))
+                        boardMoves.add(move1);
                 }
             }
 
-            /*for(int i = 0;i < boardMoves.size();i++){
+           /* for(int i = 0;i < boardMoves.size();i++){
                 System.out.println("move " + boardMoves.get(i).isHitToString());
             }*/
 
@@ -856,11 +861,11 @@ class Classes {
 
                                         if((firstDiff + secondDiff == Board.die.getDice1() + Board.die.getDice2())) {
                                             allCombos.add(new MoveCombo(2, firstMove, secondMove));
-                                        } else {
-                                            System.out.println(firstDiff + " and " + secondDiff + " were " + (firstDiff + secondDiff) + " not " + (Board.die.getDice1() + Board.die.getDice2()));
+                                        }/* else {
+                                            //System.out.println(firstDiff + " and " + secondDiff + " were " + (firstDiff + secondDiff) + " not " + (Board.die.getDice1() + Board.die.getDice2()));
                                             //System.out.println("firstMove " + firstMove + " has orgStrip " + firstMove.orgStrip + " and destStrip " + firstMove.destStrip);
                                             //System.out.println("secondMove " + secondMove + " has orgStrip " + secondMove.orgStrip + " and destStrip " + secondMove.destStrip);
-                                        }
+                                        }*/
                                     }
                                 }
                             }
@@ -869,6 +874,7 @@ class Classes {
                 }
 
             } else if(maxMoves == 4) { // Doubles
+                int largestComboSize = 0;
                 for (Move firstMove : allMoves) {
                     copyAllMoves = new ArrayList<>(allMoves);
                     if(firstMove.destStrip == -2) {
@@ -891,9 +897,8 @@ class Classes {
                             for (Move secondMove : copyAllMoves) {
                                 ArrayList<Move> copyAllMoves2 = new ArrayList<>(copyAllMoves);
                                 if(secondMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 2) {
-                                    allCombos.add(new MoveCombo(2, firstMove, secondMove));
-
                                     if((secondMove.orgStrip != -1 || Bar.piecesIn(currentTurn) < 2) && secondMove.destStrip > -1 && stripArray[secondMove.destStrip].pieceColor != currentTurn && valid(new Move(currentTurn == Color.WHITE ? secondMove.destStrip : 23 - secondMove.destStrip, currentTurn == Color.WHITE ? secondMove.destStrip - Board.die.getDice1() : (23 - secondMove.destStrip - Board.die.getDice1()), currentTurn), false, true)) {
+                                        largestComboSize = 2;
                                         copyAllMoves2.add(new Move(currentTurn == Color.WHITE ? secondMove.destStrip : 23 - secondMove.destStrip, currentTurn == Color.WHITE ? secondMove.destStrip - Board.die.getDice1() : (23 - secondMove.destStrip - Board.die.getDice1()), currentTurn));
                                     }  //Don't need to check again for dice2 since they're the same number
 
@@ -901,11 +906,14 @@ class Classes {
                                         copyAllMoves2.removeIf(m -> m.orgStrip == secondMove.orgStrip);
                                     }
 
+                                    allCombos.add(new MoveCombo(2, firstMove, secondMove));
+
                                     if(maxMoves - currentMoves >= 3){ // Ensures that a combo greater than 2 can be made
                                         for (Move thirdMove : copyAllMoves2) {
                                             ArrayList<Move> copyAllMoves3 = new ArrayList<>(copyAllMoves2);
                                             if(thirdMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 3) {
                                                 if((thirdMove.orgStrip != -1 || Bar.piecesIn(currentTurn) < 2) && thirdMove.destStrip > -1 && stripArray[thirdMove.destStrip].pieceColor != currentTurn && valid(new Move(currentTurn == Color.WHITE ? thirdMove.destStrip : 23 - thirdMove.destStrip, currentTurn == Color.WHITE ? thirdMove.destStrip - Board.die.getDice1() : (23 - thirdMove.destStrip - Board.die.getDice1()), currentTurn), false, true)) {
+                                                    largestComboSize = 3;
                                                     copyAllMoves3.add(new Move(currentTurn == Color.WHITE ? thirdMove.destStrip : 23 - thirdMove.destStrip, currentTurn == Color.WHITE ? thirdMove.destStrip - Board.die.getDice1() : (23 - thirdMove.destStrip - Board.die.getDice1()), currentTurn));
                                                 }  //Don't need to check again for dice2 since they're the same number
 
@@ -913,17 +921,24 @@ class Classes {
                                                     copyAllMoves3.removeIf(m -> m.orgStrip == thirdMove.orgStrip);
                                                 }
 
-                                                allCombos.add(new MoveCombo(3, firstMove, secondMove, thirdMove));
-
                                                 if(maxMoves - currentMoves == 4){ // Ensures that a combo = 4 can be made
                                                     for (Move fourthMove : copyAllMoves3) {
                                                         if(fourthMove.orgStrip == -1 || Bar.piecesIn(currentTurn) < 4) {
+                                                            largestComboSize = 4;
                                                             allCombos.add(new MoveCombo(4, firstMove, secondMove, thirdMove, fourthMove));
                                                         }
                                                     }
                                                 }
+
+                                                if(largestComboSize == 3){ // Only adds a combo of size 3 if a combo of size 4 wasn't found. Attempt to lower the number of insert operations
+                                                    allCombos.add(new MoveCombo(3, firstMove, secondMove, thirdMove));
+                                                }
                                             }
                                         }
+                                    }
+
+                                    if(largestComboSize == 2){ // Only inserts a combo of size 2 if no greater combo size has been found
+                                        allCombos.add(new MoveCombo(2,firstMove,secondMove));
                                     }
                                 }
                             }
@@ -932,6 +947,11 @@ class Classes {
                 }
 
             }
+            /*
+             * Segment to filter out all the combos that are less then the size of the largest combo
+             * Then function call to remove all the duplicate combos (combos that lead to the exact same outcome, but perhaps in a different order i.e. 22-18, 14-12 and 14-12,22-18
+             * Then a check to ensure that in the case of a single move is available, that the move uses the highest dice found.
+             */
             int max =0 ;
             for(MoveCombo mc: allCombos){
                 if(mc.numMovesPerCombo > max){
@@ -939,10 +959,8 @@ class Classes {
                 }
             }
             int finalMax = max;
-            allCombos.removeIf(m -> m.numMovesPerCombo< finalMax);  //will uncomment when it first properly finds bar-moves as part of multi-move plays
-                                                                      //because at the moment bar-moves are only found in plays shorter than the largest plays
-                                                // Update: Needed to uncomment to use removeDuplicateCombos, which expects all combos to be of the same length
-                                                // if you need to comment out this, make sure to also comment out that temporarily
+            allCombos.removeIf(m -> m.numMovesPerCombo< finalMax);
+
             removeDuplicateCombos(allCombos);
 
             if(max == 1 && Board.die.getDice1() != Board.die.getDice2()){   // if only one-move long plays are found, the ones that use the bigger dice number must be used if possible,
@@ -1011,9 +1029,9 @@ class Classes {
                 white[i] = new Piece(Color.WHITE);
             }
 
-            stripArray[18].insert(black, 0, 1);
+            stripArray[0].insert(black, 0, 1);
             BearOff.insert(black, 2, 14);
-            stripArray[7].insert(white,0,1);
+            stripArray[23].insert(white,0,1);
             BearOff.insert(white, 2, 14);
 
             Main.players[0].setPiecesLeft(2);
@@ -1135,8 +1153,6 @@ class MoveCombo {
                 otherMoves.put(mc.moves[i], 1);
             }
         }
-        //System.out.println(theseMoves);
-        //System.out.println(otherMoves);
 
         return theseMoves.equals(otherMoves);
     }
@@ -1339,7 +1355,6 @@ class Dice {
                 Classes.Board.currentTurn = players[0].getColor();
             } else if(dice2 > dice1) {
                 Classes.Board.currentTurn = players[1].getColor();
-                //System.out.println(players[1].getColor());
             }
         } while (dice1 == dice2);
 
