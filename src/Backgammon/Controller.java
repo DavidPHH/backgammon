@@ -71,7 +71,6 @@ public class Controller {
     private Boolean doubleResponseRequired;
     private int currentDoublingCube = 1;    //why here as well as in intitialize?
     private int doublingCubePossession;
-    private boolean crawfordRuleActive = false; //given value here so that it doesn't get reset to false when a new game begins with initialize
     private boolean deadCube;
 
     public void initialize() {
@@ -589,13 +588,14 @@ public class Controller {
         playerTwo.getChildren().set(0, new Text(players[1].getPlayerName() + "\nScore: " + players[1].getScore()));
         winner.reset(); // Resets the player's piece values
         loser.reset();
-        crawfordRuleActive = (Player.upto - winner.getScore() == 1); //after being activated once, even if that same player is still 1 away from
-        //the agreed match score, that player will never be both the winner and 1 away from the score again, so it will correctly never be activated again
+        crawfordRuleActive = (Player.upto - winner.getScore() == 1); // after being activated once, even if that same player is still 1 away from
+          // the agreed match score, that player will never be both the winner and 1 away from the score again, so it will correctly never be activated again
 
     }
 
     private void endMatch(Player winner, Player loser) throws IOException {
 
+        crawfordRuleActive = false;
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("winscreen.fxml"));
         Parent root = loader.load();

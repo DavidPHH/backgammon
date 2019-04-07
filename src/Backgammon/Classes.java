@@ -26,6 +26,8 @@ class Classes {
         static Dice die;
         static int currentMoves;
         static int maxMoves;
+        static boolean crawfordRuleActive = false; //given value here so that it doesn't get reset to false when a new game resets the scene
+
 
         static void setInitialPos(GridPane[] p, VBox[] bar, VBox[] bearOff, GridPane bfxml) {
             // Resets things in case this is being called for a new game
