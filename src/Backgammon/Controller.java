@@ -346,9 +346,9 @@ public class Controller {
                     gameInfo.appendText("\nYou must roll before moving");
                 }
                 int x = Board.currentTurn.getValue();
-                if(Main.players[x].getPiecesLeft() == 0) { // Ends the game if the player bore off their last piece
-                    int y = x == 0 ? 1 : 0;
-                    endGame(Main.players[x], Main.players[y]);
+                int y = x == 0 ? 1 : 0;
+                if(Main.players[y].getPiecesLeft() == 0) { // Ends the game if the player bore off their last piece
+                    endGame(Main.players[y], Main.players[x]);
                 }
                 pCommands.setText("");
                 break;
@@ -588,7 +588,7 @@ public class Controller {
         gameInfo.appendText("\nGame over, " + winner.getPlayerName() + " wins this round. \n" +
                 "Press any key to continue");
         pCommands.setDisable(true);
-        infoButton.requestFocus(); // This removes focus from pCommands/anything else so that keyPress can work
+        paneId.requestFocus(); // This removes focus from pCommands/anything else so that keyPress can work
         playerOne.getChildren().set(0, new Text(players[0].getPlayerName() + "\nScore: " + players[0].getScore()));
         playerTwo.getChildren().set(0, new Text(players[1].getPlayerName() + "\nScore: " + players[1].getScore()));
         crawfordRuleActive = (Player.upto - winner.getScore() == 1); //after being activated once, even if that same player is still 1 away from
