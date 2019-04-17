@@ -21,3 +21,35 @@ Theoretical scores: Give a co-efficient to each move, then add them all up to gi
 Standardise the score: 
 Make it so that each type of move(s) will have a max and min range of scores.
 Make it easier to give a probability of winning.
+
+------------------------------------------------------------------------------------------------
+Choose coefficients for PipDiff, BlotDiff, BlockDiff, and BearOffDiff
+(c = coefficient)
+score = (cPip * PipDiff) + (cBlot * BlotDiff) + (cBlock * BlockDiff) + (cBear * BearOffDiff)
+
+
+relativePipDiff(Board, me, opponent){ 
+	Pipsme - PipsOpponent / Pipsme + PipsOpponent
+
+	return 0 to 100 score
+}
+
+diffOfBlots(Board, me, opponent){
+	Blotsme - BlotspOpponent
+	
+	return 0 to 100 score	
+}
+
+diffOfBlocks(Board, me, opponent){
+	Blocksme - BlocksOpponent	
+	
+	return 0 to 100 score
+}
+
+diffOffBearOFf(Board, me, opponent){
+
+}
+
+willDouble(){
+
+}
