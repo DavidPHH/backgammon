@@ -28,7 +28,6 @@ public class enragedGophers implements BotAPI {
 
     public String getCommand(Plays possiblePlays) {
         // Add your code here
-        //System.out.println(diffOfBlots());
         if(match.canDouble((Player) me) && (cube.isOwned() || cube.getValue() == 1)){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
@@ -50,10 +49,11 @@ public class enragedGophers implements BotAPI {
     public double diffOfBlots(){
         int myBlots =0, opponentsBlots = 0;
 
-        for (int i = 0; i < 24; i++) {
+        for (int i = 1; i < 25; i++) {
             if(board.getNumCheckers(me.getId(), i) == 1){
                 myBlots++;
-            }else if(board.getNumCheckers(opponent.getId(), i) == 1){
+            }
+            if(board.getNumCheckers(opponent.getId(), i) == 1){
                 opponentsBlots++;
             }
         }
