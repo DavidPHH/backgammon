@@ -32,6 +32,13 @@ public class enragedGophers implements BotAPI {
         return "1";
     }
 
+    // getScore function that will calculate the score of a board state.
+    public double getScore(){
+        // TODO Add all the score functions to be called here and return the resulting score
+
+        return 0;
+    }
+
     public double diffOfBlots(){
         int myBlots =0, opponentsBlots = 0;
 
