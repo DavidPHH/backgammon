@@ -29,9 +29,12 @@ public class enragedGophers implements BotAPI {
     public String getCommand(Plays possiblePlays) {
         // Add your code here
         //System.out.println(diffOfBlots());
-        if(cube.isOwned() || cube.getValue() == 1) // Checks to see if the bot has access to double
-            if(getProbability(board) >= 66)
+        if(match.canDouble((Player) me) && (cube.isOwned() || cube.getValue() == 1)){ // Checks to see if the bot has access to double
+            if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
+            else if(getProbability(board) >= 66) // If there is a greater than 66% chance of winning, double
+                return "double";
+        }
 
         // TODO Add function that gets all the scores to a corresponding play. Then return that play. Need to be able to pass in temporary board state.
         return "1";
@@ -82,7 +85,7 @@ public class enragedGophers implements BotAPI {
             else
                 return "n";
         }else{
-            if(getProbability(board)  > 25)
+            if(getProbability(board)  > 25) // If bot has greater than 25% chance of winning, then allow the opposition to double.
                 return "y";
         }
         return "n";
