@@ -74,6 +74,17 @@ public class enragedGophers implements BotAPI {
 
     public String getDoubleDecision() {
         // Add your code here
+        if(me.getScore() == match.getLength() - 1){ // Post Crawford rule, the opponent should in theory be doubling, this bot should always accept it.
+            return "y";
+        }else if(me.getScore() == match.getLength() - 2 && opponent.getScore() == match.getLength() - 2){ // If both players are 2 points away, different risk assessment then usual
+            if(getScore() > 25)
+                return "y";
+            else
+                return "n";
+        }else{
+            if(getScore()  > 25)
+                return "y";
+        }
         return "n";
     }
 }
