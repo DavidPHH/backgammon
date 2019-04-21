@@ -30,15 +30,15 @@ public class enragedGophers implements BotAPI {
         // Add your code here
         //System.out.println(diffOfBlots());
         if(cube.isOwned() || cube.getValue() == 1) // Checks to see if the bot has access to double
-            if(getProbability() >= 66)
+            if(getProbability(board) >= 66)
                 return "double";
 
-        // TODO Add function that gets all the scores to a corresponding play. Then return that play.
+        // TODO Add function that gets all the scores to a corresponding play. Then return that play. Need to be able to pass in temporary board state.
         return "1";
     }
 
     // getScore function that will calculate the score of a board state.
-    public double getProbability(){
+    public double getProbability(BoardAPI board){
         // TODO Add all the score functions to be called here and return the resulting score
 
         return 0;
@@ -77,12 +77,12 @@ public class enragedGophers implements BotAPI {
         if(me.getScore() == match.getLength() - 1){ // Post Crawford rule, the opponent should in theory be doubling, this bot should always accept it.
             return "y";
         }else if(me.getScore() == match.getLength() - 2 && opponent.getScore() == match.getLength() - 2){ // If both players are 2 points away, different risk assessment then usual
-            if(getProbability() > 25)
+            if(getProbability(board) > 25)
                 return "y";
             else
                 return "n";
         }else{
-            if(getProbability()  > 25)
+            if(getProbability(board)  > 25)
                 return "y";
         }
         return "n";
