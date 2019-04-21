@@ -29,6 +29,11 @@ public class enragedGophers implements BotAPI {
     public String getCommand(Plays possiblePlays) {
         // Add your code here
         //System.out.println(diffOfBlots());
+        if(cube.isOwned() || cube.getValue() == 1) // Checks to see if the bot has access to double
+            if(getScore() >= 66)
+                return "double";
+
+        // TODO Add function that gets all the scores to a corresponding play. Then return that play.
         return "1";
     }
 
