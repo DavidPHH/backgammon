@@ -39,9 +39,9 @@ public class enragedGophers implements BotAPI {
         double probability = 0;
         int indexOfPlay = 0;
         for(int i = 0;i < possiblePlays.number();i++){
-            for(int j = 0;j < possiblePlays.get(j).numberOfMoves();j++){ // Perform the play on the temp board.
-                tempBoard[me.getId()][possiblePlays.get(j).getMove(j).getFromPip()]--;
-                tempBoard[me.getId()][possiblePlays.get(j).getMove(j).getToPip()]++;
+            for(int j = 0;j < possiblePlays.get(i).numberOfMoves();j++){ // Perform the play on the temp board.
+                tempBoard[me.getId()][possiblePlays.get(i).getMove(j).getFromPip()]--;
+                tempBoard[me.getId()][possiblePlays.get(i).getMove(j).getToPip()]++;
             }
 
             double tempScore = getProbability(tempBoard);
@@ -59,10 +59,10 @@ public class enragedGophers implements BotAPI {
         // TODO Add all the score functions to be called here and return the resulting score
         double diffHomeBoard = diffInHomeBoard(board);
 
-        return 0;
+        return 0.35*diffOfBlocks() + 0.35*diffOfBlots() + 0.3*diffHomeBoard;
     }
 
-    public double diffOfBlots(){
+    private double diffOfBlots(){
         int myBlots =0, opponentsBlots = 0;
 
         for (int i = 1; i < 25; i++) {
@@ -91,7 +91,7 @@ public class enragedGophers implements BotAPI {
         return score;
     }
 
-    public double diffOfBlocks(){
+    private double diffOfBlocks(){
         int myBlocks =0, opponentsBlocks = 0;
 
         for (int i = 1; i < 25; i++) {
@@ -134,7 +134,7 @@ public class enragedGophers implements BotAPI {
            Max score range is +/- 15. ( All pieces in one home board, none for the other player).
            Multiply by 10/3 then add 50 to create a normalised range from 0-100.
         */
-        return ((pipsInMyHomeBoard - pipsInOpponentsHomeBoard)*(10/3)) + 50;
+        return ((pipsInMyHomeBoard - pipsInOpponentsHomeBoard)*(10/3.0)) + 50;
     }
 
     public String getDoubleDecision() {

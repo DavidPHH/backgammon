@@ -9,7 +9,7 @@ public class Backgammon {
 
     public static final int NUM_PLAYERS = 2;
     public static final boolean CHEAT_ALLOWED = false;
-    private static final int DELAY = 1000;  // in milliseconds
+    private static final int DELAY = 10;  // in milliseconds
     private static final String[] ALL_BOT_NAMES = {"enragedGophers","Bot1"};
 
     private final Cube cube = new Cube();
@@ -42,7 +42,7 @@ public class Backgammon {
             }
         }
         if (args.length < NUM_PLAYERS + 1) {
-            match.setLength(3);
+            match.setLength(9);
         } else {
             match.setLength(Integer.parseInt(args[2]));
         }
