@@ -137,6 +137,24 @@ public class enragedGophers implements BotAPI {
         return ((pipsInMyHomeBoard - pipsInOpponentsHomeBoard)*(10/3.0)) + 50;
     }
 
+    private int countPips(int[][] board, int id){
+        int count = 0;
+        for (int i = 24; i > 0; i--) {
+            count += board[id][i] * i;
+        }
+        return count;
+    }
+    private double relativePipDiff(int[][] board){
+        int myPips = countPips(board, me.getId());
+        int oppPips = countPips(board, opponent.getId());
+
+        int min = -167;
+        int max = 167;
+        double score = (oppPips - myPips);
+        score = (score - min) / (max - min); // Normalizes the score
+        return score * 100;
+    }
+
     public String getDoubleDecision() {
         // Add your code here
         if(me.getScore() == match.getLength() - 1){ // Post Crawford rule, the opponent should in theory be doubling, this bot should always accept it.
