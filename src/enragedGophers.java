@@ -35,7 +35,7 @@ public class enragedGophers implements BotAPI {
                 return "double";
         }
 
-        int tempBoard[][] = board.get();
+        int[][] tempBoard = board.get();
         double probability = 0;
         int indexOfPlay = 0;
         for(int i = 0;i < possiblePlays.number();i++){
@@ -129,11 +129,11 @@ public class enragedGophers implements BotAPI {
     private double diffInHomeBoard(int[][] board){
         int pipsInMyHomeBoard = 0, pipsInOpponentsHomeBoard = 0;
 
-        for(int i = 0;i <= 6;i++){ // Get all the pieces in my home board.
+        for(int i = 1;i <= 6;i++){ // Get all the pieces in my home board.
             pipsInMyHomeBoard += board[me.getId()][i];
         }
 
-        for(int i = 0;i <= 6;i++){ // Get all the pieces in the opponents home board.
+        for(int i = 1;i <= 6;i++){ // Get all the pieces in the opponents home board.
             pipsInOpponentsHomeBoard += board[opponent.getId()][i];
         }
 
