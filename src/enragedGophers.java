@@ -32,16 +32,31 @@ public class enragedGophers implements BotAPI {
         if(match.canDouble((Player) me) && (cube.isOwned() || cube.getValue() == 1)){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
-            else if(getProbability(board) >= 66) // If there is a greater than 66% chance of winning, double
+            else if(getProbability(board.get()) >= 66) // If there is a greater than 66% chance of winning, double
                 return "double";
         }
 
-        // TODO Add function that gets all the scores to a corresponding play. Then return that play. Need to be able to pass in temporary board state.
-        return "1";
+        int tempBoard[][] = board.get();
+        double probability = 0;
+        int indexOfPlay = 0;
+        for(int i = 0;i < possiblePlays.number();i++){
+            for(int j = 0;j < possiblePlays.get(j).numberOfMoves();j++){ // Perform the play on the temp board.
+                tempBoard[me.getId()][possiblePlays.get(j).getMove(j).getFromPip()]--;
+                tempBoard[me.getId()][possiblePlays.get(j).getMove(j).getToPip()]++;
+            }
+
+            double tempScore = getProbability(tempBoard);
+            if(tempScore > probability){
+                probability = tempScore;
+            }
+            tempBoard = board.get();
+            indexOfPlay = i;
+        }
+        return Integer.toString(indexOfPlay+1); // Plays are listed starting from 1. So index 0 will be play 1.
     }
 
     // getScore function that will calculate the score of a board state.
-    public double getProbability(BoardAPI board){
+    public double getProbability(int[][] board){
         // TODO Add all the score functions to be called here and return the resulting score
 
         return 0;
@@ -80,12 +95,12 @@ public class enragedGophers implements BotAPI {
         if(me.getScore() == match.getLength() - 1){ // Post Crawford rule, the opponent should in theory be doubling, this bot should always accept it.
             return "y";
         }else if(me.getScore() == match.getLength() - 2 && opponent.getScore() == match.getLength() - 2){ // If both players are 2 points away, different risk assessment then usual
-            if(getProbability(board) > 25)
+            if(getProbability(board.get()) > 25)
                 return "y";
             else
                 return "n";
         }else{
-            if(getProbability(board)  > 25) // If bot has greater than 25% chance of winning, then allow the opposition to double.
+            if(getProbability(board.get())  > 25) // If bot has greater than 25% chance of winning, then allow the opposition to double.
                 return "y";
         }
         return "n";
