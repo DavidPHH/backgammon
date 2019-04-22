@@ -58,8 +58,15 @@ public class enragedGophers implements BotAPI {
     private double getProbability(int[][] board){
         // TODO Add all the score functions to be called here and return the resulting score
         double diffHomeBoard = diffInHomeBoard(board);
+        double diffPips = relativePipDiff(board);
 
-        return 0.35*diffOfBlocks() + 0.35*diffOfBlots() + 0.3*diffHomeBoard;
+        // Coefficients
+        double cBlocks = 0.35;
+        double cBlots = 0.35;
+        double cHBoard = 0.3;
+        double cPips = 0.3;
+
+        return cBlocks*diffOfBlocks() + cBlots*diffOfBlots() + cHBoard*diffHomeBoard + cPips*diffPips;
     }
 
     private double diffOfBlots(){
