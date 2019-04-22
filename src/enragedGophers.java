@@ -28,7 +28,6 @@ public class enragedGophers implements BotAPI {
 
     public String getCommand(Plays possiblePlays) {
         // Add your code here
-        //System.out.println(diffOfBlots());
         if(match.canDouble((Player) me) && (cube.isOwned() || cube.getValue() == 1)){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
@@ -65,10 +64,11 @@ public class enragedGophers implements BotAPI {
     public double diffOfBlots(){
         int myBlots =0, opponentsBlots = 0;
 
-        for (int i = 0; i < 24; i++) {
+        for (int i = 1; i < 25; i++) {
             if(board.getNumCheckers(me.getId(), i) == 1){
                 myBlots++;
-            }else if(board.getNumCheckers(opponent.getId(), i) == 1){
+            }
+            if(board.getNumCheckers(opponent.getId(), i) == 1){
                 opponentsBlots++;
             }
         }
@@ -86,6 +86,34 @@ public class enragedGophers implements BotAPI {
         // then add 50 to it so it's now 0-100;
 
         score = (10/3.0)*score + 50;
+
+        return score;
+    }
+
+    public double diffOfBlocks(){
+        int myBlocks =0, opponentsBlocks = 0;
+
+        for (int i = 1; i < 25; i++) {
+            if(board.getNumCheckers(me.getId(), i) >= 2){
+                myBlocks++;
+            }
+            if(board.getNumCheckers(opponent.getId(), i) >= 2){
+                opponentsBlocks++;
+            }
+        }
+
+        // opposite of diffOfBlots in that this time the more the better, so subtraction order is reversed
+
+        double score = myBlocks - opponentsBlocks;
+
+        // Now we need to normalise the returned range to 0-100;
+        // in theory, the lowest that score could ever be is -7, when the opponent has the maximum number of blots, 7,
+        // and you have the minimum, 0. Likewise the highest it could ever be is +7 for the reverse scenario.
+
+        // So first we multiply score by 50/7 to stretch that max range of -7 to +7 to a new range of -50 to +50,
+        // then add 50 to it so it's now 0-100;
+
+        score = (50/7.0)*score + 50;
 
         return score;
     }
