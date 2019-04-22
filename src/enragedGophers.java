@@ -55,8 +55,9 @@ public class enragedGophers implements BotAPI {
     }
 
     // getScore function that will calculate the score of a board state.
-    public double getProbability(int[][] board){
+    private double getProbability(int[][] board){
         // TODO Add all the score functions to be called here and return the resulting score
+        double diffHomeBoard = diffInHomeBoard(board);
 
         return 0;
     }
@@ -116,6 +117,24 @@ public class enragedGophers implements BotAPI {
         score = (50/7.0)*score + 50;
 
         return score;
+    }
+
+    private double diffInHomeBoard(int[][] board){
+        int pipsInMyHomeBoard = 0, pipsInOpponentsHomeBoard = 0;
+
+        for(int i = 0;i <= 6;i++){ // Get all the pieces in my home board.
+            pipsInMyHomeBoard += board[me.getId()][i];
+        }
+
+        for(int i = 0;i <= 6;i++){ // Get all the pieces in the opponents home board.
+            pipsInOpponentsHomeBoard += board[opponent.getId()][i];
+        }
+
+        /* Max amount of pieces possible in both home board is 15.
+           Max score range is +/- 15. ( All pieces in one home board, none for the other player).
+           Multiply by 10/3 then add 50 to create a normalised range from 0-100.
+        */
+        return ((pipsInMyHomeBoard - pipsInOpponentsHomeBoard)*(10/3)) + 50;
     }
 
     public String getDoubleDecision() {
