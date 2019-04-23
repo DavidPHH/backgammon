@@ -38,7 +38,14 @@ public class Player implements PlayerAPI {
         return this.color;
     }
 
-    public Dice getDice() { return dice; }
+    public Dice getDice() {
+        return dice;
+    }
+
+    public Dice getDuplicateDice() {
+        Dice duplicateDice = new Dice(dice);
+        return duplicateDice;
+    }
 
     public String toString() {
         return name;

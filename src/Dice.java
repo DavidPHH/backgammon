@@ -13,6 +13,10 @@ class Dice {
         numbers = new int[]{firstValue, secondValue};
     }
 
+    Dice(Dice dice) {
+        this.numbers = new int[]{dice.getDie(0), dice.getDie(1)};
+    }
+
     public void rollDice() {
         for (int i=0; i<NUM_DICE; i++) {
             numbers[i] = 1 + (int) (Math.random() * 6);
@@ -31,7 +35,7 @@ class Dice {
         return "[" + numbers[index] + "]";
     }
 
-   public String toString() {
+    public String toString() {
       return "[" + numbers[0] + "," + numbers[1] + "]";
    }
 

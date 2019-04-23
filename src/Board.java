@@ -78,8 +78,8 @@ public class Board implements BoardAPI {
     }
 
     @Override
-    public int getNumCheckers(int player, int pip) {
-        return checkers[player][pip];
+    public int getNumCheckers(int playerId, int pip) {
+        return checkers[playerId][pip];
     }
 
     private boolean bearOffIsLegal(Player player) {
@@ -209,5 +209,25 @@ public class Board implements BoardAPI {
                 checkers[player][pip] = RESET[pip];
             }
         }
+    }
+
+    public Plays getPossiblePlays(int playerId, Dice dice) {
+        return getPossiblePlays(players.get(playerId),dice);
+    }
+
+    public boolean lastCheckerInInnerBoard(int playerId) {
+        return lastCheckerInInnerBoard(players.get(playerId));
+    }
+
+    public boolean lastCheckerInOpponentsInnerBoard(int playerId) {
+        return lastCheckerInOpponentsInnerBoard(players.get(playerId));
+    }
+
+    public boolean allCheckersOff(int playerId) {
+        return allCheckersOff(players.get(playerId));
+    }
+
+    public boolean hasCheckerOff(int playerId) {
+        return hasCheckerOff(players.get(playerId));
     }
 }
