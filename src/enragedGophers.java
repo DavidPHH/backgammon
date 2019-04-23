@@ -181,6 +181,27 @@ public class enragedGophers implements BotAPI {
         return score * 100;
     }
 
+    private boolean pieceInFrontOfMyFurthest(int[][] board){
+        int indexOfFurthestPiece = 0;
+
+        for(int i = board[me.getId()].length - 1;i >= 0;i--){
+            if(board[me.getId()][i] > 0){
+                indexOfFurthestPiece = i;
+                break;
+            }
+        }
+
+        if(indexOfFurthestPiece != 0){ // Ensures that the furthest piece found wasn't in bear-off. (It should never be)
+            for(int i = board[opponent.getId()].length - 1;i >= indexOfFurthestPiece;i--){
+                if(board[opponent.getId()][i] > 0){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public String getDoubleDecision() {
         // Add your code here
         if(me.getScore() == match.getLength() - 1){ // Post Crawford rule, the opponent should in theory be doubling, this bot should always accept it.
