@@ -126,6 +126,12 @@ public class enragedGophers implements BotAPI {
         return score;
     }
 
+    private double diffInBar(int[][] board){
+        int piecesInMyBar = board[me.getId()][25], piecesInOpponentsBar = board[opponent.getId()][25];
+
+        return ((piecesInOpponentsBar - piecesInMyBar) * (10.0/3.0)) + 50;
+    }
+
     private double diffInHomeBoard(int[][] board){
         int pipsInMyHomeBoard = 0, pipsInOpponentsHomeBoard = 0;
 
