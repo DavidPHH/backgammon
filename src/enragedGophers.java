@@ -57,21 +57,24 @@ public class enragedGophers implements BotAPI {
     private double getProbability(int[][] board){
         double diffHomeBoard = diffInHomeBoard(board);
         double diffPips = relativePipDiff(board);
+        double primeScore = scorePrime(board);
 
         // Coefficients
-        double cBlocks = 0.25;
-        double cBlots = 0.10;
-        double cHBoard = 0.15;
-        double cPips = 0.15;
+        double cBlocks = 0.20;
+        double cBlots = 0.08;
+        double cHBoard = 0.12;
+        double cPips = 0.18;
         double cBornOff = 0.1;
         double cBar = 0.2;
-        double cSpreadOfBlocksHB = 0.05;
+        double cSpreadOfBlocksHB = 0.1;
+        double cPrime = .02;
 
         if(pieceInFrontOfMyFurthest(board)){
            cBlocks = 0;
            cBlots = 0;
            cBar = 0;
            cSpreadOfBlocksHB = 0;
+           cPrime = 0;
 
            cHBoard = 0.4;
            cPips = 0.25;
@@ -79,7 +82,8 @@ public class enragedGophers implements BotAPI {
         }
 
         return cBlocks*diffOfBlocks(board) + cBlots*diffOfBlots(board) + cHBoard*diffHomeBoard + cPips*diffPips +
-                cBornOff*piecesBornOff(board) + cBar*diffInBar(board) + cSpreadOfBlocksHB*diffSpreadOfBlocksInHomeBoard(board);
+                cBornOff*piecesBornOff(board) + cBar*diffInBar(board) +
+                cSpreadOfBlocksHB*diffSpreadOfBlocksInHomeBoard(board) + cPrime * primeScore;
     }
 
     private double diffOfBlots(int[][] board){
