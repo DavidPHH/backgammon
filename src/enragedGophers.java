@@ -27,7 +27,6 @@ public class enragedGophers implements BotAPI {
     }
 
     public String getCommand(Plays possiblePlays) {
-        // Add your code here
         if(match.canDouble(me.getId()) && (cube.isOwned() || cube.getValue() == 1)){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
@@ -38,7 +37,7 @@ public class enragedGophers implements BotAPI {
         int[][] tempBoard = board.get();
         double probability = 0;
         int indexOfPlay = 0;
-        for(int i = 0;i < possiblePlays.number();i++){
+        for(int i = possiblePlays.number()-1;i >= 0;i--){
             for(int j = 0;j < possiblePlays.get(i).numberOfMoves();j++){ // Perform the play on the temp board.
                 tempBoard[me.getId()][possiblePlays.get(i).getMove(j).getFromPip()]--;
                 tempBoard[me.getId()][possiblePlays.get(i).getMove(j).getToPip()]++;
@@ -48,10 +47,11 @@ public class enragedGophers implements BotAPI {
             if(tempScore > probability){
                 probability = tempScore;
             }
+
             tempBoard = board.get();
             indexOfPlay = i;
         }
-        return Integer.toString(indexOfPlay+1); // Plays are listed starting from 1. So index 0 will be play 1.
+        return Integer.toString(indexOfPlay + 1); // Plays are listed starting from 1. So index 0 will be play 1.
     }
 
     // getScore function that will calculate the score of a board state.
@@ -61,13 +61,15 @@ public class enragedGophers implements BotAPI {
         double diffPips = relativePipDiff(board);
 
         // Coefficients
-        double cBlocks = 0.35;
-        double cBlots = 0.35;
-        double cHBoard = 0.3;
-        double cPips = 0.3;
-        double cBornOff;
+        double cBlocks = 0.30;
+        double cBlots = 0.25;
+        double cHBoard = 0.15;
+        double cPips = 0.2;
+        double cBornOff = .1;
+        double cSpreadOfBlocksHB;
 
-        return cBlocks*diffOfBlocks() + cBlots*diffOfBlots() + cHBoard*diffHomeBoard + cPips*diffPips + piecesBornOff(board);
+        return cBlocks*diffOfBlocks() + cBlots*diffOfBlots() + cHBoard*diffHomeBoard + cPips*diffPips +
+                cBornOff*piecesBornOff(board) + spreadOfBlocksInHomeBoard(board);
     }
 
     private double diffOfBlots(){
@@ -172,8 +174,8 @@ public class enragedGophers implements BotAPI {
         int myPips = countPips(board, me.getId());
         int oppPips = countPips(board, opponent.getId());
 
-        int min = -167;
-        int max = 167;
+        int min = -375;
+        int max = 375;
         double score = (oppPips - myPips);
         score = (score - min) / (max - min); // Normalizes the score
         return score * 100;
