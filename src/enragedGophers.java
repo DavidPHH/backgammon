@@ -65,8 +65,9 @@ public class enragedGophers implements BotAPI {
         double cBlots = 0.35;
         double cHBoard = 0.3;
         double cPips = 0.3;
+        double cBornOff;
 
-        return cBlocks*diffOfBlocks() + cBlots*diffOfBlots() + cHBoard*diffHomeBoard + cPips*diffPips;
+        return cBlocks*diffOfBlocks() + cBlots*diffOfBlots() + cHBoard*diffHomeBoard + cPips*diffPips + piecesBornOff(board);
     }
 
     private double diffOfBlots(){
@@ -129,11 +130,11 @@ public class enragedGophers implements BotAPI {
     private double diffInHomeBoard(int[][] board){
         int pipsInMyHomeBoard = 0, pipsInOpponentsHomeBoard = 0;
 
-        for(int i = 1;i <= 6;i++){ // Get all the pieces in my home board.
+        for(int i = 0;i <= 6;i++){ // Get all the pieces in my home board.
             pipsInMyHomeBoard += board[me.getId()][i];
         }
 
-        for(int i = 1;i <= 6;i++){ // Get all the pieces in the opponents home board.
+        for(int i = 0;i <= 6;i++){ // Get all the pieces in the opponents home board.
             pipsInOpponentsHomeBoard += board[opponent.getId()][i];
         }
 
@@ -142,6 +143,10 @@ public class enragedGophers implements BotAPI {
            Multiply by 10/3 then add 50 to create a normalised range from 0-100.
         */
         return ((pipsInMyHomeBoard - pipsInOpponentsHomeBoard)*(10/3.0)) + 50;
+    }
+
+    private double piecesBornOff(int[][] board){
+        return ((board[me.getId()][0]) * (10/3.0) + 50);
     }
 
     private int countPips(int[][] board, int id){
