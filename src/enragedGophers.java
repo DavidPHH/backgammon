@@ -26,10 +26,11 @@ public class enragedGophers implements BotAPI {
     }
 
     public String getCommand(Plays possiblePlays) {
+        System.out.println("enragedGophers's probability: " + getProbability(board.get()));
         if(match.canDouble(me.getId()) && (cube.getValue() == 1 || cube.getOwnerId() == me.getId())){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
-            else if(getProbability(board.get()) >= 66) // If there is a greater than 66% chance of winning, double
+            else if(getProbability(board.get()) >= 55) // If there is a greater than 66% chance of winning, double
                 return "double";
         }
 
@@ -58,15 +59,27 @@ public class enragedGophers implements BotAPI {
         double diffPips = relativePipDiff(board);
 
         // Coefficients
-        double cBlocks = 0.30;
-        double cBlots = 0.25;
+        double cBlocks = 0.25;
+        double cBlots = 0.10;
         double cHBoard = 0.15;
-        double cPips = 0.2;
+        double cPips = 0.15;
         double cBornOff = 0.1;
-        double cSpreadOfBlocksHB;
+        double cBar = 0.2;
+        double cSpreadOfBlocksHB = 0.05;
+
+        if(pieceInFrontOfMyFurthest(board)){
+           cBlocks = 0;
+           cBlots = 0;
+           cBar = 0;
+           cSpreadOfBlocksHB = 0;
+
+           cHBoard = 0.4;
+           cPips = 0.25;
+           cBornOff = 0.35;
+        }
 
         return cBlocks*diffOfBlocks(board) + cBlots*diffOfBlots(board) + cHBoard*diffHomeBoard + cPips*diffPips +
-                cBornOff*piecesBornOff(board);
+                cBornOff*piecesBornOff(board) + cBar*diffInBar(board) + cSpreadOfBlocksHB*diffSpreadOfBlocksInHomeBoard(board);
     }
 
     private double diffOfBlots(int[][] board){
