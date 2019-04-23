@@ -60,14 +60,14 @@ public class enragedGophers implements BotAPI {
         double primeScore = scorePrime(board);
 
         // Coefficients
-        double cBlocks = 0.20;
-        double cBlots = 0.08;
-        double cHBoard = 0.12;
-        double cPips = 0.18;
-        double cBornOff = 0.1;
-        double cBar = 0.2;
+        double cBlocks = 0.1;
+        double cBlots = 0.2;
+        double cHBoard = 0.15;
+        double cPips = 0.1;
+        double cBornOff = 0.15;
+        double cBar = 0.15;
         double cSpreadOfBlocksHB = 0.1;
-        double cPrime = .02;
+        double cPrime = 0.05;
 
         if(pieceInFrontOfMyFurthest(board)){
            cBlocks = 0;
