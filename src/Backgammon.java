@@ -9,8 +9,8 @@ public class Backgammon {
 
     public static final int NUM_PLAYERS = 2;
     public static final boolean CHEAT_ALLOWED = false;
-    private static final int DELAY = 10;  // in milliseconds
-    private static final String[] ALL_BOT_NAMES = {"enragedGophers","Bot1"};
+    private static final int DELAY = 4000;  // in milliseconds
+    private static final String[] ALL_BOT_NAMES = {"enragedGophers","testOpponent"};
 
     private final Cube cube = new Cube();
     private final Players players = new Players();
@@ -25,7 +25,7 @@ public class Backgammon {
     private void setupBots (String[] args) {
         if (args.length < NUM_PLAYERS) {
             botNames[0] = "enragedGophers";
-            botNames[1] = "Bot1";
+            botNames[1] = "testOpponent";
         } else {
             for (int i = 0; i < NUM_PLAYERS; i++) {
                 boolean found = false;
@@ -42,7 +42,7 @@ public class Backgammon {
             }
         }
         if (args.length < NUM_PLAYERS + 1) {
-            match.setLength(3);
+            match.setLength(33);
         } else {
             match.setLength(Integer.parseInt(args[2]));
         }
