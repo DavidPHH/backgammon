@@ -206,6 +206,25 @@ public class enragedGophers implements BotAPI {
         return score * 100;
     }
 
+    private double scorePrime(int[][] board){
+        int count = 0;
+        int max_prime = 0;
+        for (int i = 1; i <= 24; i++) {
+            if(board[me.getId()][i] > 1)
+                count += 1;
+            else{
+                if (count > max_prime)
+                    max_prime = count;
+                count = 0;
+            }
+        }
+        if (max_prime >= 6)
+            return 100;
+        else{
+           return (max_prime / 6 ) * 100;
+        }
+    }
+
     private boolean pieceInFrontOfMyFurthest(int[][] board){
         int indexOfFurthestPiece = 0;
 
