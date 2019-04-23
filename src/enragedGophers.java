@@ -146,7 +146,7 @@ public class enragedGophers implements BotAPI {
     }
 
     private double piecesBornOff(int[][] board){
-        return ((board[me.getId()][0]) * (10/3.0) + 50);
+        return (((board[me.getId()][0]) - ((board[opponent.getId()][0])) * (10/3.0) + 50));
     }
 
     private int countPips(int[][] board, int id){
