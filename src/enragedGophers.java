@@ -149,6 +149,18 @@ public class enragedGophers implements BotAPI {
         return (((board[me.getId()][0]) - ((board[opponent.getId()][0])) * (10/3.0) + 50));
     }
 
+    private double spreadOfBlocksInHomeBoard(int[][] board){
+        int blocksInMyHomeBoard = 0;
+
+        for(int i = 1;i <= 6;i++){
+            if(board[me.getId()][i] > 1){
+                blocksInMyHomeBoard++;
+            }
+        }
+
+        return (100.0/6.0) * blocksInMyHomeBoard;
+    }
+
     private int countPips(int[][] board, int id){
         int count = 0;
         for (int i = 24; i > 0; i--) {
