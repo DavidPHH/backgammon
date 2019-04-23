@@ -26,7 +26,7 @@ public class enragedGophers implements BotAPI {
     }
 
     public String getCommand(Plays possiblePlays) {
-        if(match.canDouble(me.getId()) && (cube.isOwned() || cube.getValue() == 1)){ // Checks to see if the bot has access to double
+        if(match.canDouble(me.getId()) && (cube.getValue() == 1 || cube.getOwnerId() == me.getId())){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
             else if(getProbability(board.get()) >= 66) // If there is a greater than 66% chance of winning, double
@@ -66,7 +66,7 @@ public class enragedGophers implements BotAPI {
         double cSpreadOfBlocksHB;
 
         return cBlocks*diffOfBlocks(board) + cBlots*diffOfBlots(board) + cHBoard*diffHomeBoard + cPips*diffPips +
-                cBornOff*piecesBornOff(board) + spreadOfBlocksInHomeBoard(board);
+                cBornOff*piecesBornOff(board);
     }
 
     private double diffOfBlots(int[][] board){

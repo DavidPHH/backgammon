@@ -29,12 +29,12 @@ public class testOpponent implements BotAPI {
         // Add your code here
         //System.out.println("Probability: " + relativePipDiff(board.get()));
         //System.out.println("canDouble: " + match.canDouble((Player) opponent));
-        /*if(match.canDouble(me.getId()) && (cube.getValue() == 1 || cube.getOwnerId() == me.getId())){ // Checks to see if the bot has access to double
+        if(match.canDouble(me.getId()) && (cube.getValue() == 1 || cube.getOwnerId() == me.getId())){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
             else if(getProbability(board.get()) >= 66) // If there is a greater than 66% chance of winning, double
                 return "double";
-        }*/
+        }
 
         int[][] tempBoard = board.get();
         double probability = 0;
