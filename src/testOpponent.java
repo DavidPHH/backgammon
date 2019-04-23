@@ -22,17 +22,15 @@ public class testOpponent implements BotAPI {
     }
 
     public String getName() {
-        return "testOpponent"; // must match the class name
+        return "enragedGophers"; // must match the class name
     }
 
     public String getCommand(Plays possiblePlays) {
-        // Add your code here
-        //System.out.println("Probability: " + relativePipDiff(board.get()));
-        //System.out.println("canDouble: " + match.canDouble((Player) opponent));
+        System.out.println("enragedGophers's probability: " + getProbability(board.get()));
         if(match.canDouble(me.getId()) && (cube.getValue() == 1 || cube.getOwnerId() == me.getId())){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
-            else if(getProbability(board.get()) >= 66) // If there is a greater than 66% chance of winning, double
+            else if(getProbability(board.get()) >= 55) // If there is a greater than 66% chance of winning, double
                 return "double";
         }
 
@@ -52,33 +50,46 @@ public class testOpponent implements BotAPI {
             tempBoard = board.get();
             indexOfPlay = i;
         }
-        return Integer.toString(indexOfPlay+1); // Plays are listed starting from 1. So index 0 will be play 1.
+        return Integer.toString(indexOfPlay + 1); // Plays are listed starting from 1. So index 0 will be play 1.
     }
 
     // getScore function that will calculate the score of a board state.
     private double getProbability(int[][] board){
-        // TODO Add all the score functions to be called here and return the resulting score
         double diffHomeBoard = diffInHomeBoard(board);
         double diffPips = relativePipDiff(board);
 
         // Coefficients
-        double cBlocks = 0.3;
-        double cBlots = 0.3;
-        double cHBoard = 0.2;
-        double cPips = 0.2;
-        double cBornOff;
+        double cBlocks = 0.05;
+        double cBlots = 0.10;
+        double cHBoard = 0.15;
+        double cPips = 0.15;
+        double cBornOff = 0.15;
+        double cBar = 0.2;
+        double cSpreadOfBlocksHB = 0.2;
 
-        return cBlocks*diffOfBlocks() + cBlots*diffOfBlots() + cHBoard*diffHomeBoard + cPips*diffPips + piecesBornOff(board);
+        if(pieceInFrontOfMyFurthest(board)){
+            cBlocks = 0;
+            cBlots = 0;
+            cBar = 0;
+            cSpreadOfBlocksHB = 0;
+
+            cHBoard = 0.4;
+            cPips = 0.25;
+            cBornOff = 0.35;
+        }
+
+        return cBlocks*diffOfBlocks(board) + cBlots*diffOfBlots(board) + cHBoard*diffHomeBoard + cPips*diffPips +
+                cBornOff*piecesBornOff(board) + cBar*diffInBar(board) + cSpreadOfBlocksHB*diffspreadOfBlocksInHomeBoard(board);
     }
 
-    private double diffOfBlots(){
+    private double diffOfBlots(int[][] board){
         int myBlots =0, opponentsBlots = 0;
 
         for (int i = 1; i < 25; i++) {
-            if(board.getNumCheckers(me.getId(), i) == 1){
+            if(board[me.getId()][i] == 1){
                 myBlots++;
             }
-            if(board.getNumCheckers(opponent.getId(), i) == 1){
+            if(board[opponent.getId()][i] == 1){
                 opponentsBlots++;
             }
         }
@@ -100,14 +111,14 @@ public class testOpponent implements BotAPI {
         return score;
     }
 
-    private double diffOfBlocks(){
+    private double diffOfBlocks(int[][] board){
         int myBlocks =0, opponentsBlocks = 0;
 
         for (int i = 1; i < 25; i++) {
-            if(board.getNumCheckers(me.getId(), i) >= 2){
+            if(board[me.getId()][i] >= 2){
                 myBlocks++;
             }
-            if(board.getNumCheckers(opponent.getId(), i) >= 2){
+            if(board[opponent.getId()][i] >= 2){
                 opponentsBlocks++;
             }
         }
@@ -126,6 +137,12 @@ public class testOpponent implements BotAPI {
         score = (50/7.0)*score + 50;
 
         return score;
+    }
+
+    private double diffInBar(int[][] board){
+        int piecesInMyBar = board[me.getId()][25], piecesInOpponentsBar = board[opponent.getId()][25];
+
+        return ((piecesInOpponentsBar - piecesInMyBar) * (10.0/3.0)) + 50;
     }
 
     private double diffInHomeBoard(int[][] board){
@@ -147,7 +164,28 @@ public class testOpponent implements BotAPI {
     }
 
     private double piecesBornOff(int[][] board){
-        return ((board[me.getId()][0]) * (10/3.0) + 50);
+        return (((board[me.getId()][0]) - ((board[opponent.getId()][0])) * (10/3.0) + 50));
+    }
+
+    private double diffspreadOfBlocksInHomeBoard(int[][] board){
+        int blocksInMyHomeBoard = 0;
+        int blocksInOpponentsHomeBoard = 0;
+
+        for(int i = 1;i <= 6;i++){
+            if(board[me.getId()][i] > 1){
+                blocksInMyHomeBoard++;
+            }
+        }
+
+        for(int i = 1;i <= 6;i++){
+            if(board[opponent.getId()][i] > 1){
+                blocksInOpponentsHomeBoard++;
+            }
+        }
+
+        int score = blocksInMyHomeBoard - blocksInOpponentsHomeBoard;
+
+        return ((50.0/6.0) * score) + 50;
     }
 
     private int countPips(int[][] board, int id){
@@ -161,11 +199,32 @@ public class testOpponent implements BotAPI {
         int myPips = countPips(board, me.getId());
         int oppPips = countPips(board, opponent.getId());
 
-        int min = -167;
-        int max = 167;
+        int min = -375;
+        int max = 375;
         double score = (oppPips - myPips);
         score = (score - min) / (max - min); // Normalizes the score
         return score * 100;
+    }
+
+    private boolean pieceInFrontOfMyFurthest(int[][] board){
+        int indexOfFurthestPiece = 0;
+
+        for(int i = board[me.getId()].length - 1;i >= 0;i--){
+            if(board[me.getId()][i] > 0){
+                indexOfFurthestPiece = i;
+                break;
+            }
+        }
+
+        if(indexOfFurthestPiece != 0){ // Ensures that the furthest piece found wasn't in bear-off. (It should never be)
+            for(int i = board[opponent.getId()].length - 1;i >= indexOfFurthestPiece;i--){
+                if(board[opponent.getId()][i] > 0){
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public String getDoubleDecision() {
@@ -178,7 +237,7 @@ public class testOpponent implements BotAPI {
             else
                 return "n";
         }else{
-            if(getProbability(board.get())  > 55) // If bot has greater than 25% chance of winning, then allow the opposition to double.
+            if(getProbability(board.get())  > 25) // If bot has greater than 25% chance of winning, then allow the opposition to double.
                 return "y";
         }
         return "n";

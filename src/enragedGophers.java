@@ -154,8 +154,9 @@ public class enragedGophers implements BotAPI {
         return (((board[me.getId()][0]) - ((board[opponent.getId()][0])) * (10/3.0) + 50));
     }
 
-    private double spreadOfBlocksInHomeBoard(int[][] board){
+    private double diffSpreadOfBlocksInHomeBoard(int[][] board){
         int blocksInMyHomeBoard = 0;
+        int blocksInOpponentsHomeBoard = 0;
 
         for(int i = 1;i <= 6;i++){
             if(board[me.getId()][i] > 1){
@@ -163,7 +164,15 @@ public class enragedGophers implements BotAPI {
             }
         }
 
-        return (100.0/6.0) * blocksInMyHomeBoard;
+        for(int i = 1;i <= 6;i++){
+            if(board[opponent.getId()][i] > 1){
+                blocksInOpponentsHomeBoard++;
+            }
+        }
+
+        int score = blocksInMyHomeBoard - blocksInOpponentsHomeBoard;
+
+        return ((50.0/6.0) * score) + 50;
     }
 
     private int countPips(int[][] board, int id){
