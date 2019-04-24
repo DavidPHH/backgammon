@@ -22,7 +22,7 @@ public class testOpponent implements BotAPI {
     }
 
     public String getName() {
-        return "enragedGophers"; // must match the class name
+        return "testOpponent"; // must match the class name
     }
 
     public String getCommand(Plays possiblePlays) {
@@ -57,29 +57,33 @@ public class testOpponent implements BotAPI {
     private double getProbability(int[][] board){
         double diffHomeBoard = diffInHomeBoard(board);
         double diffPips = relativePipDiff(board);
+        double primeScore = scorePrime(board);
 
         // Coefficients
-        double cBlocks = 0.05;
-        double cBlots = 0.10;
-        double cHBoard = 0.15;
-        double cPips = 0.15;
+        double cBlocks = 0.17;
+        double cBlots = 0.11;
+        double cHBoard = 0.12;
+        double cPips = 0.13;
         double cBornOff = 0.15;
         double cBar = 0.2;
-        double cSpreadOfBlocksHB = 0.2;
+        double cSpreadOfBlocksHB = 0.1;
+        double cPrime = 0.02;
 
-        if(pieceInFrontOfMyFurthest(board)){
+        if(pieceInFrontOfMyFurthest(board)) {
             cBlocks = 0;
             cBlots = 0;
             cBar = 0;
             cSpreadOfBlocksHB = 0;
+            cPrime = 0;
 
             cHBoard = 0.4;
-            cPips = 0.25;
-            cBornOff = 0.35;
+            cPips = 0.2;
+            cBornOff = 0.4;
         }
 
         return cBlocks*diffOfBlocks(board) + cBlots*diffOfBlots(board) + cHBoard*diffHomeBoard + cPips*diffPips +
-                cBornOff*piecesBornOff(board) + cBar*diffInBar(board) + cSpreadOfBlocksHB*diffspreadOfBlocksInHomeBoard(board);
+                cBornOff*piecesBornOff(board) + cBar*diffInBar(board) +
+                cSpreadOfBlocksHB*diffSpreadOfBlocksInHomeBoard(board) + cPrime * primeScore;
     }
 
     private double diffOfBlots(int[][] board){
@@ -167,7 +171,7 @@ public class testOpponent implements BotAPI {
         return (((board[me.getId()][0]) - ((board[opponent.getId()][0])) * (10/3.0) + 50));
     }
 
-    private double diffspreadOfBlocksInHomeBoard(int[][] board){
+    private double diffSpreadOfBlocksInHomeBoard(int[][] board){
         int blocksInMyHomeBoard = 0;
         int blocksInOpponentsHomeBoard = 0;
 
@@ -206,6 +210,25 @@ public class testOpponent implements BotAPI {
         return score * 100;
     }
 
+    private double scorePrime(int[][] board){
+        int count = 0;
+        int max_prime = 0;
+        for (int i = 1; i <= 24; i++) {
+            if(board[me.getId()][i] > 1)
+                count += 1;
+            else{
+                if (count > max_prime)
+                    max_prime = count;
+                count = 0;
+            }
+        }
+        if (max_prime >= 6)
+            return 100;
+        else{
+            return (max_prime / 6.0 ) * 100;
+        }
+    }
+
     private boolean pieceInFrontOfMyFurthest(int[][] board){
         int indexOfFurthestPiece = 0;
 
@@ -237,7 +260,7 @@ public class testOpponent implements BotAPI {
             else
                 return "n";
         }else{
-            if(getProbability(board.get())  > 25) // If bot has greater than 25% chance of winning, then allow the opposition to double.
+            if(getProbability(board.get())  > 40) // If bot has greater than 40% chance of winning, then accept the double offer.
                 return "y";
         }
         return "n";

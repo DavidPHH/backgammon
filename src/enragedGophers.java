@@ -60,14 +60,14 @@ public class enragedGophers implements BotAPI {
         double primeScore = scorePrime(board);
 
         // Coefficients
-        double cBlocks = 0.1;
-        double cBlots = 0.2;
-        double cHBoard = 0.15;
-        double cPips = 0.1;
+        double cBlocks = 0.17;
+        double cBlots = 0.12;
+        double cHBoard = 0.11;
+        double cPips = 0.11;
         double cBornOff = 0.15;
-        double cBar = 0.15;
-        double cSpreadOfBlocksHB = 0.1;
-        double cPrime = 0.05;
+        double cBar = 0.19;
+        double cSpreadOfBlocksHB = 0.11;
+        double cPrime = 0.04;
 
         if(pieceInFrontOfMyFurthest(board)){
            cBlocks = 0;
@@ -77,8 +77,8 @@ public class enragedGophers implements BotAPI {
            cPrime = 0;
 
            cHBoard = 0.4;
-           cPips = 0.25;
-           cBornOff = 0.35;
+           cPips = 0.2;
+           cBornOff = 0.4;
         }
 
         return cBlocks*diffOfBlocks(board) + cBlots*diffOfBlots(board) + cHBoard*diffHomeBoard + cPips*diffPips +
@@ -160,7 +160,7 @@ public class enragedGophers implements BotAPI {
             pipsInOpponentsHomeBoard += board[opponent.getId()][i];
         }
 
-        /* Max amount of pieces possible in both home board is 15.
+        /* Max amount of pieces possible in either home board is 15.
            Max score range is +/- 15. ( All pieces in one home board, none for the other player).
            Multiply by 10/3 then add 50 to create a normalised range from 0-100.
         */
@@ -225,7 +225,7 @@ public class enragedGophers implements BotAPI {
         if (max_prime >= 6)
             return 100;
         else{
-           return (max_prime / 6 ) * 100;
+            return (max_prime / 6.0 ) * 100;
         }
     }
 
@@ -260,7 +260,7 @@ public class enragedGophers implements BotAPI {
             else
                 return "n";
         }else{
-            if(getProbability(board.get())  > 25) // If bot has greater than 25% chance of winning, then allow the opposition to double.
+            if(getProbability(board.get())  > 42) // If bot has greater than 40% chance of winning, then accept the double offer.
                 return "y";
         }
         return "n";
