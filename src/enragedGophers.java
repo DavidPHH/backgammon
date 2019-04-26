@@ -1,3 +1,4 @@
+// Team: enragedGophers
 public class enragedGophers implements BotAPI {
 
     // The public API of Bot must not change
@@ -26,7 +27,6 @@ public class enragedGophers implements BotAPI {
     }
 
     public String getCommand(Plays possiblePlays) {
-        //System.out.println("enragedGophers's probability: " + diffScorePrime(board.get()));
         if(match.canDouble(me.getId()) && (cube.getValue() == 1 || cube.getOwnerId() == me.getId())){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
@@ -210,30 +210,39 @@ public class enragedGophers implements BotAPI {
         return score * 100;
     }
 
-    private double diffScorePrime(int[][] board){
-        int count = 0;
-        int myMaxPrime = 0, opponentsMaxPrime = 0;
+    private int countPrime(int[][] board, PlayerAPI player, PlayerAPI opponent){
+        int oppFirstPiece = 0; // First piece of the opponent on the board
+        int firstPiece = 0; // First piece of our prime
+        int count = 0; // Temporary count of prime
+        int myMaxPrime = 0; // Size of biggest prime
         for (int i = 1; i <= 24; i++) {
-            if(board[me.getId()][i] > 1)
+            if(board[opponent.getId()][25-i] > 0) {
+                if (oppFirstPiece == 0)
+                    oppFirstPiece = i; // Sets the opponents first piece if it wasn't set already
+            }
+            if(board[player.getId()][i] > 1) { // If there's a block, start counting the prime
                 count += 1;
+                if(firstPiece == 0)
+                    firstPiece = i;
+            }
             else{
-                if (count > myMaxPrime)
+                if (count > myMaxPrime) // If the prime ends,compare the size to the maximum prime
                     myMaxPrime = count;
+                firstPiece = 0;
                 count = 0;
             }
         }
+        if(oppFirstPiece > firstPiece) // If our prime doesn't block an opponent's piece, it doesn't matter
+            myMaxPrime = 0;
 
-        count = 0;
-        for (int i = 1; i <= 24; i++) {
-            if(board[opponent.getId()][i] > 1)
-                count += 1;
-            else{
-                if (count > opponentsMaxPrime)
-                    opponentsMaxPrime = count;
-                count = 0;
-            }
-        }
+        return myMaxPrime;
+    }
 
+    private double diffScorePrime(int[][] board){
+
+        // Count size of prime for each player, returns 0 if prime doesn't matter.
+        int myMaxPrime = countPrime(board, me, opponent);
+        int opponentsMaxPrime = countPrime(board, opponent, me);
         double score = myMaxPrime - opponentsMaxPrime;
 
         if (score >= 6)
