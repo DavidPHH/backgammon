@@ -69,7 +69,7 @@ public class enragedGophers implements BotAPI {
         double cSpreadOfBlocksHB = 0.11;
         double cPrime = 0.04;
 
-        if(pieceInFrontOfMyFurthest(board)){
+        if(!pieceInFrontOfMyFurthest(board)){ // Changes the weights if
            cBlocks = 0;
            cBlots = 0;
            cBar = 0;
@@ -80,7 +80,6 @@ public class enragedGophers implements BotAPI {
            cPips = 0.2;
            cBornOff = 0.4;
         }
-
         return cBlocks*diffOfBlocks(board) + cBlots*diffOfBlots(board) + cHBoard*diffHomeBoard + cPips*diffPips +
                 cBornOff*piecesBornOff(board) + cBar*diffInBar(board) +
                 cSpreadOfBlocksHB*diffSpreadOfBlocksInHomeBoard(board) + cPrime * primeScore;
@@ -143,7 +142,7 @@ public class enragedGophers implements BotAPI {
         return score;
     }
 
-    private double diffInBar(int[][] board){
+    private double diffInBar(int[][] board){ // Returns normalised score of the difference in pieces on the bar
         int piecesInMyBar = board[me.getId()][25], piecesInOpponentsBar = board[opponent.getId()][25];
 
         return ((piecesInOpponentsBar - piecesInMyBar) * (10.0/3.0)) + 50;
@@ -171,7 +170,7 @@ public class enragedGophers implements BotAPI {
         return (((board[me.getId()][0]) - ((board[opponent.getId()][0])) * (10/3.0) + 50));
     }
 
-    private double diffSpreadOfBlocksInHomeBoard(int[][] board){
+    private double diffSpreadOfBlocksInHomeBoard(int[][] board){ // Returns the difference between the spread of blocks in home board
         int blocksInMyHomeBoard = 0;
         int blocksInOpponentsHomeBoard = 0;
 
@@ -192,7 +191,7 @@ public class enragedGophers implements BotAPI {
         return ((50.0/6.0) * score) + 50;
     }
 
-    private int countPips(int[][] board, int id){
+    private int countPips(int[][] board, int id){ // Returns the number of pips for a player
         int count = 0;
         for (int i = 24; i > 0; i--) {
             count += board[id][i] * i;
@@ -200,9 +199,10 @@ public class enragedGophers implements BotAPI {
         return count;
     }
     private double relativePipDiff(int[][] board){
+        // Count pips
         int myPips = countPips(board, me.getId());
         int oppPips = countPips(board, opponent.getId());
-
+        // Gets relative score
         int min = -375;
         int max = 375;
         double score = (oppPips - myPips);
@@ -210,7 +210,7 @@ public class enragedGophers implements BotAPI {
         return score * 100;
     }
 
-    private int countPrime(int[][] board, PlayerAPI player, PlayerAPI opponent){
+    private int countPrime(int[][] board, PlayerAPI player, PlayerAPI opponent){ // Returns the size of a prime for a player
         int oppFirstPiece = 0; // First piece of the opponent on the board
         int firstPiece = 0; // First piece of our prime
         int count = 0; // Temporary count of prime
@@ -252,7 +252,8 @@ public class enragedGophers implements BotAPI {
         }
     }
 
-    private boolean pieceInFrontOfMyFurthest(int[][] board){
+    private boolean pieceInFrontOfMyFurthest(int[][] board){ // Returns true if there is an opposing piece between my
+        // furthest piece and bear off
         int indexOfFurthestPiece = 0;
 
         for(int i = board[me.getId()].length - 1;i >= 0;i--){
