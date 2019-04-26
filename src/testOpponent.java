@@ -26,7 +26,7 @@ public class testOpponent implements BotAPI {
     }
 
     public String getCommand(Plays possiblePlays) {
-        System.out.println("enragedGophers's probability: " + getProbability(board.get()));
+        //System.out.println("opponents's probability: " + getProbability(board.get()));
         if(match.canDouble(me.getId()) && (cube.getValue() == 1 || cube.getOwnerId() == me.getId())){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";

@@ -26,7 +26,7 @@ public class enragedGophers implements BotAPI {
     }
 
     public String getCommand(Plays possiblePlays) {
-        System.out.println("enragedGophers's probability: " + getProbability(board.get()));
+        //System.out.println("enragedGophers's probability: " + diffScorePrime(board.get()));
         if(match.canDouble(me.getId()) && (cube.getValue() == 1 || cube.getOwnerId() == me.getId())){ // Checks to see if the bot has access to double
             if(opponent.getScore() == match.getLength() - 1) // If the opponent is one game away from taking the match, always double. Nothing to lose.
                 return "double";
@@ -57,7 +57,7 @@ public class enragedGophers implements BotAPI {
     private double getProbability(int[][] board){
         double diffHomeBoard = diffInHomeBoard(board);
         double diffPips = relativePipDiff(board);
-        double primeScore = scorePrime(board);
+        double primeScore = diffScorePrime(board);
 
         // Coefficients
         double cBlocks = 0.17;
@@ -210,22 +210,36 @@ public class enragedGophers implements BotAPI {
         return score * 100;
     }
 
-    private double scorePrime(int[][] board){
+    private double diffScorePrime(int[][] board){
         int count = 0;
-        int max_prime = 0;
+        int myMaxPrime = 0, opponentsMaxPrime = 0;
         for (int i = 1; i <= 24; i++) {
             if(board[me.getId()][i] > 1)
                 count += 1;
             else{
-                if (count > max_prime)
-                    max_prime = count;
+                if (count > myMaxPrime)
+                    myMaxPrime = count;
                 count = 0;
             }
         }
-        if (max_prime >= 6)
+
+        count = 0;
+        for (int i = 1; i <= 24; i++) {
+            if(board[opponent.getId()][i] > 1)
+                count += 1;
+            else{
+                if (count > opponentsMaxPrime)
+                    opponentsMaxPrime = count;
+                count = 0;
+            }
+        }
+
+        double score = myMaxPrime - opponentsMaxPrime;
+
+        if (score >= 6)
             return 100;
         else{
-            return (max_prime / 6.0 ) * 100;
+            return (50* score / 6.0 ) + 50;
         }
     }
 
